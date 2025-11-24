@@ -120,7 +120,7 @@ app.get('/:page', (req, res) => {
       <head>
         <title>Página Não Encontrada - BeautySys</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 40px; background: #f5f5f5; }
+          body { font-family: Arial, sans-serif; margin: 40px; background: #c4b1b1ff; }
           .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
           h1 { color: #e53e3e; }
           .links { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 20px 0; }
