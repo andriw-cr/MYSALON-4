@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautySys - Sistema de Gestão</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Layout Principal -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 bg-white shadow-md">
+            <div class="p-4 border-b">
+                <h1 class="text-xl font-bold text-purple-600">BeautySys</h1>
+                <p class="text-sm text-gray-500">Sistema de Gestão</p>
+            </div>
+            <nav class="mt-6">
+                <a href="#" class="block py-3 px-6 text-gray-700 hover:bg-purple-50 active-menu">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="./Clientes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-users mr-3"></i>Clientes
+                </a>
+                <a href="./profissionais.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-user-tie mr-3"></i>Profissionais
+                </a>
+                <a href="./servicos.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cut mr-3"></i>Serviços
+                </a>
+                <a href="./agenda.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-calendar-alt mr-3"></i>Agenda
+                </a>
+                <a href="./estoque.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-boxes mr-3"></i>Estoque
+                </a>
+                <a href="./financeiro.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-chart-line mr-3"></i>Financeiro
+                </a>
+                <a href="./fidelidade.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-gift mr-3"></i>Fidelidade
+                </a>
+                <a href="./configuracoes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cog mr-3"></i>Configurações
+                </a>
+            </nav>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 mr-4">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold">Dashboard</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="relative">
+                        <button class="text-gray-500">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=8b5cf6&color=fff" alt="Avatar" class="w-8 h-8 rounded-full">
+                        <span class="ml-2 text-sm font-medium">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Conteúdo do Dashboard -->
+            <main class="p-6">
+                <!-- Cards de Resumo -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="dashboard-card bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Clientes Ativos</p>
+                                <h3 class="text-2xl font-bold mt-2">245</h3>
+                                <p class="text-green-500 text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i>12% este mês</p>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-full">
+                                <i class="fas fa-users text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Agendamentos Hoje</p>
+                                <h3 class="text-2xl font-bold mt-2">18</h3>
+                                <p class="text-green-500 text-sm mt-1"><i class="fas fa-check mr-1"></i>5 concluídos</p>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i class="fas fa-calendar-alt text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Faturamento Mensal</p>
+                                <h3 class="text-2xl font-bold mt-2">R$ 12.580</h3>
+                                <p class="text-green-500 text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i>8% este mês</p>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="fas fa-dollar-sign text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="dashboard-card bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-gray-500 text-sm">Serviços Realizados</p>
+                                <h3 class="text-2xl font-bold mt-2">156</h3>
+                                <p class="text-red-500 text-sm mt-1"><i class="fas fa-arrow-down mr-1"></i>3% este mês</p>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-full">
+                                <i class="fas fa-cut text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos e Agenda -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Gráfico de Faturamento -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold">Faturamento Mensal</h3>
+                            <div class="flex space-x-2">
+                                <button class="px-3 py-1 bg-purple-100 text-purple-600 rounded-lg text-sm">Mensal</button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm">Semanal</button>
+                                <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm">Diário</button>
+                            </div>
+                        </div>
+                        <div class="h-80">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Próximos Agendamentos -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold mb-6">Próximos Agendamentos</h3>
+                        <div class="space-y-4">
+                            <!-- Agendamentos repetidos - mantive apenas um exemplo por brevidade -->
+                            <div class="p-3 border border-gray-200 rounded-lg">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center">
+                                        <div class="bg-purple-100 p-2 rounded-lg mr-3">
+                                            <i class="fas fa-user text-purple-600"></i>
+                                        </div>
+                                        <div>
+                                            <p class="font-medium">Maria Silva</p>
+                                            <p class="text-sm text-gray-500">Corte e Escova</p>
+                                            <p class="text-xs text-gray-400">Profissional: Ana Souza</p>
+                                        </div>
+                                    </div>
+                                    <div class="text-right">
+                                        <p class="font-medium">10:30</p>
+                                        <p class="text-sm text-gray-500">Hoje</p>
+                                        <p class="text-xs status-confirmed"><i class="fas fa-check-circle mr-1"></i>Confirmado</p>
+                                    </div>
+                                </div>
+                                <div class="appointment-actions">
+                                    <button class="btn-edit" data-appointment="1">
+                                        <i class="fas fa-edit mr-1"></i>Editar
+                                    </button>
+                                    <button class="btn-cancel" data-appointment="1">
+                                        <i class="fas fa-times mr-1"></i>Cancelar
+                                    </button>
+                                </div>
+                            </div>
+                            <!-- ... outros agendamentos ... -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Serviços Populares e Calendário -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Serviços Mais Populares -->
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold mb-6">Serviços Mais Populares</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                                    <span>Corte Feminino</span>
+                                </div>
+                                <span class="font-medium">42 vendas</span>
+                            </div>
+                            <!-- ... outros serviços ... -->
+                        </div>
+                    </div>
+
+                    <!-- Calendário -->
+                    <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-semibold">Agenda</h3>
+                            <div class="flex space-x-2">
+                                <button id="openAgendaBtn" class="px-4 py-2 bg-gray-600 text-white rounded-lg text-sm">
+                                    <i class="fas fa-calendar-alt mr-2"></i>Abrir Agenda
+                                </button>
+                                <button id="newAppointmentBtn" class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm">
+                                    <i class="fas fa-plus mr-2"></i>Novo Agendamento
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mb-4 flex justify-between">
+                            <button class="px-3 py-1 rounded-lg"><i class="fas fa-chevron-left"></i></button>
+                            <h4 class="font-semibold">Outubro 2023</h4>
+                            <button class="px-3 py-1 rounded-lg"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                        <div class="grid grid-cols-7 gap-2 mb-2">
+                            <div class="text-center font-medium text-gray-500 py-2">Dom</div>
+                            <div class="text-center font-medium text-gray-500 py-2">Seg</div>
+                            <div class="text-center font-medium text-gray-500 py-2">Ter</div>
+                            <div class="text-center font-medium text-gray-500 py-2">Qua</div>
+                            <div class="text-center font-medium text-gray-500 py-2">Qui</div>
+                            <div class="text-center font-medium text-gray-500 py-2">Sex</div>
+                            <div class="text-center font-medium text-gray-500 py-2">Sáb</div>
+                        </div>
+                        <div class="grid grid-cols-7 gap-2">
+                            <!-- Dias do calendário -->
+                            <div class="calendar-day text-center py-2 text-gray-400">25</div>
+                            <!-- ... outros dias ... -->
+                            <div class="calendar-day has-appointments text-center py-2">
+                                19
+                                <div class="appointment-badge bg-purple-500">3</div>
+                            </div>
+                            <!-- ... resto dos dias ... -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal para Novo Agendamento -->
+    <div id="appointmentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Novo Agendamento</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="appointmentForm">
+                <div class="form-group">
+                    <label class="form-label" for="client">Cliente</label>
+                    <select class="form-select" id="client" required>
+                        <option value="">Selecione um cliente</option>
+                        <option value="1">Maria Silva</option>
+                        <option value="2">João Santos</option>
+                        <option value="3">Ana Costa</option>
+                        <option value="4">Pedro Alves</option>
+                        <option value="5">Carla Mendes</option>
+                    </select>
+                </div>
+                <!-- ... outros campos do formulário ... -->
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary close-modal">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar Agendamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>

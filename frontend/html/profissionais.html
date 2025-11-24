@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautySys - Profissionais</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <script src="../js/app.js" defer></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Layout Principal -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 bg-white shadow-md">
+            <div class="p-4 border-b">
+                <h1 class="text-xl font-bold text-purple-600">BeautySys</h1>
+                <p class="text-sm text-gray-500">Sistema de Gestão</p>
+            </div>
+            <nav class="mt-6">
+                <a href="dashboard.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="clientes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-users mr-3"></i>Clientes
+                </a>
+                <a href="profissionais.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50 active-menu">
+                    <i class="fas fa-user-tie mr-3"></i>Profissionais
+                </a>
+                <a href="servicos.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cut mr-3"></i>Serviços
+                </a>
+                <a href="agenda.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-calendar-alt mr-3"></i>Agenda
+                </a>
+                <a href="estoque.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-boxes mr-3"></i>Estoque
+                </a>
+                <a href="financeiro.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-chart-line mr-3"></i>Financeiro
+                </a>
+                <a href="fidelidade.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-gift mr-3"></i>Fidelidade
+                </a>
+                <a href="configuracoes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cog mr-3"></i>Configurações
+                </a>
+            </nav>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 mr-4">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold">Profissionais</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="relative">
+                        <button class="text-gray-500">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">2</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=8b5cf6&color=fff" alt="Avatar" class="w-8 h-8 rounded-full">
+                        <span class="ml-2 text-sm font-medium">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Conteúdo da Página de Profissionais -->
+            <main class="p-6">
+                <!-- Barra de Ações -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+                        <div>
+                            <h3 class="text-lg font-semibold">Gerenciar Profissionais</h3>
+                            <p class="text-gray-500 text-sm">Cadastre, edite e visualize informações dos profissionais</p>
+                        </div>
+                        <div class="flex space-x-3">
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center">
+                                <i class="fas fa-filter mr-2"></i>Filtrar
+                            </button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center">
+                                <i class="fas fa-download mr-2"></i>Exportar
+                            </button>
+                            <button id="btnNovoProfissional" class="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center">
+                                <i class="fas fa-plus mr-2"></i>Novo Profissional
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Estatísticas Rápidas -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Total de Profissionais</p>
+                                <h3 class="text-xl font-bold mt-1">18</h3>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-full">
+                                <i class="fas fa-user-tie text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Ativos</p>
+                                <h3 class="text-xl font-bold mt-1">15</h3>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="fas fa-user-check text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Comissão Média</p>
+                                <h3 class="text-xl font-bold mt-1">45%</h3>
+                            </div>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i class="fas fa-percentage text-blue-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Férias Programadas</p>
+                                <h3 class="text-xl font-bold mt-1">3</h3>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-full">
+                                <i class="fas fa-umbrella-beach text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Profissionais -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full professional-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profissional</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Função</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contato</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comissão</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Carla+Silva&background=8b5cf6&color=fff" alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Carla Silva</div>
+                                                <div class="text-sm text-gray-500">CPF: 123.456.789-00</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Cabeleireira</div>
+                                        <div class="text-sm text-gray-500">Corte, Coloração</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">(11) 98765-4321</div>
+                                        <div class="text-sm text-gray-500">carla.silva@email.com</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        50%
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Ativo
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="tooltip text-purple-600 hover:text-purple-900 edit-professional" data-id="1">
+                                                <i class="fas fa-edit"></i>
+                                                <span class="tooltip-text">Editar Profissional</span>
+                                            </button>
+                                            <button class="tooltip text-blue-600 hover:text-blue-900 view-professional" data-id="1">
+                                                <i class="fas fa-eye"></i>
+                                                <span class="tooltip-text">Visualizar Detalhes</span>
+                                            </button>
+                                            <button class="tooltip text-green-600 hover:text-green-900">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <span class="tooltip-text">Ver Agenda</span>
+                                            </button>
+                                            <button class="tooltip text-red-600 hover:text-red-900 delete-professional" data-id="1">
+                                                <i class="fas fa-trash"></i>
+                                                <span class="tooltip-text">Excluir Profissional</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Rogerio+Santos&background=3b82f6&color=fff" alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Rogério Santos</div>
+                                                <div class="text-sm text-gray-500">CPF: 987.654.321-00</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Barbeiro</div>
+                                        <div class="text-sm text-gray-500">Barba, Corte</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">(11) 97654-3210</div>
+                                        <div class="text-sm text-gray-500">rogerio.santos@email.com</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        40%
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            Ativo
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="tooltip text-purple-600 hover:text-purple-900 edit-professional" data-id="2">
+                                                <i class="fas fa-edit"></i>
+                                                <span class="tooltip-text">Editar Profissional</span>
+                                            </button>
+                                            <button class="tooltip text-blue-600 hover:text-blue-900 view-professional" data-id="2">
+                                                <i class="fas fa-eye"></i>
+                                                <span class="tooltip-text">Visualizar Detalhes</span>
+                                            </button>
+                                            <button class="tooltip text-green-600 hover:text-green-900">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <span class="tooltip-text">Ver Agenda</span>
+                                            </button>
+                                            <button class="tooltip text-red-600 hover:text-red-900 delete-professional" data-id="2">
+                                                <i class="fas fa-trash"></i>
+                                                <span class="tooltip-text">Excluir Profissional</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10">
+                                                <img class="h-10 w-10 rounded-full" src="https://ui-avatars.com/api/?name=Amanda+Costa&background=10b981&color=fff" alt="">
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Amanda Costa</div>
+                                                <div class="text-sm text-gray-500">CPF: 456.789.123-00</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">Manicure</div>
+                                        <div class="text-sm text-gray-500">Unhas, Spa</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm text-gray-900">(11) 96543-2109</div>
+                                        <div class="text-sm text-gray-500">amanda.costa@email.com</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        45%
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Férias
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <div class="flex space-x-2">
+                                            <button class="tooltip text-purple-600 hover:text-purple-900 edit-professional" data-id="3">
+                                                <i class="fas fa-edit"></i>
+                                                <span class="tooltip-text">Editar Profissional</span>
+                                            </button>
+                                            <button class="tooltip text-blue-600 hover:text-blue-900 view-professional" data-id="3">
+                                                <i class="fas fa-eye"></i>
+                                                <span class="tooltip-text">Visualizar Detalhes</span>
+                                            </button>
+                                            <button class="tooltip text-green-600 hover:text-green-900">
+                                                <i class="fas fa-calendar-alt"></i>
+                                                <span class="tooltip-text">Ver Agenda</span>
+                                            </button>
+                                            <button class="tooltip text-red-600 hover:text-red-900 delete-professional" data-id="3">
+                                                <i class="fas fa-trash"></i>
+                                                <span class="tooltip-text">Excluir Profissional</span>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginação -->
+                    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"> Anterior </a>
+                            <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"> Próxima </a>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Mostrando
+                                    <span class="font-medium">1</span>
+                                    a
+                                    <span class="font-medium">3</span>
+                                    de
+                                    <span class="font-medium">18</span>
+                                    resultados
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Anterior</span>
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</a>
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Próxima</span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro/Edição de Profissional -->
+    <div id="professionalModal" class="fixed inset-0 overflow-y-auto modal hidden z-50">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <!-- Conteúdo do modal de edição (existente) -->
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">
+                                Novo Profissional
+                            </h3>
+                            <!-- Conteúdo do formulário existente -->
+                            <div class="mt-4">
+                                <p>Formulário de edição do profissional...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="saveProfessional" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Salvar
+                    </button>
+                    <button type="button" id="cancelProfessional" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização de Profissional -->
+    <div id="viewProfessionalModal" class="fixed inset-0 overflow-y-auto modal hidden z-50">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="viewModalTitle">
+                                Detalhes do Profissional
+                            </h3>
+                            <div class="mt-4">
+                                <div class="bg-white">
+                                    <!-- Cabeçalho com Foto e Informações Básicas -->
+                                    <div class="flex items-start space-x-6 mb-6">
+                                        <div class="flex-shrink-0">
+                                            <img id="viewProfessionalPhoto" class="h-24 w-24 rounded-full" src="https://ui-avatars.com/api/?name=Carla+Silva&background=8b5cf6&color=fff" alt="">
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 id="viewProfessionalName" class="text-xl font-bold text-gray-900">Carla Silva</h4>
+                                            <p id="viewProfessionalInfo" class="text-gray-600">Cabeleireira • CPF: 123.456.789-00</p>
+                                            <div class="mt-2">
+                                                <span id="viewProfessionalStatus" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                    Ativo
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Grid de Informações -->
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <!-- Informações Pessoais -->
+                                        <div class="space-y-4">
+                                            <div>
+                                                <h5 class="text-sm font-medium text-gray-500 mb-2">INFORMAÇÕES PESSOAIS</h5>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Data Nascimento:</span>
+                                                        <span id="viewProfessionalBirthdate" class="text-sm font-medium">15/03/1985</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Gênero:</span>
+                                                        <span id="viewProfessionalGender" class="text-sm font-medium">Feminino</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Estado Civil:</span>
+                                                        <span id="viewProfessionalMaritalStatus" class="text-sm font-medium">Casada</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Data Admissão:</span>
+                                                        <span id="viewProfessionalAdmission" class="text-sm font-medium">15/01/2020</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Informações de Contato -->
+                                            <div>
+                                                <h5 class="text-sm font-medium text-gray-500 mb-2">CONTATO</h5>
+                                                <div class="space-y-2">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-phone text-gray-400 mr-3"></i>
+                                                        <span id="viewProfessionalPhone" class="text-sm">(11) 98765-4321</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-envelope text-gray-400 mr-3"></i>
+                                                        <span id="viewProfessionalEmail" class="text-sm">carla.silva@email.com</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-map-marker-alt text-gray-400 mr-3"></i>
+                                                        <span id="viewProfessionalAddress" class="text-sm">Rua das Flores, 123 - São Paulo, SP</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Informações Profissionais -->
+                                        <div class="space-y-4">
+                                            <div>
+                                                <h5 class="text-sm font-medium text-gray-500 mb-2">INFORMAÇÕES PROFISSIONAIS</h5>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Função:</span>
+                                                        <span id="viewProfessionalRole" class="text-sm font-medium">Cabeleireira</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Especialidades:</span>
+                                                        <span id="viewProfessionalSpecialties" class="text-sm font-medium">Corte, Coloração</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Experiência:</span>
+                                                        <span id="viewProfessionalExperience" class="text-sm font-medium">8 anos</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Tipo Contrato:</span>
+                                                        <span id="viewProfessionalContract" class="text-sm font-medium">CLT</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!-- Informações Financeiras -->
+                                            <div>
+                                                <h5 class="text-sm font-medium text-gray-500 mb-2">FINANCEIRO</h5>
+                                                <div class="space-y-2">
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Salário Base:</span>
+                                                        <span id="viewProfessionalSalary" class="text-sm font-medium">R$ 2.500,00</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Comissão:</span>
+                                                        <span id="viewProfessionalCommission" class="text-sm font-medium">50%</span>
+                                                    </div>
+                                                    <div class="flex justify-between">
+                                                        <span class="text-sm text-gray-600">Comissão Média:</span>
+                                                        <span id="viewProfessionalAvgCommission" class="text-sm font-medium">R$ 1.200,00/mês</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Serviços Realizados -->
+                                    <div class="mt-6 pt-6 border-t border-gray-200">
+                                        <h5 class="text-sm font-medium text-gray-500 mb-3">SERVIÇOS REALIZADOS</h5>
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div class="text-center p-3 bg-purple-50 rounded-lg">
+                                                <div class="text-lg font-bold text-purple-600" id="viewProfessionalService1">24</div>
+                                                <div class="text-xs text-gray-600">Corte Feminino</div>
+                                            </div>
+                                            <div class="text-center p-3 bg-blue-50 rounded-lg">
+                                                <div class="text-lg font-bold text-blue-600" id="viewProfessionalService2">18</div>
+                                                <div class="text-xs text-gray-600">Coloração</div>
+                                            </div>
+                                            <div class="text-center p-3 bg-green-50 rounded-lg">
+                                                <div class="text-lg font-bold text-green-600" id="viewProfessionalService3">12</div>
+                                                <div class="text-xs text-gray-600">Hidratação</div>
+                                            </div>
+                                            <div class="text-center p-3 bg-yellow-50 rounded-lg">
+                                                <div class="text-lg font-bold text-yellow-600" id="viewProfessionalService4">8</div>
+                                                <div class="text-xs text-gray-600">Escova</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Estatísticas de Desempenho -->
+                                    <div class="mt-6 pt-6 border-t border-gray-200">
+                                        <h5 class="text-sm font-medium text-gray-500 mb-3">DESEMPENHO DO MÊS</h5>
+                                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                            <div class="text-center">
+                                                <div class="text-lg font-bold text-gray-900" id="viewProfessionalTotalServices">62</div>
+                                                <div class="text-xs text-gray-600">Total Serviços</div>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="text-lg font-bold text-green-600" id="viewProfessionalRevenue">R$ 3.240,00</div>
+                                                <div class="text-xs text-gray-600">Faturamento</div>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="text-lg font-bold text-blue-600" id="viewProfessionalCommissionMonth">R$ 1.620,00</div>
+                                                <div class="text-xs text-gray-600">Comissão</div>
+                                            </div>
+                                            <div class="text-center">
+                                                <div class="text-lg font-bold text-purple-600" id="viewProfessionalAvgRating">4.8</div>
+                                                <div class="text-xs text-gray-600">Avaliação Média</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Horário de Trabalho -->
+                                    <div class="mt-6 pt-6 border-t border-gray-200">
+                                        <h5 class="text-sm font-medium text-gray-500 mb-3">HORÁRIO DE TRABALHO</h5>
+                                        <div class="space-y-2">
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-600">Segunda a Sexta:</span>
+                                                <span class="font-medium">08:00 - 18:00</span>
+                                            </div>
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-600">Sábado:</span>
+                                                <span class="font-medium">08:00 - 14:00</span>
+                                            </div>
+                                            <div class="flex justify-between text-sm">
+                                                <span class="text-gray-600">Domingo:</span>
+                                                <span class="font-medium text-gray-400">Folga</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Observações -->
+                                    <div class="mt-6 pt-6 border-t border-gray-200">
+                                        <h5 class="text-sm font-medium text-gray-500 mb-2">OBSERVAÇÕES</h5>
+                                        <p id="viewProfessionalNotes" class="text-sm text-gray-600">Profissional especializada em coloração e cortes modernos. Excelente relacionamento com os clientes.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="editProfessionalFromView" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        <i class="fas fa-edit mr-2"></i>Editar Profissional
+                    </button>
+                    <button type="button" id="closeViewProfessional" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,629 @@
+/* ===== ESTILOS GLOBAIS E COMPARTILHADOS ===== */
+
+/* Sidebar e Navegação */
+.sidebar {
+    transition: all 0.3s ease;
+}
+.active-menu {
+    background-color: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border-left: 4px solid #8b5cf6;
+}
+
+/* Tabelas */
+.finance-table tbody tr,
+.professional-table tbody tr,
+.service-table tbody tr,
+.client-table tbody tr,
+.product-table tbody tr,
+.loyalty-table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.finance-table tbody tr:hover,
+.professional-table tbody tr:hover,
+.service-table tbody tr:hover,
+.client-table tbody tr:hover,
+.product-table tbody tr:hover,
+.loyalty-table tbody tr:hover {
+    background-color: #f9fafb;
+}
+
+/* Sistema de Abas */
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+.tab-button.active {
+    background-color: #8b5cf6;
+    color: white;
+}
+
+/* Subtabs (Configurações) */
+.subtab-content {
+    display: none;
+}
+.subtab-content.active {
+    display: block;
+}
+.subtab-button.active {
+    background-color: #8b5cf6;
+    color: white;
+}
+
+/* Modais */
+.modal {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.modal.hidden {
+    opacity: 0;
+    transform: scale(0.9);
+    pointer-events: none;
+}
+
+/* Modal Overlay (Estrutura aprimorada) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+.modal-content {
+    background-color: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    transform: translateY(-20px);
+    transition: transform 0.3s ease;
+}
+.modal-overlay.active .modal-content {
+    transform: translateY(0);
+}
+
+/* Modais Específicos */
+.block-modal,
+.checkout-modal,
+.appointment-detail-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* Tooltips */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+.tooltip .tooltip-text,
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+.tooltip .tooltip-text::after,
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}
+.tooltip:hover .tooltip-text,
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* ===== ESTILOS ESPECÍFICOS POR MÓDULO ===== */
+
+/* DASHBOARD */
+.dashboard-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.calendar-day {
+    transition: background-color 0.2s ease;
+    position: relative;
+}
+.calendar-day:hover {
+    background-color: #f3f4f6;
+}
+.calendar-day.selected {
+    background-color: #8b5cf6;
+    color: white;
+}
+.calendar-day.has-appointments {
+    background-color: rgba(139, 92, 246, 0.1);
+}
+.calendar-day.has-appointments::after {
+    content: '';
+    position: absolute;
+    bottom: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: #8b5cf6;
+    border-radius: 50%;
+}
+
+.appointment-badge {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.status-confirmed { color: #10b981; }
+.status-pending { color: #f59e0b; }
+
+.appointment-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.btn-edit, .btn-cancel {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-edit {
+    background-color: #e0e7ff;
+    color: #4f46e5;
+    border: 1px solid #c7d2fe;
+}
+.btn-edit:hover {
+    background-color: #c7d2fe;
+}
+.btn-cancel {
+    background-color: #fee2e2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+.btn-cancel:hover {
+    background-color: #fecaca;
+}
+
+/* AGENDA */
+.schedule-slot {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+.schedule-slot:hover {
+    background-color: #f3f4f6;
+}
+.schedule-slot.booked {
+    background-color: #8b5cf6;
+    color: white;
+}
+.schedule-slot.break {
+    background-color: #f59e0b;
+    color: white;
+}
+.schedule-slot.blocked {
+    background-color: #ef4444;
+    color: white;
+}
+.schedule-slot.current-time {
+    background-color: #10b981;
+    color: white;
+}
+
+.appointment-block {
+    border-left: 4px solid;
+    transition: all 0.2s ease;
+}
+.appointment-block:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Status de Agendamentos */
+.status-scheduled { border-left-color: #3b82f6; background-color: #dbeafe; }
+.status-confirmed { border-left-color: #10b981; background-color: #d1fae5; }
+.status-in-progress { border-left-color: #f59e0b; background-color: #fef3c7; }
+.status-completed { border-left-color: #6b7280; background-color: #f3f4f6; }
+.status-cancelled { border-left-color: #ef4444; background-color: #fee2e2; }
+
+.time-slot {
+    height: 60px;
+    border-bottom: 1px solid #e5e7eb;
+    position: relative;
+}
+.time-slot.half-hour {
+    height: 30px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+.current-time-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #ef4444;
+    z-index: 10;
+}
+
+.agenda-view,
+.subpage {
+    display: none;
+}
+.agenda-view.active,
+.subpage.active {
+    display: block;
+}
+
+.back-button {
+    transition: all 0.3s ease;
+}
+.back-button:hover {
+    transform: translateX(-3px);
+}
+
+/* FINANCEIRO */
+.income { color: #10b981; }
+.expense { color: #ef4444; }
+.overdue { background-color: #fef2f2; }
+.pending { background-color: #fffbeb; }
+.paid { background-color: #f0fdf4; }
+
+/* SERVIÇOS E PRODUTOS */
+.service-card,
+.product-card,
+.campaign-card,
+.config-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.service-card:hover,
+.product-card:hover,
+.campaign-card:hover,
+.config-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+.config-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* ESTOQUE */
+.stock-low { background-color: #fef3c7; }
+.stock-critical { background-color: #fee2e2; }
+.stock-ok { background-color: #d1fae5; }
+
+/* FIDELIDADE */
+.points-badge {
+    background: linear-gradient(135deg, #8b5cf6, #6366f1);
+    color: white;
+}
+.voucher-active { border-left: 4px solid #10b981; }
+.voucher-expired { border-left: 4px solid #ef4444; }
+.voucher-used { border-left: 4px solid #6b7280; }
+
+/* CONFIGURAÇÕES */
+.toggle-checkbox:checked {
+    right: 0;
+    border-color: #8b5cf6;
+}
+.toggle-checkbox:checked + .toggle-label {
+    background-color: #8b5cf6;
+}
+
+/* Bandeiras de Cartões */
+.flag-icon {
+    width: 40px;
+    height: 25px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: white;
+}
+.flag-visa { background: linear-gradient(135deg, #1a1f71, #f7a600); }
+.flag-mastercard { background: linear-gradient(135deg, #eb001b, #f79e1b); }
+.flag-elo { background: linear-gradient(135deg, #00a4e0, #ef4223); }
+.flag-hipercard { background: linear-gradient(135deg, #d52b1e, #f37021); }
+.flag-amex { background: linear-gradient(135deg, #2e77bc, #4d84b6); }
+.flag-hiper { background: linear-gradient(135deg, #d52b1e, #f37021); }
+.flag-cabal { background: linear-gradient(135deg, #0055a4, #009c3b); }
+.flag-sorocred { background: linear-gradient(135deg, #1351a3, #e22129); }
+
+/* ===== COMPONENTES DE INTERFACE ===== */
+
+/* Botões de Ação */
+.action-btn {
+    transition: all 0.2s ease;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.action-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.whatsapp-btn {
+    background-color: #25D366;
+    color: white;
+}
+.whatsapp-btn:hover {
+    background-color: #128C7E;
+}
+
+.cancel-btn {
+    background-color: #ef4444;
+    color: white;
+}
+.cancel-btn:hover {
+    background-color: #dc2626;
+}
+
+.detail-btn {
+    background-color: #6b7280;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    margin-top: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: inline-flex;
+    align-items: center;
+}
+.detail-btn:hover {
+    background-color: #4b5563;
+}
+
+.close-btn {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #6b7280;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.close-btn:hover {
+    color: #374151;
+}
+
+/* Sistema de Pagamento */
+.payment-method {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.payment-option {
+    flex: 1;
+    min-width: 120px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.payment-option:hover {
+    border-color: #8b5cf6;
+}
+.payment-option.selected {
+    border-color: #8b5cf6;
+    background-color: rgba(139, 92, 246, 0.1);
+}
+.payment-option i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    display: block;
+}
+
+/* Serviços Adicionais */
+.additional-service {
+    border: 1px dashed #d1d5db;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: 16px;
+    background-color: #f9fafb;
+}
+
+.add-service-btn {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px dashed #d1d5db;
+    padding: 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+}
+.add-service-btn:hover {
+    background-color: #e5e7eb;
+    border-color: #9ca3af;
+}
+
+.remove-service-btn {
+    background: none;
+    border: none;
+    color: #ef4444;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-left: 8px;
+}
+.remove-service-btn:hover {
+    color: #dc2626;
+}
+
+/* Validação de Horários */
+.time-validation {
+    margin-top: 8px;
+    padding: 8px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+}
+.time-validation.available {
+    background-color: #d1fae5;
+    color: #065f46;
+}
+.time-validation.unavailable {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+/* Popup de Confirmação */
+.confirmation-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 1000;
+    display: none;
+    max-width: 300px;
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+}
+
+.confirmation-overlay.show,
+.confirmation-popup.show {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -40%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+/* ===== FORMULÁRIOS E CONTROLES ===== */
+
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+.btn-secondary {
+    padding: 8px 16px;
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    padding: 8px 16px;
+    background-color: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.btn-primary:hover {
+    background-color: #7c3aed;
+}

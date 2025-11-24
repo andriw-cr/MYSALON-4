@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautySys - Configurações</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+</head>
+<body class="bg-gray-100">
+    <!-- Layout Principal -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 bg-white shadow-md">
+            <div class="p-4 border-b">
+                <h1 class="text-xl font-bold text-purple-600">BeautySys</h1>
+                <p class="text-sm text-gray-500">Sistema de Gestão</p>
+            </div>
+            <nav class="mt-6">
+                <a href="dashboard.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="clientes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-users mr-3"></i>Clientes
+                </a>
+                <a href="profissionais.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-user-tie mr-3"></i>Profissionais
+                </a>
+                <a href="servicos.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cut mr-3"></i>Serviços
+                </a>
+                <a href="agenda.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-calendar-alt mr-3"></i>Agenda
+                </a>
+                <a href="estoque.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-boxes mr-3"></i>Estoque
+                </a>
+                <a href="financeiro.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-chart-line mr-3"></i>Financeiro
+                </a>
+                <a href="fidelidade.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-gift mr-3"></i>Fidelidade
+                </a>
+                <a href="configuracoes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50 active-menu">
+                    <i class="fas fa-cog mr-3"></i>Configurações
+                </a>
+            </nav>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 mr-4">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold">Configurações do Sistema</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar configurações..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=8b5cf6&color=fff" alt="Avatar" class="w-8 h-8 rounded-full">
+                        <span class="ml-2 text-sm font-medium">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Conteúdo da Página de Configurações -->
+            <main class="p-6">
+                <!-- Menu Lateral de Configurações -->
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                    <!-- Menu Lateral -->
+                    <div class="lg:col-span-1">
+                        <div class="bg-white rounded-lg shadow">
+                            <nav class="p-4">
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="empresa">
+                                    <i class="fas fa-building mr-3"></i>Empresa
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="usuarios">
+                                    <i class="fas fa-users mr-3"></i>Usuários e Acessos
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="agenda">
+                                    <i class="fas fa-calendar-alt mr-3"></i>Agenda
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="servicos">
+                                    <i class="fas fa-cut mr-3"></i>Serviços
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 bg-purple-600 text-white active" data-tab="pagamentos">
+                                    <i class="fas fa-credit-card mr-3"></i>Pagamentos e Cartões
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="estoque">
+                                    <i class="fas fa-boxes mr-3"></i>Estoque
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="financeiro">
+                                    <i class="fas fa-chart-line mr-3"></i>Financeiro
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="fidelidade">
+                                    <i class="fas fa-gift mr-3"></i>Fidelidade
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="integracoes">
+                                    <i class="fas fa-plug mr-3"></i>Integrações
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="notificacoes">
+                                    <i class="fas fa-bell mr-3"></i>Notificações
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="aparencia">
+                                    <i class="fas fa-palette mr-3"></i>Aparência
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg mb-2 text-gray-700 hover:bg-purple-50" data-tab="backup">
+                                    <i class="fas fa-shield-alt mr-3"></i>Backup e Segurança
+                                </button>
+                                <button class="tab-button w-full text-left py-3 px-4 rounded-lg text-gray-700 hover:bg-purple-50" data-tab="avancadas">
+                                    <i class="fas fa-cogs mr-3"></i>Avançadas
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+
+                    <!-- Conteúdo das Configurações -->
+                    <div class="lg:col-span-3">
+                        <!-- Aba: Pagamentos e Cartões -->
+                        <div id="pagamentos-tab" class="tab-content active">
+                            <!-- Tela Principal - Lista de Operadoras -->
+                            <div id="operadoras-list" class="operadoras-screen active-screen">
+                                <div class="bg-white rounded-lg shadow">
+                                    <div class="p-6 border-b border-gray-200">
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <h3 class="text-lg font-semibold">Pagamentos e Cartões</h3>
+                                                <p class="text-gray-500 text-sm">Gerencie operadoras de cartão e taxas</p>
+                                            </div>
+                                            <button id="btnNovaOperadora" class="bg-purple-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-purple-700">
+                                                <i class="fas fa-plus mr-2"></i>Nova Operadora
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="p-6">
+                                        <!-- Lista de Operadoras Cadastradas -->
+                                        <div class="mb-8">
+                                            <h4 class="text-md font-semibold mb-4">Operadoras Cadastradas</h4>
+                                            <div class="overflow-x-auto">
+                                                <table class="min-w-full divide-y divide-gray-200">
+                                                    <thead class="bg-gray-50">
+                                                        <tr>
+                                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Operadora</th>
+                                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taxa Débito</th>
+                                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taxa Crédito</th>
+                                                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="bg-white divide-y divide-gray-200">
+                                                        <tr>
+                                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                                <div class="flex items-center">
+                                                                    <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                                        <i class="fas fa-credit-card text-blue-600"></i>
+                                                                    </div>
+                                                                    <div class="ml-4">
+                                                                        <div class="text-sm font-medium text-gray-900">Stone</div>
+                                                                        <div class="text-sm text-gray-500">Maquininha</div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                Maquininha física
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                                    Ativa
+                                                                </span>
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                1.99%
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                4.99%
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                                <button class="btn-editar text-purple-600 hover:text-purple-900 mr-3" data-id="1">Editar</button>
+                                                                <button class="text-red-600 hover:text-red-900">Desativar</button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                                <div class="flex items-center">
+                                                                    <div class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                                        <i class="fas fa-wifi text-green-600"></i>
+                                                                    </div>
+                                                                    <div class="ml-4">
+                                                                        <div class="text-sm font-medium text-gray-900">Cielo</div>
+                                                                        <div class="text-sm text-gray-500">Gateway online</div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                Gateway online
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                                                    Ativa
+                                                                </span>
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                1.89%
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                                4.89%
+                                                            </td>
+                                                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                                <button class="btn-editar text-purple-600 hover:text-purple-900 mr-3" data-id="2">Editar</button>
+                                                                <button class="text-red-600 hover:text-red-900">Desativar</button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tela de Detalhes - Cadastro/Edição -->
+                            <div id="operadoras-detail" class="operadoras-screen hidden">
+                                <div class="bg-white rounded-lg shadow">
+                                    <div class="p-6 border-b border-gray-200">
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <h3 class="text-lg font-semibold" id="detail-title">Nova Operadora</h3>
+                                                <p class="text-gray-500 text-sm">Configure os dados da operadora de cartão</p>
+                                            </div>
+                                            <div class="flex space-x-2">
+                                                <button id="btnVoltarLista" class="bg-gray-500 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-gray-600">
+                                                    <i class="fas fa-arrow-left mr-2"></i>Voltar
+                                                </button>
+                                                <button id="btnSalvarOperadora" class="bg-purple-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-purple-700">
+                                                    <i class="fas fa-save mr-2"></i>Salvar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Menu de Sub-abas -->
+                                    <div class="border-b border-gray-200">
+                                        <nav class="flex space-x-8 px-6">
+                                            <button class="subtab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 active" data-subtab="informacoes">
+                                                Informações Gerais
+                                            </button>
+                                            <button class="subtab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-subtab="bandeiras">
+                                                Bandeiras
+                                            </button>
+                                            <button class="subtab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-subtab="condicoes">
+                                                Condições de Pagamento
+                                            </button>
+                                            <button class="subtab-button py-4 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-subtab="configuracoes">
+                                                Configurações
+                                            </button>
+                                        </nav>
+                                    </div>
+
+                                    <div class="p-6">
+                                        <!-- Sub-aba: Informações Gerais -->
+                                        <div id="informacoes-subtab" class="subtab-content active">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Nome da Operadora *</label>
+                                                    <input type="text" id="operadora_nome" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Ex: Stone, Cielo, Rede...">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Tipo *</label>
+                                                    <select id="operadora_tipo" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                                        <option value="">Selecione</option>
+                                                        <option value="maquininha">Maquininha física</option>
+                                                        <option value="gateway">Gateway online</option>
+                                                        <option value="link">Link de pagamento</option>
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Código Interno</label>
+                                                    <input type="text" id="operadora_codigo" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Identificador único">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Status</label>
+                                                    <select id="operadora_status" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                                        <option value="ativa">Ativa</option>
+                                                        <option value="inativa">Inativa</option>
+                                                    </select>
+                                                </div>
+                                                <div class="md:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Descrição (opcional)</label>
+                                                    <textarea id="operadora_descricao" rows="2" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
+                                                </div>
+                                                <div class="md:col-span-2 flex items-center">
+                                                    <input type="checkbox" id="operadora_api" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                                                    <label class="ml-2 block text-sm text-gray-700">Integração via API</label>
+                                                </div>
+                                                <div class="md:col-span-2">
+                                                    <label class="block text-sm font-medium text-gray-700">Chave API / Token</label>
+                                                    <input type="password" id="operadora_token" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Chave de integração">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Sub-aba: Bandeiras -->
+                                        <div id="bandeiras-subtab" class="subtab-content">
+                                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                                <!-- Visa -->
+                                                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="flag-icon flag-visa mr-3">VISA</div>
+                                                        <span class="text-sm font-medium">Visa</span>
+                                                    </div>
+                                                    <label class="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="toggle-checkbox sr-only" checked>
+                                                        <div class="toggle-label w-11 h-6 bg-gray-200 rounded-full"></div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <!-- Mastercard -->
+                                                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="flag-icon flag-mastercard mr-3">MC</div>
+                                                        <span class="text-sm font-medium">Mastercard</span>
+                                                    </div>
+                                                    <label class="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="toggle-checkbox sr-only" checked>
+                                                        <div class="toggle-label w-11 h-6 bg-gray-200 rounded-full"></div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <!-- Elo -->
+                                                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="flag-icon flag-elo mr-3">ELO</div>
+                                                        <span class="text-sm font-medium">Elo</span>
+                                                    </div>
+                                                    <label class="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="toggle-checkbox sr-only" checked>
+                                                        <div class="toggle-label w-11 h-6 bg-gray-200 rounded-full"></div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <!-- Hipercard -->
+                                                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="flag-icon flag-hipercard mr-3">HC</div>
+                                                        <span class="text-sm font-medium">Hipercard</span>
+                                                    </div>
+                                                    <label class="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="toggle-checkbox sr-only">
+                                                        <div class="toggle-label w-11 h-6 bg-gray-200 rounded-full"></div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <!-- Amex -->
+                                                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="flag-icon flag-amex mr-3">AMEX</div>
+                                                        <span class="text-sm font-medium">Amex</span>
+                                                    </div>
+                                                    <label class="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="toggle-checkbox sr-only">
+                                                        <div class="toggle-label w-11 h-6 bg-gray-200 rounded-full"></div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <!-- Hiper -->
+                                                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="flag-icon flag-hiper mr-3">HIPER</div>
+                                                        <span class="text-sm font-medium">Hiper</span>
+                                                    </div>
+                                                    <label class="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="toggle-checkbox sr-only">
+                                                        <div class="toggle-label w-11 h-6 bg-gray-200 rounded-full"></div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <!-- Cabal -->
+                                                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="flag-icon flag-cabal mr-3">CABAL</div>
+                                                        <span class="text-sm font-medium">Cabal</span>
+                                                    </div>
+                                                    <label class="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="toggle-checkbox sr-only">
+                                                        <div class="toggle-label w-11 h-6 bg-gray-200 rounded-full"></div>
+                                                    </label>
+                                                </div>
+                                                
+                                                <!-- Sorocred -->
+                                                <div class="flex items-center justify-between p-3 border border-gray-200 rounded-lg">
+                                                    <div class="flex items-center">
+                                                        <div class="flag-icon flag-sorocred mr-3">SC</div>
+                                                        <span class="text-sm font-medium">Sorocred</span>
+                                                    </div>
+                                                    <label class="relative inline-flex items-center cursor-pointer">
+                                                        <input type="checkbox" class="toggle-checkbox sr-only">
+                                                        <div class="toggle-label w-11 h-6 bg-gray-200 rounded-full"></div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Sub-aba: Condições de Pagamento -->
+                                        <div id="condicoes-subtab" class="subtab-content">
+                                            <div class="mb-4 flex justify-between items-center">
+                                                <h4 class="text-md font-semibold">Condições de Pagamento</h4>
+                                                <button class="bg-green-600 text-white py-2 px-4 rounded-md text-sm font-medium hover:bg-green-700">
+                                                    <i class="fas fa-plus mr-2"></i>Nova Condição
+                                                </button>
+                                            </div>
+                                            <div class="overflow-x-auto">
+                                                <table class="min-w-full divide-y divide-gray-200">
+                                                    <thead class="bg-gray-50">
+                                                        <tr>
+                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo Pagamento</th>
+                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bandeira</th>
+                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Parcelas</th>
+                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taxa (%)</th>
+                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Taxa Fixa (R$)</th>
+                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Repasse</th>
+                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Antecipação</th>
+                                                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="bg-white divide-y divide-gray-200">
+                                                        <tr>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">Débito</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">Todas</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">1x</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="1.99">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="0.10">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">D+2</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="0.00">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                                                <button class="text-purple-600 hover:text-purple-900 mr-2">Editar</button>
+                                                                <button class="text-red-600 hover:text-red-900">Excluir</button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">Crédito</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">Visa</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">1x</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="4.80">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="0.15">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">D+30</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="1.50">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                                                <button class="text-purple-600 hover:text-purple-900 mr-2">Editar</button>
+                                                                <button class="text-red-600 hover:text-red-900">Excluir</button>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">Crédito</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">Mastercard</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">2x</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="5.50">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="0.15">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">D+30</td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm">
+                                                                <input type="number" step="0.01" class="w-20 focus:ring-purple-500 focus:border-purple-500 shadow-sm sm:text-sm border-gray-300 rounded-md" value="1.50">
+                                                            </td>
+                                                            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">
+                                                                <button class="text-purple-600 hover:text-purple-900 mr-2">Editar</button>
+                                                                <button class="text-red-600 hover:text-red-900">Excluir</button>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                        <!-- Sub-aba: Configurações -->
+                                        <div id="configuracoes-subtab" class="subtab-content">
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipos de pagamento aceitos</label>
+                                                    <div class="space-y-2">
+                                                        <div class="flex items-center">
+                                                            <input type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded" checked>
+                                                            <label class="ml-2 block text-sm text-gray-700">Débito</label>
+                                                        </div>
+                                                        <div class="flex items-center">
+                                                            <input type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded" checked>
+                                                            <label class="ml-2 block text-sm text-gray-700">Crédito</label>
+                                                        </div>
+                                                        <div class="flex items-center">
+                                                            <input type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                                                            <label class="ml-2 block text-sm text-gray-700">PIX</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Máximo de parcelas para o cliente</label>
+                                                    <select class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                                        <option>3</option>
+                                                        <option>6</option>
+                                                        <option selected>12</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div>
+                                                    <label class="block text-sm font-medium text-gray-700">Parcelamento sem juros</label>
+                                                    <select class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                                        <option>Não oferecer</option>
+                                                        <option selected>Até 3x</option>
+                                                        <option>Até 6x</option>
+                                                        <option>Até 12x</option>
+                                                    </select>
+                                                </div>
+                                                
+                                                <div class="flex items-center">
+                                                    <input type="checkbox" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                                                    <label class="ml-2 block text-sm text-gray-700">Repasse da taxa para o cliente</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Outras abas existentes -->
+                        <!-- Aba: Empresa -->
+                        <div id="empresa-tab" class="tab-content">
+                            <!-- Conteúdo existente da aba Empresa -->
+                        </div>
+
+                        <!-- Aba: Usuários e Acessos -->
+                        <div id="usuarios-tab" class="tab-content">
+                            <!-- Conteúdo existente da aba Usuários -->
+                        </div>
+
+                        <!-- Aba: Agenda -->
+                        <div id="agenda-tab" class="tab-content">
+                            <!-- Conteúdo existente da aba Agenda -->
+                        </div>
+
+                        <!-- Aba: Serviços -->
+                        <div id="servicos-tab" class="tab-content">
+                            <!-- Conteúdo existente da aba Serviços -->
+                        </div>
+
+                        <!-- Aba: Backup e Segurança -->
+                        <div id="backup-tab" class="tab-content">
+                            <!-- Conteúdo existente da aba Backup -->
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="../js/app.js"></script>
+</body>
+</html>

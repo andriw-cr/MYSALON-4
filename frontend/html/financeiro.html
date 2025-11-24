@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautySys - Financeiro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <script src="../js/app.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Layout Principal -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 bg-white shadow-md">
+            <div class="p-4 border-b">
+                <h1 class="text-xl font-bold text-purple-600">BeautySys</h1>
+                <p class="text-sm text-gray-500">Sistema de Gestão</p>
+            </div>
+            <nav class="mt-6">
+                <a href="dashboard.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="clientes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-users mr-3"></i>Clientes
+                </a>
+                <a href="profissionais.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-user-tie mr-3"></i>Profissionais
+                </a>
+                <a href="servicos.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cut mr-3"></i>Serviços
+                </a>
+                <a href="agenda.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-calendar-alt mr-3"></i>Agenda
+                </a>
+                <a href="estoque.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-boxes mr-3"></i>Estoque
+                </a>
+                <a href="financeiro.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50 active-menu">
+                    <i class="fas fa-chart-line mr-3"></i>Financeiro
+                </a>
+                <a href="fidelidade.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-gift mr-3"></i>Fidelidade
+                </a>
+                <a href="configuracoes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cog mr-3"></i>Configurações
+                </a>
+            </nav>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 mr-4 tooltip">
+                        <i class="fas fa-bars"></i>
+                        <span class="tooltip-text">Alternar menu</span>
+                    </button>
+                    <h2 class="text-lg font-semibold" id="pageTitle">Financeiro</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar lançamentos..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="relative">
+                        <button class="text-gray-500 tooltip">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">7</span>
+                            <span class="tooltip-text">Notificações</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=8b5cf6&color=fff" alt="Avatar" class="w-8 h-8 rounded-full">
+                        <span class="ml-2 text-sm font-medium">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Página Principal do Financeiro -->
+            <div id="mainPage" class="subpage active">
+                <!-- Conteúdo da Página Financeira -->
+                <main class="p-6">
+                    <!-- Dashboard Financeiro -->
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                        <!-- Receita Total -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Receita do Mês</p>
+                                    <h3 class="text-2xl font-bold mt-2 income">R$ 28.450</h3>
+                                    <p class="text-green-500 text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i>12% vs mês anterior</p>
+                                </div>
+                                <div class="bg-green-100 p-3 rounded-full">
+                                    <i class="fas fa-dollar-sign text-green-600 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Despesas Totais -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Despesas do Mês</p>
+                                    <h3 class="text-2xl font-bold mt-2 expense">R$ 15.820</h3>
+                                    <p class="text-red-500 text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i>8% vs mês anterior</p>
+                                </div>
+                                <div class="bg-red-100 p-3 rounded-full">
+                                    <i class="fas fa-receipt text-red-600 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Lucro Líquido -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Lucro Líquido</p>
+                                    <h3 class="text-2xl font-bold mt-2 income">R$ 12.630</h3>
+                                    <p class="text-green-500 text-sm mt-1"><i class="fas fa-chart-line mr-1"></i>18% de margem</p>
+                                </div>
+                                <div class="bg-blue-100 p-3 rounded-full">
+                                    <i class="fas fa-chart-bar text-blue-600 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Comissões a Pagar -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <p class="text-gray-500 text-sm">Comissões Pendentes</p>
+                                    <h3 class="text-2xl font-bold mt-2 expense">R$ 6.240</h3>
+                                    <p class="text-yellow-500 text-sm mt-1"><i class="fas fa-clock mr-1"></i>Vence em 5 dias</p>
+                                </div>
+                                <div class="bg-yellow-100 p-3 rounded-full">
+                                    <i class="fas fa-hand-holding-usd text-yellow-600 text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráficos e Métricas -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <!-- Gráfico de Fluxo de Caixa -->
+                        <div class="lg:col-span-2 bg-white rounded-lg shadow p-6">
+                            <div class="flex justify-between items-center mb-6">
+                                <h3 class="text-lg font-semibold">Fluxo de Caixa - Últimos 30 Dias</h3>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 bg-purple-100 text-purple-600 rounded-lg text-sm">30 Dias</button>
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm">90 Dias</button>
+                                    <button class="px-3 py-1 bg-gray-100 text-gray-600 rounded-lg text-sm">Anual</button>
+                                </div>
+                            </div>
+                            <div class="h-64">
+                                <canvas id="cashFlowChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Métricas de Pagamento -->
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <h3 class="text-lg font-semibold mb-6">Vendas por Forma de Pagamento</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-purple-500 rounded-full mr-3"></div>
+                                        <span>Cartão de Crédito</span>
+                                    </div>
+                                    <span class="font-medium">42%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full mr-3"></div>
+                                        <span>PIX</span>
+                                    </div>
+                                    <span class="font-medium">28%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full mr-3"></div>
+                                        <span>Dinheiro</span>
+                                    </div>
+                                    <span class="font-medium">15%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-3"></div>
+                                        <span>Cartão Débito</span>
+                                    </div>
+                                    <span class="font-medium">12%</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <div class="w-3 h-3 bg-red-500 rounded-full mr-3"></div>
+                                        <span>Outros</span>
+                                    </div>
+                                    <span class="font-medium">3%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Barra de Controles -->
+                    <div class="bg-white rounded-lg shadow p-6 mb-6">
+                        <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+                            <div class="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                                <!-- Período -->
+                                <div class="flex items-center space-x-2">
+                                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        <option>Outubro 2023</option>
+                                        <option>Setembro 2023</option>
+                                        <option>Agosto 2023</option>
+                                        <option>Personalizado</option>
+                                    </select>
+                                </div>
+
+                                <!-- Filtros -->
+                                <div class="flex flex-wrap gap-2">
+                                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        <option>Todas as Categorias</option>
+                                        <option>Serviços</option>
+                                        <option>Produtos</option>
+                                        <option>Comissões</option>
+                                        <option>Despesas</option>
+                                    </select>
+                                    
+                                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        <option>Todos os Status</option>
+                                        <option>Pago</option>
+                                        <option>Pendente</option>
+                                        <option>Atrasado</option>
+                                    </select>
+
+                                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        <option>Todas as Contas</option>
+                                        <option>Caixa Principal</option>
+                                        <option>Conta Corrente</option>
+                                        <option>Poupança</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Ações Rápidas -->
+                            <div class="flex flex-wrap gap-2">
+                                <button id="btnNovaEntrada" class="px-4 py-2 bg-green-600 text-white rounded-lg flex items-center text-sm tooltip">
+                                    <i class="fas fa-plus-circle mr-2"></i>Nova Entrada
+                                    <span class="tooltip-text">Registrar nova entrada</span>
+                                </button>
+                                <button id="btnNovaSaida" class="px-4 py-2 bg-red-600 text-white rounded-lg flex items-center text-sm tooltip">
+                                    <i class="fas fa-minus-circle mr-2"></i>Nova Saída
+                                    <span class="tooltip-text">Registrar nova saída</span>
+                                </button>
+                                <button id="btnTransferencia" class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center text-sm tooltip">
+                                    <i class="fas fa-exchange-alt mr-2"></i>Transferência
+                                    <span class="tooltip-text">Realizar transferência</span>
+                                </button>
+                                <button id="btnRelatorios" class="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center text-sm tooltip">
+                                    <i class="fas fa-file-invoice-dollar mr-2"></i>Relatórios
+                                    <span class="tooltip-text">Gerar relatórios</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Abas Principais -->
+                    <div class="bg-white rounded-lg shadow mb-6">
+                        <!-- Conteúdo das abas permanece igual -->
+                        <!-- ... -->
+                    </div>
+                </main>
+            </div>
+
+            <!-- Subpágina: Nova Entrada -->
+            <div id="novaEntradaPage" class="subpage">
+                <main class="p-6">
+                    <div class="flex items-center mb-6">
+                        <button class="back-button text-purple-600 hover:text-purple-800 mr-4 p-2 rounded-lg hover:bg-purple-50">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div>
+                            <h1 class="text-2xl font-bold">Nova Entrada</h1>
+                            <p class="text-gray-500">Registre uma nova receita no sistema</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-6">Dados da Entrada</h3>
+                                
+                                <form id="entradaForm">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="entrada_categoria" class="block text-sm font-medium text-gray-700 mb-2">Categoria *</label>
+                                            <select id="entrada_categoria" name="entrada_categoria" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                                <option value="">Selecione uma categoria</option>
+                                                <option value="servicos">Serviços Prestados</option>
+                                                <option value="produtos">Venda de Produtos</option>
+                                                <option value="pacotes">Pacotes/Mensalidades</option>
+                                                <option value="sinal">Sinal/Pré-pagamento</option>
+                                                <option value="outros">Outras Receitas</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="entrada_valor" class="block text-sm font-medium text-gray-700 mb-2">Valor (R$) *</label>
+                                            <input type="number" id="entrada_valor" name="entrada_valor" step="0.01" min="0" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0,00">
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="entrada_descricao" class="block text-sm font-medium text-gray-700 mb-2">Descrição *</label>
+                                            <input type="text" id="entrada_descricao" name="entrada_descricao" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Descreva a origem desta entrada">
+                                        </div>
+
+                                        <div>
+                                            <label for="entrada_cliente" class="block text-sm font-medium text-gray-700 mb-2">Cliente</label>
+                                            <select id="entrada_cliente" name="entrada_cliente" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                                <option value="">Selecione um cliente</option>
+                                                <option value="1">Maria Silva</option>
+                                                <option value="2">João Santos</option>
+                                                <option value="3">Ana Costa</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="entrada_profissional" class="block text-sm font-medium text-gray-700 mb-2">Profissional</label>
+                                            <select id="entrada_profissional" name="entrada_profissional" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                                <option value="">Selecione um profissional</option>
+                                                <option value="1">Carla Silva</option>
+                                                <option value="2">Rogério Santos</option>
+                                                <option value="3">Amanda Costa</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="entrada_data" class="block text-sm font-medium text-gray-700 mb-2">Data da Entrada *</label>
+                                            <input type="date" id="entrada_data" name="entrada_data" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+
+                                        <div>
+                                            <label for="entrada_forma_pagamento" class="block text-sm font-medium text-gray-700 mb-2">Forma de Pagamento *</label>
+                                            <select id="entrada_forma_pagamento" name="entrada_forma_pagamento" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                                <option value="">Selecione</option>
+                                                <option value="dinheiro">Dinheiro</option>
+                                                <option value="pix">PIX</option>
+                                                <option value="credito">Cartão de Crédito</option>
+                                                <option value="debito">Cartão de Débito</option>
+                                                <option value="transferencia">Transferência</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="entrada_observacoes" class="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                                            <textarea id="entrada_observacoes" name="entrada_observacoes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Observações adicionais sobre esta entrada"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6 flex justify-end space-x-3">
+                                        <button type="button" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                            <i class="fas fa-save mr-2"></i>Salvar Entrada
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Resumo da Entrada</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Categoria:</span>
+                                        <span id="resumo_categoria" class="font-medium">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Valor:</span>
+                                        <span id="resumo_valor" class="font-medium text-green-600">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Data:</span>
+                                        <span id="resumo_data" class="font-medium">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Forma de Pagamento:</span>
+                                        <span id="resumo_pagamento" class="font-medium">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">Ações Rápidas</h3>
+                                <div class="space-y-2">
+                                    <button class="w-full text-left px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
+                                        <i class="fas fa-redo mr-2"></i>Repetir Entrada Similar
+                                    </button>
+                                    <button class="w-full text-left px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">
+                                        <i class="fas fa-calendar-plus mr-2"></i>Agendar Próxima Entrada
+                                    </button>
+                                    <button class="w-full text-left px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100">
+                                        <i class="fas fa-receipt mr-2"></i>Emitir Recibo
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Subpágina: Nova Saída -->
+            <div id="novaSaidaPage" class="subpage">
+                <main class="p-6">
+                    <div class="flex items-center mb-6">
+                        <button class="back-button text-purple-600 hover:text-purple-800 mr-4 p-2 rounded-lg hover:bg-purple-50">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div>
+                            <h1 class="text-2xl font-bold">Nova Saída</h1>
+                            <p class="text-gray-500">Registre uma nova despesa no sistema</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-6">Dados da Saída</h3>
+                                
+                                <form id="saidaForm">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="saida_categoria" class="block text-sm font-medium text-gray-700 mb-2">Categoria *</label>
+                                            <select id="saida_categoria" name="saida_categoria" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                                <option value="">Selecione uma categoria</option>
+                                                <option value="compras">Compras/Estoque</option>
+                                                <option value="folha">Folha de Pagamento</option>
+                                                <option value="comissoes">Comissões</option>
+                                                <option value="aluguel">Aluguel</option>
+                                                <option value="contas">Contas (Luz, Água, Internet)</option>
+                                                <option value="manutencao">Manutenção</option>
+                                                <option value="marketing">Marketing</option>
+                                                <option value="outros">Outras Despesas</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="saida_valor" class="block text-sm font-medium text-gray-700 mb-2">Valor (R$) *</label>
+                                            <input type="number" id="saida_valor" name="saida_valor" step="0.01" min="0" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0,00">
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="saida_descricao" class="block text-sm font-medium text-gray-700 mb-2">Descrição *</label>
+                                            <input type="text" id="saida_descricao" name="saida_descricao" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Descreva a finalidade desta saída">
+                                        </div>
+
+                                        <div>
+                                            <label for="saida_fornecedor" class="block text-sm font-medium text-gray-700 mb-2">Fornecedor</label>
+                                            <input type="text" id="saida_fornecedor" name="saida_fornecedor" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Nome do fornecedor">
+                                        </div>
+
+                                        <div>
+                                            <label for="saida_data" class="block text-sm font-medium text-gray-700 mb-2">Data da Saída *</label>
+                                            <input type="date" id="saida_data" name="saida_data" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+
+                                        <div>
+                                            <label for="saida_forma_pagamento" class="block text-sm font-medium text-gray-700 mb-2">Forma de Pagamento *</label>
+                                            <select id="saida_forma_pagamento" name="saida_forma_pagamento" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                                <option value="">Selecione</option>
+                                                <option value="dinheiro">Dinheiro</option>
+                                                <option value="pix">PIX</option>
+                                                <option value="transferencia">Transferência</option>
+                                                <option value="boleto">Boleto</option>
+                                                <option value="debito">Cartão de Débito</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="saida_observacoes" class="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                                            <textarea id="saida_observacoes" name="saida_observacoes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Observações adicionais sobre esta saída"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6 flex justify-end space-x-3">
+                                        <button type="button" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                                            <i class="fas fa-save mr-2"></i>Salvar Saída
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Resumo da Saída</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Categoria:</span>
+                                        <span id="resumo_saida_categoria" class="font-medium">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Valor:</span>
+                                        <span id="resumo_saida_valor" class="font-medium text-red-600">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Data:</span>
+                                        <span id="resumo_saida_data" class="font-medium">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Forma de Pagamento:</span>
+                                        <span id="resumo_saida_pagamento" class="font-medium">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">Ações Rápidas</h3>
+                                <div class="space-y-2">
+                                    <button class="w-full text-left px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100">
+                                        <i class="fas fa-redo mr-2"></i>Repetir Saída Similar
+                                    </button>
+                                    <button class="w-full text-left px-4 py-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100">
+                                        <i class="fas fa-calendar-plus mr-2"></i>Agendar Próxima Saída
+                                    </button>
+                                    <button class="w-full text-left px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100">
+                                        <i class="fas fa-file-invoice mr-2"></i>Vincular Nota Fiscal
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Subpágina: Transferência -->
+            <div id="transferenciaPage" class="subpage">
+                <main class="p-6">
+                    <div class="flex items-center mb-6">
+                        <button class="back-button text-purple-600 hover:text-purple-800 mr-4 p-2 rounded-lg hover:bg-purple-50">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div>
+                            <h1 class="text-2xl font-bold">Transferência</h1>
+                            <p class="text-gray-500">Realize transferências entre contas</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2">
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-6">Dados da Transferência</h3>
+                                
+                                <form id="transferenciaForm">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="transferencia_origem" class="block text-sm font-medium text-gray-700 mb-2">Conta de Origem *</label>
+                                            <select id="transferencia_origem" name="transferencia_origem" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                                <option value="">Selecione a conta de origem</option>
+                                                <option value="caixa">Caixa Principal</option>
+                                                <option value="corrente">Conta Corrente</option>
+                                                <option value="poupanca">Poupança</option>
+                                                <option value="digital">Carteira Digital</option>
+                                            </select>
+                                        </div>
+
+                                        <div>
+                                            <label for="transferencia_destino" class="block text-sm font-medium text-gray-700 mb-2">Conta de Destino *</label>
+                                            <select id="transferencia_destino" name="transferencia_destino" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                                <option value="">Selecione a conta de destino</option>
+                                                <option value="caixa">Caixa Principal</option>
+                                                <option value="corrente">Conta Corrente</option>
+                                                <option value="poupanca">Poupança</option>
+                                                <option value="digital">Carteira Digital</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="transferencia_valor" class="block text-sm font-medium text-gray-700 mb-2">Valor da Transferência (R$) *</label>
+                                            <input type="number" id="transferencia_valor" name="transferencia_valor" step="0.01" min="0" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0,00">
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="transferencia_descricao" class="block text-sm font-medium text-gray-700 mb-2">Descrição *</label>
+                                            <input type="text" id="transferencia_descricao" name="transferencia_descricao" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Descreva a finalidade desta transferência">
+                                        </div>
+
+                                        <div>
+                                            <label for="transferencia_data" class="block text-sm font-medium text-gray-700 mb-2">Data da Transferência *</label>
+                                            <input type="date" id="transferencia_data" name="transferencia_data" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                        </div>
+
+                                        <div>
+                                            <label for="transferencia_taxa" class="block text-sm font-medium text-gray-700 mb-2">Taxa (R$)</label>
+                                            <input type="number" id="transferencia_taxa" name="transferencia_taxa" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="0,00">
+                                        </div>
+
+                                        <div class="md:col-span-2">
+                                            <label for="transferencia_observacoes" class="block text-sm font-medium text-gray-700 mb-2">Observações</label>
+                                            <textarea id="transferencia_observacoes" name="transferencia_observacoes" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Observações adicionais sobre esta transferência"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-6 flex justify-end space-x-3">
+                                        <button type="button" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">
+                                            Cancelar
+                                        </button>
+                                        <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                            <i class="fas fa-exchange-alt mr-2"></i>Realizar Transferência
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                                <h3 class="text-lg font-semibold mb-4">Resumo da Transferência</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Origem:</span>
+                                        <span id="resumo_origem" class="font-medium">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Destino:</span>
+                                        <span id="resumo_destino" class="font-medium">-</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Valor:</span>
+                                        <span id="resumo_transferencia_valor" class="font-medium text-blue-600">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Taxa:</span>
+                                        <span id="resumo_taxa" class="font-medium text-red-600">R$ 0,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Data:</span>
+                                        <span id="resumo_transferencia_data" class="font-medium">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-lg shadow p-6">
+                                <h3 class="text-lg font-semibold mb-4">Saldo das Contas</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Caixa Principal:</span>
+                                        <span class="font-medium text-green-600">R$ 5.240,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Conta Corrente:</span>
+                                        <span class="font-medium text-green-600">R$ 12.580,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Poupança:</span>
+                                        <span class="font-medium text-green-600">R$ 8.750,00</span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span class="text-gray-600">Carteira Digital:</span>
+                                        <span class="font-medium text-green-600">R$ 1.250,00</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- Subpágina: Relatórios -->
+            <div id="relatoriosPage" class="subpage">
+                <main class="p-6">
+                    <div class="flex items-center mb-6">
+                        <button class="back-button text-purple-600 hover:text-purple-800 mr-4 p-2 rounded-lg hover:bg-purple-50">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <div>
+                            <h1 class="text-2xl font-bold">Relatórios Financeiros</h1>
+                            <p class="text-gray-500">Acesse e gere relatórios detalhados</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold">Fluxo de Caixa</h3>
+                                <i class="fas fa-chart-line text-purple-600 text-xl"></i>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">Análise de entradas e saídas por período</p>
+                            <button class="w-full bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700">
+                                Gerar Relatório
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold">DRE</h3>
+                                <i class="fas fa-chart-bar text-green-600 text-xl"></i>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">Demonstrativo de Resultados do Exercício</p>
+                            <button class="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700">
+                                Gerar Relatório
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold">Contas a Receber</h3>
+                                <i class="fas fa-hand-holding-usd text-blue-600 text-xl"></i>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">Relatório de recebíveis e inadimplência</p>
+                            <button class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700">
+                                Gerar Relatório
+                            </button>
+                        </div>
+
+                        <div class="bg-white rounded-lg shadow p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-semibold">Contas a Pagar</h3>
+                                <i class="fas fa-file-invoice-dollar text-red-600 text-xl"></i>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-4">Relatório de despesas e fornecedores</p>
+                            <button class="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">
+                                Gerar Relatório
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-lg shadow p-6">
+                        <h3 class="text-lg font-semibold mb-6">Configurações do Relatório</h3>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Período</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option>Este Mês</option>
+                                    <option>Mês Anterior</option>
+                                    <option>Trimestre Atual</option>
+                                    <option>Semestre Atual</option>
+                                    <option>Ano Atual</option>
+                                    <option>Personalizado</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Data Inicial</label>
+                                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Data Final</label>
+                                <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Formato</label>
+                                <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                                    <option>PDF</option>
+                                    <option>Excel</option>
+                                    <option>HTML</option>
+                                    <option>Imagem</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button class="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center">
+                                <i class="fas fa-download mr-2"></i>Exportar Relatório
+                            </button>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautySys - Logs do Sistema</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .log-error { background-color: #fef2f2; border-left: 4px solid #ef4444; }
+        .log-warning { background-color: #fffbeb; border-left: 4px solid #f59e0b; }
+        .log-info { background-color: #eff6ff; border-left: 4px solid #3b82f6; }
+        .log-success { background-color: #f0fdf4; border-left: 4px solid #10b981; }
+        .log-debug { background-color: #f8fafc; border-left: 4px solid #64748b; }
+        
+        .auto-refresh:checked + .slider { background-color: #8b5cf6; }
+        .auto-refresh:checked + .slider:before { transform: translateX(20px); }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Cabeçalho -->
+        <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">📋 Logs do Sistema</h1>
+                    <p class="text-gray-600 mt-2">Monitoramento em tempo real de erros e eventos</p>
+                </div>
+                <div class="flex flex-wrap gap-4 mt-4 md:mt-0">
+                    <!-- Controles -->
+                    <div class="flex items-center space-x-4">
+                        <label class="flex items-center cursor-pointer">
+                            <div class="relative">
+                                <input type="checkbox" id="autoRefresh" class="auto-refresh sr-only" checked>
+                                <div class="slider block w-14 h-8 bg-gray-200 rounded-full"></div>
+                                <div class="dot absolute left-1 top-1 bg-white w-6 h-6 rounded-full transition"></div>
+                            </div>
+                            <div class="ml-3 text-gray-700 font-medium">Auto Refresh</div>
+                        </label>
+                        
+                        <button id="btnClearLogs" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors">
+                            <i class="fas fa-trash mr-2"></i>Limpar Logs
+                        </button>
+                        
+                        <button id="btnExportLogs" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+                            <i class="fas fa-download mr-2"></i>Exportar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Estatísticas Rápidas -->
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mt-6">
+                <div class="bg-red-50 p-4 rounded-lg text-center">
+                    <div class="text-red-600 text-2xl font-bold" id="errorCount">0</div>
+                    <div class="text-red-700 text-sm">Erros</div>
+                </div>
+                <div class="bg-yellow-50 p-4 rounded-lg text-center">
+                    <div class="text-yellow-600 text-2xl font-bold" id="warningCount">0</div>
+                    <div class="text-yellow-700 text-sm">Alertas</div>
+                </div>
+                <div class="bg-blue-50 p-4 rounded-lg text-center">
+                    <div class="text-blue-600 text-2xl font-bold" id="infoCount">0</div>
+                    <div class="text-blue-700 text-sm">Informações</div>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg text-center">
+                    <div class="text-green-600 text-2xl font-bold" id="successCount">0</div>
+                    <div class="text-green-700 text-sm">Sucessos</div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg text-center">
+                    <div class="text-gray-600 text-2xl font-bold" id="totalCount">0</div>
+                    <div class="text-gray-700 text-sm">Total</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filtros -->
+        <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <div class="flex flex-wrap gap-4 items-center">
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-700 font-medium">Filtrar:</span>
+                    <select id="filterLevel" class="border rounded-lg px-3 py-2">
+                        <option value="all">Todos os Níveis</option>
+                        <option value="error">Apenas Erros</option>
+                        <option value="warning">Apenas Alertas</option>
+                        <option value="info">Apenas Informações</option>
+                        <option value="success">Apenas Sucessos</option>
+                    </select>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-700 font-medium">Buscar:</span>
+                    <input type="text" id="searchLogs" placeholder="Digite para buscar..." 
+                           class="border rounded-lg px-3 py-2 w-64">
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-700 font-medium">Data:</span>
+                    <input type="date" id="filterDate" class="border rounded-lg px-3 py-2">
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela de Logs -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Data/Hora
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Nível
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Módulo
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Mensagem
+                            </th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Detalhes
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody" class="bg-white divide-y divide-gray-200">
+                        <!-- Logs serão carregados aqui via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Paginação -->
+            <div class="bg-white px-4 py-3 border-t border-gray-200">
+                <div class="flex justify-between items-center">
+                    <div class="text-sm text-gray-700">
+                        Mostrando <span id="showingStart">1</span> a <span id="showingEnd">10</span> de 
+                        <span id="totalLogs">0</span> registros
+                    </div>
+                    <div class="flex space-x-2">
+                        <button id="prevPage" class="px-3 py-1 border rounded-lg hover:bg-gray-50">Anterior</button>
+                        <button id="nextPage" class="px-3 py-1 border rounded-lg hover:bg-gray-50">Próxima</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Detalhes -->
+        <div id="logDetailModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+            <div class="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-90vh overflow-y-auto">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">Detalhes do Log</h3>
+                    <button id="closeDetailModal" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <pre id="logDetailContent" class="bg-gray-100 p-4 rounded-lg text-sm overflow-x-auto"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="logs-system.js"></script>
+</body>
+</html>

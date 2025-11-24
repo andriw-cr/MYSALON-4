@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BeautySys - Estoque</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style/style.css">
+    <script src="../js/app.js"></script>
+</head>
+<body class="bg-gray-100">
+    <!-- Layout Principal -->
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="sidebar w-64 bg-white shadow-md">
+            <div class="p-4 border-b">
+                <h1 class="text-xl font-bold text-purple-600">BeautySys</h1>
+                <p class="text-sm text-gray-500">Sistema de Gestão</p>
+            </div>
+            <nav class="mt-6">
+                <a href="dashboard.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-tachometer-alt mr-3"></i>Dashboard
+                </a>
+                <a href="clientes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-users mr-3"></i>Clientes
+                </a>
+                <a href="profissionais.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-user-tie mr-3"></i>Profissionais
+                </a>
+                <a href="servicos.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cut mr-3"></i>Serviços
+                </a>
+                <a href="agenda.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-calendar-alt mr-3"></i>Agenda
+                </a>
+                <a href="estoque.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50 active-menu">
+                    <i class="fas fa-boxes mr-3"></i>Estoque
+                </a>
+                <a href="financeiro.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-chart-line mr-3"></i>Financeiro
+                </a>
+                <a href="fidelidade.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-gift mr-3"></i>Fidelidade
+                </a>
+                <a href="configuracoes.html" class="block py-3 px-6 text-gray-700 hover:bg-purple-50">
+                    <i class="fas fa-cog mr-3"></i>Configurações
+                </a>
+            </nav>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <div class="flex-1 overflow-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center">
+                <div class="flex items-center">
+                    <button id="sidebarToggle" class="text-gray-500 mr-4">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="text-lg font-semibold">Estoque</h2>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <input type="text" placeholder="Buscar produtos..." class="pl-10 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                    <div class="relative">
+                        <button class="text-gray-500">
+                            <i class="fas fa-bell"></i>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">3</span>
+                        </button>
+                    </div>
+                    <div class="flex items-center">
+                        <img src="https://ui-avatars.com/api/?name=Admin+User&background=8b5cf6&color=fff" alt="Avatar" class="w-8 h-8 rounded-full">
+                        <span class="ml-2 text-sm font-medium">Admin User</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Conteúdo da Página de Estoque -->
+            <main class="p-6">
+                <!-- Barra de Ações -->
+                <div class="bg-white rounded-lg shadow p-6 mb-6">
+                    <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center space-y-4 lg:space-y-0">
+                        <div>
+                            <h3 class="text-lg font-semibold">Gestão de Estoque</h3>
+                            <p class="text-gray-500 text-sm">Controle de produtos, insumos e movimentações</p>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center text-sm">
+                                <i class="fas fa-filter mr-2"></i>Filtrar
+                            </button>
+                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center text-sm">
+                                <i class="fas fa-download mr-2"></i>Exportar
+                            </button>
+                            <button id="btnNovaMovimentacao" class="px-4 py-2 bg-blue-600 text-white rounded-lg flex items-center text-sm">
+                                <i class="fas fa-exchange-alt mr-2"></i>Movimentação
+                            </button>
+                            <button id="btnNovoProduto" class="px-4 py-2 bg-purple-600 text-white rounded-lg flex items-center text-sm">
+                                <i class="fas fa-plus mr-2"></i>Novo Produto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas e Estatísticas -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Total de Produtos</p>
+                                <h3 class="text-xl font-bold mt-1">156</h3>
+                            </div>
+                            <div class="bg-purple-100 p-3 rounded-full">
+                                <i class="fas fa-boxes text-purple-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Valor em Estoque</p>
+                                <h3 class="text-xl font-bold mt-1">R$ 12.580</h3>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="fas fa-dollar-sign text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Produtos em Falta</p>
+                                <h3 class="text-xl font-bold mt-1">8</h3>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-full">
+                                <i class="fas fa-exclamation-triangle text-red-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Estoque Baixo</p>
+                                <h3 class="text-xl font-bold mt-1">15</h3>
+                            </div>
+                            <div class="bg-yellow-100 p-3 rounded-full">
+                                <i class="fas fa-thermometer-half text-yellow-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas Críticos -->
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 text-xl mr-3"></i>
+                        <div>
+                            <h4 class="font-semibold text-red-800">Alertas de Estoque</h4>
+                            <p class="text-red-600 text-sm">8 produtos em falta • 3 produtos próximos do vencimento</p>
+                        </div>
+                        <button class="ml-auto text-red-600 hover:text-red-800">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filtros Rápidos -->
+                <div class="bg-white rounded-lg shadow p-4 mb-6">
+                    <div class="flex flex-wrap gap-4">
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option>Todas as Categorias</option>
+                            <option>Shampoo & Condicionador</option>
+                            <option>Coloração</option>
+                            <option>Tratamentos</option>
+                            <option>Maquiagem</option>
+                            <option>Unhas</option>
+                        </select>
+                        
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option>Todos os Fornecedores</option>
+                            <option>L'Oréal</option>
+                            <option>Wella</option>
+                            <option>Kérastase</option>
+                            <option>Natura</option>
+                        </select>
+                        
+                        <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                            <option>Todos os Status</option>
+                            <option>Ativo</option>
+                            <option>Inativo</option>
+                            <option>Em Falta</option>
+                            <option>Estoque Baixo</option>
+                        </select>
+
+                        <button class="px-3 py-2 bg-red-100 text-red-700 rounded-lg text-sm flex items-center">
+                            <i class="fas fa-exclamation-triangle mr-2"></i>Críticos
+                        </button>
+                        <button class="px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg text-sm flex items-center">
+                            <i class="fas fa-thermometer-half mr-2"></i>Estoque Baixo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Visualização em Cards (Produtos Críticos) -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-semibold mb-4">Produtos com Estoque Crítico</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Card de Produto Crítico -->
+                        <div class="product-card bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-flask text-red-600"></i>
+                                </div>
+                                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">2 unidades</span>
+                            </div>
+                            <h4 class="font-semibold text-red-800">Tonalizante L'Oréal 6.0</h4>
+                            <p class="text-red-600 text-sm mb-2">Coloração • Mín: 10</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-red-700 font-bold">R$ 28,90</span>
+                                <button class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card de Produto Crítico -->
+                        <div class="product-card bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-pump-soap text-red-600"></i>
+                                </div>
+                                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">0 unidades</span>
+                            </div>
+                            <h4 class="font-semibold text-red-800">Shampoo Repair Wella</h4>
+                            <p class="text-red-600 text-sm mb-2">Shampoo • Mín: 5</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-red-700 font-bold">R$ 42,50</span>
+                                <button class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card de Produto Crítico -->
+                        <div class="product-card bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-spa text-yellow-600"></i>
+                                </div>
+                                <span class="bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">3 unidades</span>
+                            </div>
+                            <h4 class="font-semibold text-yellow-800">Máscara Repair Kérastase</h4>
+                            <p class="text-yellow-600 text-sm mb-2">Tratamento • Mín: 8</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-yellow-700 font-bold">R$ 89,90</span>
+                                <button class="text-yellow-600 hover:text-yellow-800">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Card de Produto Crítico -->
+                        <div class="product-card bg-red-50 border border-red-200 rounded-lg p-4">
+                            <div class="flex justify-between items-start mb-3">
+                                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                                    <i class="fas fa-vial text-red-600"></i>
+                                </div>
+                                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full">1 unidade</span>
+                            </div>
+                            <h4 class="font-semibold text-red-800">Developer 20vol</h4>
+                            <p class="text-red-600 text-sm mb-2">Química • Mín: 12</p>
+                            <div class="flex justify-between items-center">
+                                <span class="text-red-700 font-bold">R$ 15,80</span>
+                                <button class="text-red-600 hover:text-red-800">
+                                    <i class="fas fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Produtos -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full product-table">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Produto</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Categoria</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Marca</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">SKU</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estoque</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mínimo</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Custo</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preço Venda</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr class="stock-critical">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-flask text-red-600"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Tonalizante L'Oréal 6.0</div>
+                                                <div class="text-sm text-gray-500">300ml</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Coloração
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        L'Oréal
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        LOR-COL-600
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-red-600">2</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        10
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        R$ 18,50
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        R$ 28,90
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            Crítico
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-purple-600 hover:text-purple-900 mr-3 edit-product" data-id="1">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900 mr-3">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900 delete-product" data-id="1">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="stock-low">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-spa text-yellow-600"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Máscara Repair Kérastase</div>
+                                                <div class="text-sm text-gray-500">500ml</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Tratamento
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Kérastase
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        KER-TRT-001
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-yellow-600">3</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        8
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        R$ 52,00
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        R$ 89,90
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            Baixo
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-purple-600 hover:text-purple-900 mr-3 edit-product" data-id="2">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900 mr-3">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900 delete-product" data-id="2">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="stock-ok">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-pump-soap text-green-600"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Shampoo Nutrição Wella</div>
+                                                <div class="text-sm text-gray-500">1L</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Shampoo
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Wella
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        WEL-SHP-001
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-green-600">15</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        5
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        R$ 28,90
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        R$ 42,50
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            OK
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-purple-600 hover:text-purple-900 mr-3 edit-product" data-id="3">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900 mr-3">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900 delete-product" data-id="3">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="stock-critical">
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="flex items-center">
+                                            <div class="flex-shrink-0 h-10 w-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-vial text-red-600"></i>
+                                            </div>
+                                            <div class="ml-4">
+                                                <div class="text-sm font-medium text-gray-900">Developer 20vol</div>
+                                                <div class="text-sm text-gray-500">1L</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Química
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        Wella
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        WEL-DEV-020
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="text-sm font-medium text-red-600">1</div>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        12
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        R$ 9,80
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                        R$ 15,80
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap">
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                            Crítico
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                        <button class="text-purple-600 hover:text-purple-900 mr-3 edit-product" data-id="4">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-blue-600 hover:text-blue-900 mr-3">
+                                            <i class="fas fa-exchange-alt"></i>
+                                        </button>
+                                        <button class="text-green-600 hover:text-green-900 mr-3">
+                                            <i class="fas fa-history"></i>
+                                        </button>
+                                        <button class="text-red-600 hover:text-red-900 delete-product" data-id="4">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Paginação -->
+                    <div class="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                        <div class="flex-1 flex justify-between sm:hidden">
+                            <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"> Anterior </a>
+                            <a href="#" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"> Próxima </a>
+                        </div>
+                        <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                            <div>
+                                <p class="text-sm text-gray-700">
+                                    Mostrando
+                                    <span class="font-medium">1</span>
+                                    a
+                                    <span class="font-medium">4</span>
+                                    de
+                                    <span class="font-medium">156</span>
+                                    resultados
+                                </p>
+                            </div>
+                            <div>
+                                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Anterior</span>
+                                        <i class="fas fa-chevron-left"></i>
+                                    </a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">1</a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">2</a>
+                                    <a href="#" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">3</a>
+                                    <a href="#" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        <span class="sr-only">Próxima</span>
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal de Cadastro/Edição de Produto -->
+    <div id="productModal" class="fixed inset-0 overflow-y-auto modal hidden z-50">
+        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="sm:flex sm:items-start">
+                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">
+                                Novo Produto
+                            </h3>
+                            
+                            <!-- Abas -->
+                            <div class="mt-4 border-b border-gray-200">
+                                <nav class="-mb-px flex space-x-8">
+                                    <button class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300 active" data-tab="general">
+                                        Informações Gerais
+                                    </button>
+                                    <button class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="stock">
+                                        Estoque
+                                    </button>
+                                    <button class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="pricing">
+                                        Valores
+                                    </button>
+                                    <button class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="supplier">
+                                        Fornecedor
+                                    </button>
+                                    <button class="tab-button py-2 px-1 border-b-2 border-transparent font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" data-tab="consumption">
+                                        Consumo
+                                    </button>
+                                </nav>
+                            </div>
+                            
+                            <!-- Conteúdo das Abas -->
+                            <div class="mt-4 max-h-96 overflow-y-auto">
+                                <form id="productForm">
+                                    <!-- Aba 1: Informações Gerais -->
+                                    <div id="general-tab" class="tab-content active">
+                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            <div class="sm:col-span-2">
+                                                <label for="product_name" class="block text-sm font-medium text-gray-700">Nome do Produto *</label>
+                                                <input type="text" name="product_name" id="product_name" required class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="category" class="block text-sm font-medium text-gray-700">Categoria *</label>
+                                                <select id="category" name="category" required class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                                    <option value="">Selecione</option>
+                                                    <option value="shampoo">Shampoo & Condicionador</option>
+                                                    <option value="color">Coloração</option>
+                                                    <option value="treatment">Tratamentos</option>
+                                                    <option value="makeup">Maquiagem</option>
+                                                    <option value="nails">Unhas</option>
+                                                    <option value="chemical">Química</option>
+                                                    <option value="other">Outros</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label for="brand" class="block text-sm font-medium text-gray-700">Marca *</label>
+                                                <input type="text" name="brand" id="brand" required class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="sku" class="block text-sm font-medium text-gray-700">SKU/Código Interno *</label>
+                                                <input type="text" name="sku" id="sku" required class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="barcode" class="block text-sm font-medium text-gray-700">Código de Barras</label>
+                                                <input type="text" name="barcode" id="barcode" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div class="sm:col-span-2">
+                                                <label class="block text-sm font-medium text-gray-700">Foto do Produto</label>
+                                                <div class="mt-1 flex items-center">
+                                                    <span class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
+                                                        <i class="fas fa-camera text-gray-300 h-full w-full flex items-center justify-center"></i>
+                                                    </span>
+                                                    <button type="button" class="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500">
+                                                        Alterar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Aba 2: Estoque -->
+                                    <div id="stock-tab" class="tab-content">
+                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            <div>
+                                                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantidade Inicial *</label>
+                                                <input type="number" name="quantity" id="quantity" required min="0" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="min_stock" class="block text-sm font-medium text-gray-700">Estoque Mínimo *</label>
+                                                <input type="number" name="min_stock" id="min_stock" required min="0" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="max_stock" class="block text-sm font-medium text-gray-700">Estoque Máximo</label>
+                                                <input type="number" name="max_stock" id="max_stock" min="0" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="unit" class="block text-sm font-medium text-gray-700">Unidade de Medida *</label>
+                                                <select id="unit" name="unit" required class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                                    <option value="">Selecione</option>
+                                                    <option value="unit">Unidade</option>
+                                                    <option value="ml">Mililitro (ml)</option>
+                                                    <option value="l">Litro (L)</option>
+                                                    <option value="g">Grama (g)</option>
+                                                    <option value="kg">Quilo (kg)</option>
+                                                    <option value="box">Caixa</option>
+                                                    <option value="pack">Pacote</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label for="expiry_date" class="block text-sm font-medium text-gray-700">Data de Validade</label>
+                                                <input type="date" name="expiry_date" id="expiry_date" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="location" class="block text-sm font-medium text-gray-700">Localização no Estoque</label>
+                                                <input type="text" name="location" id="location" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md" placeholder="Ex: Prateleira A3">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Aba 3: Valores -->
+                                    <div id="pricing-tab" class="tab-content">
+                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            <div>
+                                                <label for="cost_price" class="block text-sm font-medium text-gray-700">Custo Unitário (R$) *</label>
+                                                <input type="number" name="cost_price" id="cost_price" step="0.01" min="0" required class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="total_cost" class="block text-sm font-medium text-gray-700">Custo Total</label>
+                                                <input type="text" name="total_cost" id="total_cost" readonly class="mt-1 bg-gray-100 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="sale_price" class="block text-sm font-medium text-gray-700">Preço de Venda (R$)</label>
+                                                <input type="number" name="sale_price" id="sale_price" step="0.01" min="0" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="margin" class="block text-sm font-medium text-gray-700">Margem (%)</label>
+                                                <input type="text" name="margin" id="margin" readonly class="mt-1 bg-gray-100 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Aba 4: Fornecedor -->
+                                    <div id="supplier-tab" class="tab-content">
+                                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                                            <div class="sm:col-span-2">
+                                                <label for="supplier" class="block text-sm font-medium text-gray-700">Fornecedor</label>
+                                                <select id="supplier" name="supplier" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                                    <option value="">Selecione</option>
+                                                    <option value="1">L'Oréal</option>
+                                                    <option value="2">Wella</option>
+                                                    <option value="3">Kérastase</option>
+                                                    <option value="4">Natura</option>
+                                                    <option value="5">Outro</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label for="supplier_cnpj" class="block text-sm font-medium text-gray-700">CNPJ</label>
+                                                <input type="text" name="supplier_cnpj" id="supplier_cnpj" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label for="supplier_contact" class="block text-sm font-medium text-gray-700">Contato</label>
+                                                <input type="text" name="supplier_contact" id="supplier_contact" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div class="sm:col-span-2">
+                                                <label for="supplier_website" class="block text-sm font-medium text-gray-700">Site</label>
+                                                <input type="url" name="supplier_website" id="supplier_website" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Aba 5: Consumo -->
+                                    <div id="consumption-tab" class="tab-content">
+                                        <div class="grid grid-cols-1 gap-4">
+                                            <div>
+                                                <label for="consumption_per_service" class="block text-sm font-medium text-gray-700">Quantidade Consumida por Serviço</label>
+                                                <input type="number" name="consumption_per_service" id="consumption_per_service" step="0.01" min="0" class="mt-1 focus:ring-purple-500 focus:border-purple-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-700 mb-2">Serviços que Consomem este Produto</label>
+                                                <div class="space-y-2">
+                                                    <div class="flex items-center">
+                                                        <input type="checkbox" id="service_1" name="services" value="1" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                                                        <label for="service_1" class="ml-2 block text-sm text-gray-700">Corte Feminino</label>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <input type="checkbox" id="service_2" name="services" value="2" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                                                        <label for="service_2" class="ml-2 block text-sm text-gray-700">Coloração</label>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <input type="checkbox" id="service_3" name="services" value="3" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                                                        <label for="service_3" class="ml-2 block text-sm text-gray-700">Progressiva</label>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <input type="checkbox" id="service_4" name="services" value="4" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                                                        <label for="service_4" class="ml-2 block text-sm text-gray-700">Tratamento Capilar</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <input type="checkbox" id="auto_deduct" name="auto_deduct" class="focus:ring-purple-500 h-4 w-4 text-purple-600 border-gray-300 rounded">
+                                                <label for="auto_deduct" class="ml-2 block text-sm text-gray-700">Controle automático de desconto de estoque</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <button type="button" id="saveProduct" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Salvar
+                    </button>
+                    <button type="button" id="cancelProduct" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        Cancelar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
