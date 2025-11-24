@@ -1,13 +1,18 @@
 import express from 'express';
 import cors from 'cors';
-import { ApiServiceClass } from './api.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+import ApiServiceClass from '../frontend/js/api.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Configuração do CORS para permitir frontend local
 app.use(cors({
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000'],
+    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000', 'http://127.0.0.1:3000'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -30,12 +35,21 @@ app.use((req, res, next) => {
 app.get('/api/clientes', async (req, res) => {
     try {
         console.log('Buscando todos os clientes...');
-        const clientes = await apiService.getAllClientes();
-        res.json({
-            success: true,
-            data: clientes,
-            count: clientes.length
-        });
+        const result = await apiService.getClientes();
+        
+        if (result.success) {
+            res.json({
+                success: true,
+                data: result.data,
+                count: result.data.length
+            });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Erro ao buscar clientes',
+                error: result.error
+            });
+        }
     } catch (error) {
         console.error('Erro ao buscar clientes:', error);
         res.status(500).json({
@@ -52,17 +66,17 @@ app.get('/api/clientes/:id', async (req, res) => {
         const { id } = req.params;
         console.log(`Buscando cliente com ID: ${id}`);
         
-        const cliente = await apiService.getClienteById(parseInt(id));
+        const result = await apiService.getCliente(parseInt(id));
         
-        if (cliente) {
+        if (result.success) {
             res.json({
                 success: true,
-                data: cliente
+                data: result.data
             });
         } else {
             res.status(404).json({
                 success: false,
-                message: 'Cliente não encontrado'
+                message: result.error || 'Cliente não encontrado'
             });
         }
     } catch (error) {
@@ -78,32 +92,52 @@ app.get('/api/clientes/:id', async (req, res) => {
 // POST /api/clientes - Criar novo cliente
 app.post('/api/clientes', async (req, res) => {
     try {
-        const { nome, telefone, email, data_nascimento, observacoes } = req.body;
-        console.log('Criando novo cliente:', { nome, telefone, email });
+        const { 
+            nome_completo, 
+            telefone, 
+            email, 
+            data_nascimento, 
+            genero, 
+            status, 
+            observacoes, 
+            pontos_fidelidade 
+        } = req.body;
+        
+        console.log('Criando novo cliente:', { nome_completo, telefone, email });
         
         // Validação básica
-        if (!nome || !telefone) {
+        if (!nome_completo || !telefone) {
             return res.status(400).json({
                 success: false,
-                message: 'Nome e telefone são obrigatórios'
+                message: 'Nome completo e telefone são obrigatórios'
             });
         }
 
         const novoCliente = {
-            nome,
+            nome_completo,
             telefone,
             email: email || '',
             data_nascimento: data_nascimento || '',
-            observacoes: observacoes || ''
+            genero: genero || '',
+            status: status || 'ativo',
+            observacoes: observacoes || '',
+            pontos_fidelidade: pontos_fidelidade || 0
         };
 
-        const clienteId = await apiService.createCliente(novoCliente);
+        const result = await apiService.criarCliente(novoCliente);
         
-        res.status(201).json({
-            success: true,
-            message: 'Cliente criado com sucesso',
-            data: { id: clienteId, ...novoCliente }
-        });
+        if (result.success) {
+            res.status(201).json({
+                success: true,
+                message: 'Cliente criado com sucesso',
+                data: result.data
+            });
+        } else {
+            res.status(400).json({
+                success: false,
+                message: result.error || 'Erro ao criar cliente'
+            });
+        }
     } catch (error) {
         console.error('Erro ao criar cliente:', error);
         res.status(500).json({
@@ -118,38 +152,50 @@ app.post('/api/clientes', async (req, res) => {
 app.put('/api/clientes/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const { nome, telefone, email, data_nascimento, observacoes } = req.body;
+        const { 
+            nome_completo, 
+            telefone, 
+            email, 
+            data_nascimento, 
+            genero, 
+            status, 
+            observacoes, 
+            pontos_fidelidade 
+        } = req.body;
         
         console.log(`Atualizando cliente ID: ${id}`, req.body);
         
         // Validação básica
-        if (!nome || !telefone) {
+        if (!nome_completo || !telefone) {
             return res.status(400).json({
                 success: false,
-                message: 'Nome e telefone são obrigatórios'
+                message: 'Nome completo e telefone são obrigatórios'
             });
         }
 
         const clienteAtualizado = {
-            nome,
+            nome_completo,
             telefone,
             email: email || '',
             data_nascimento: data_nascimento || '',
-            observacoes: observacoes || ''
+            genero: genero || '',
+            status: status || 'ativo',
+            observacoes: observacoes || '',
+            pontos_fidelidade: pontos_fidelidade || 0
         };
 
-        const sucesso = await apiService.updateCliente(parseInt(id), clienteAtualizado);
+        const result = await apiService.atualizarCliente(parseInt(id), clienteAtualizado);
         
-        if (sucesso) {
+        if (result.success) {
             res.json({
                 success: true,
                 message: 'Cliente atualizado com sucesso',
-                data: { id: parseInt(id), ...clienteAtualizado }
+                data: result.data
             });
         } else {
             res.status(404).json({
                 success: false,
-                message: 'Cliente não encontrado para atualização'
+                message: result.error || 'Cliente não encontrado para atualização'
             });
         }
     } catch (error) {
@@ -168,17 +214,18 @@ app.delete('/api/clientes/:id', async (req, res) => {
         const { id } = req.params;
         console.log(`Excluindo cliente ID: ${id}`);
         
-        const sucesso = await apiService.deleteCliente(parseInt(id));
+        const result = await apiService.excluirCliente(parseInt(id));
         
-        if (sucesso) {
+        if (result.success) {
             res.json({
                 success: true,
-                message: 'Cliente excluído com sucesso'
+                message: 'Cliente excluído com sucesso',
+                data: result.data
             });
         } else {
             res.status(404).json({
                 success: false,
-                message: 'Cliente não encontrado para exclusão'
+                message: result.error || 'Cliente não encontrado para exclusão'
             });
         }
     } catch (error) {
@@ -194,23 +241,28 @@ app.delete('/api/clientes/:id', async (req, res) => {
 // GET /api/clientes/buscar - Busca com filtros
 app.get('/api/clientes/buscar', async (req, res) => {
     try {
-        const { termo } = req.query;
-        console.log(`Buscando clientes com termo: ${termo}`);
+        const { nome, status } = req.query;
+        console.log(`Buscando clientes com filtros:`, { nome, status });
         
-        if (!termo) {
-            return res.status(400).json({
+        const filtros = {};
+        if (nome) filtros.nome = nome;
+        if (status && status !== 'todos') filtros.status = status;
+
+        const result = await apiService.buscarClientes(filtros);
+        
+        if (result.success) {
+            res.json({
+                success: true,
+                data: result.data,
+                count: result.data.length
+            });
+        } else {
+            res.status(500).json({
                 success: false,
-                message: 'Parâmetro "termo" é obrigatório para busca'
+                message: 'Erro na busca de clientes',
+                error: result.error
             });
         }
-
-        const clientes = await apiService.searchClientes(termo);
-        
-        res.json({
-            success: true,
-            data: clientes,
-            count: clientes.length
-        });
     } catch (error) {
         console.error('Erro ao buscar clientes:', error);
         res.status(500).json({
@@ -226,7 +278,8 @@ app.get('/api/health', (req, res) => {
     res.json({
         success: true,
         message: 'API está funcionando',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        database: 'SQLite'
     });
 });
 
@@ -253,6 +306,7 @@ app.listen(PORT, () => {
     console.log(`🚀 Servidor rodando na porta ${PORT}`);
     console.log(`📊 API disponível em: http://localhost:${PORT}/api`);
     console.log(`❤️  Health check: http://localhost:${PORT}/api/health`);
+    console.log(`👥 Clientes: http://localhost:${PORT}/api/clientes`);
 });
 
 export default app;
