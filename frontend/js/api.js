@@ -1,10 +1,10 @@
-// frontend/js/api.js - VERSÃO CORRIGIDA E UNIFICADA
+// frontend/js/api.js - VERSÃO CORRIGIDA E FINAL
 // CLIENTE HTTP PARA API DO BACKEND
 
 class ApiService {
     constructor() {
         this.baseURL = 'http://localhost:3000/api';
-        console.log('✅ ApiService inicializado - Conectando ao backend');
+        console.log('✅ ApiService inicializado - Base URL:', this.baseURL);
     }
 
     // Método genérico para requisições
@@ -19,71 +19,22 @@ class ApiService {
         };
 
         try {
-            console.log(`📡 Fazendo requisição: ${url}`);
+            console.log(`📡 API Request: ${url}`, options.method || 'GET');
             const response = await fetch(url, defaultOptions);
             
             if (!response.ok) {
                 const errorText = await response.text();
+                console.error(`❌ API Error ${response.status}:`, errorText);
                 throw new Error(`HTTP ${response.status}: ${errorText}`);
             }
             
-            return await response.json();
+            const data = await response.json();
+            console.log(`✅ API Response ${endpoint}:`, data?.length || 'data received');
+            return data;
         } catch (error) {
-            console.error(`❌ Erro na requisição ${endpoint}:`, error);
+            console.error(`❌ Request Error ${endpoint}:`, error);
             throw error;
         }
-    }
-
-    // ========== CLIENTES ==========
-    
-    async getClientes(filtros = {}) {
-        const params = new URLSearchParams();
-        if (filtros.search) params.append('search', filtros.search);
-        if (filtros.status) params.append('status', filtros.status);
-        
-        const queryString = params.toString();
-        const endpoint = queryString ? `/clientes?${queryString}` : '/clientes';
-        
-        console.log(`🔍 Buscando clientes: ${endpoint}`);
-        return await this.request(endpoint);
-    }
-
-    async getCliente(id) {
-        console.log(`🔍 Buscando cliente ID: ${id}`);
-        return await this.request(`/clientes/${id}`);
-    }
-
-    async criarCliente(dadosCliente) {
-        console.log(`➕ Criando novo cliente:`, dadosCliente);
-        return await this.request('/clientes', {
-            method: 'POST',
-            body: JSON.stringify(dadosCliente)
-        });
-    }
-
-    async atualizarCliente(id, dadosCliente) {
-        console.log(`✏️ Atualizando cliente ID ${id}:`, dadosCliente);
-        return await this.request(`/clientes/${id}`, {
-            method: 'PUT',
-            body: JSON.stringify(dadosCliente)
-        });
-    }
-
-    async excluirCliente(id) {
-        console.log(`🗑️ Inativando cliente ID: ${id}`);
-        return await this.request(`/clientes/${id}`, {
-            method: 'DELETE'
-        });
-    }
-
-    async getAgendamentosCliente(id) {
-        console.log(`📅 Buscando agendamentos do cliente ID: ${id}`);
-        return await this.request(`/clientes/${id}/agendamentos`);
-    }
-
-    async getEstatisticasCliente(id) {
-        console.log(`📊 Buscando estatísticas do cliente ID: ${id}`);
-        return await this.request(`/clientes/${id}/estatisticas`);
     }
 
     // ========== AGENDAMENTOS ==========
@@ -100,12 +51,10 @@ class ApiService {
         const queryString = params.toString();
         const endpoint = `/agendamentos${queryString ? `?${queryString}` : ''}`;
         
-        console.log(`📅 Buscando agendamentos: ${endpoint}`);
         return await this.request(endpoint);
     }
 
     async criarAgendamento(dados) {
-        console.log(`➕ Criando novo agendamento:`, dados);
         return await this.request('/agendamentos', {
             method: 'POST',
             body: JSON.stringify(dados)
@@ -113,7 +62,6 @@ class ApiService {
     }
 
     async atualizarAgendamento(id, dados) {
-        console.log(`✏️ Atualizando agendamento ID ${id}:`, dados);
         return await this.request(`/agendamentos/${id}`, {
             method: 'PUT',
             body: JSON.stringify(dados)
@@ -121,7 +69,6 @@ class ApiService {
     }
 
     async mudarStatusAgendamento(id, status) {
-        console.log(`🔄 Mudando status do agendamento ${id} para: ${status}`);
         return await this.request(`/agendamentos/${id}/status`, {
             method: 'PATCH',
             body: JSON.stringify({ status })
@@ -129,7 +76,6 @@ class ApiService {
     }
 
     async excluirAgendamento(id) {
-        console.log(`🗑️ Excluindo agendamento ID: ${id}`);
         return await this.request(`/agendamentos/${id}`, {
             method: 'DELETE'
         });
@@ -141,9 +87,7 @@ class ApiService {
             data: data
         });
         
-        const endpoint = `/agendamentos/disponibilidade/horarios?${params}`;
-        console.log(`🕐 Buscando horários livres: ${endpoint}`);
-        return await this.request(endpoint);
+        return await this.request(`/agendamentos/disponibilidade/horarios?${params}`);
     }
 
     async verificarDisponibilidade(profissionalId, dataHora, duracao) {
@@ -153,19 +97,51 @@ class ApiService {
             duracao: duracao
         });
         
-        const endpoint = `/agendamentos/disponibilidade/verificar?${params}`;
-        console.log(`✅ Verificando disponibilidade: ${endpoint}`);
-        return await this.request(endpoint);
+        return await this.request(`/agendamentos/disponibilidade/verificar?${params}`);
     }
 
     async getServicosAgendamento(agendamentoId) {
-        console.log(`🔍 Buscando serviços do agendamento ID: ${agendamentoId}`);
         return await this.request(`/agendamentos/${agendamentoId}/servicos`);
     }
 
     async getEstatisticasHoje() {
-        console.log(`📊 Buscando estatísticas do dia`);
         return await this.request('/agendamentos/estatisticas/hoje');
+    }
+
+    // ========== PROFISSIONAIS ==========
+    
+    async getProfissionais() {
+        return await this.request('/profissionais');
+    }
+
+    async getProfissional(id) {
+        return await this.request(`/profissionais/${id}`);
+    }
+
+    async getServicosPorProfissional(profissionalId) {
+        return await this.request(`/profissionais/${profissionalId}/servicos`);
+    }
+
+    async getHorariosTrabalho(profissionalId) {
+        return await this.request(`/profissionais/${profissionalId}/horarios-trabalho`);
+    }
+
+    async getEstatisticasProfissional(profissionalId) {
+        return await this.request(`/profissionais/${profissionalId}/estatisticas`);
+    }
+
+    // ========== SERVIÇOS ==========
+    
+    async getServicos() {
+        return await this.request('/servicos');
+    }
+
+    async getServico(id) {
+        return await this.request(`/servicos/${id}`);
+    }
+
+    async getProfissionaisPorServico(servicoId) {
+        return await this.request(`/servicos/${servicoId}/profissionais`);
     }
 
     // ========== BLOQUEIOS ==========
@@ -182,12 +158,10 @@ class ApiService {
         const queryString = params.toString();
         const endpoint = `/bloqueios${queryString ? `?${queryString}` : ''}`;
         
-        console.log(`🚫 Buscando bloqueios: ${endpoint}`);
         return await this.request(endpoint);
     }
 
     async criarBloqueio(dados) {
-        console.log(`➕ Criando novo bloqueio:`, dados);
         return await this.request('/bloqueios', {
             method: 'POST',
             body: JSON.stringify(dados)
@@ -195,81 +169,83 @@ class ApiService {
     }
 
     async excluirBloqueio(id) {
-        console.log(`🗑️ Removendo bloqueio ID: ${id}`);
         return await this.request(`/bloqueios/${id}`, {
             method: 'DELETE'
         });
     }
 
-    // ========== PROFISSIONAIS ==========
+    // ========== CLIENTES (mantido para compatibilidade) ==========
     
-    async getProfissionais() {
-        console.log(`👨‍💼 Buscando profissionais`);
-        return await this.request('/profissionais');
+    async getClientes(filtros = {}) {
+        const params = new URLSearchParams();
+        if (filtros.search) params.append('search', filtros.search);
+        if (filtros.status) params.append('status', filtros.status);
+        
+        const queryString = params.toString();
+        const endpoint = queryString ? `/clientes?${queryString}` : '/clientes';
+        
+        return await this.request(endpoint);
     }
 
-    async getProfissional(id) {
-        console.log(`🔍 Buscando profissional ID: ${id}`);
-        return await this.request(`/profissionais/${id}`);
+    async getCliente(id) {
+        return await this.request(`/clientes/${id}`);
     }
 
-    async getServicosPorProfissional(profissionalId) {
-        console.log(`💇 Buscando serviços do profissional ID: ${profissionalId}`);
-        return await this.request(`/profissionais/${profissionalId}/servicos`);
+    async criarCliente(dadosCliente) {
+        return await this.request('/clientes', {
+            method: 'POST',
+            body: JSON.stringify(dadosCliente)
+        });
     }
 
-    async getHorariosTrabalho(profissionalId) {
-        console.log(`🕐 Buscando horários de trabalho do profissional ID: ${profissionalId}`);
-        return await this.request(`/profissionais/${profissionalId}/horarios-trabalho`);
+    async atualizarCliente(id, dadosCliente) {
+        return await this.request(`/clientes/${id}`, {
+            method: 'PUT',
+            body: JSON.stringify(dadosCliente)
+        });
     }
 
-    async getEstatisticasProfissional(profissionalId) {
-        console.log(`📊 Buscando estatísticas do profissional ID: ${profissionalId}`);
-        return await this.request(`/profissionais/${profissionalId}/estatisticas`);
+    async excluirCliente(id) {
+        return await this.request(`/clientes/${id}`, {
+            method: 'DELETE'
+        });
     }
 
-    // ========== SERVIÇOS ==========
-    
-    async getServicos() {
-        console.log(`💇 Buscando serviços`);
-        return await this.request('/servicos');
+    async getAgendamentosCliente(id) {
+        return await this.request(`/clientes/${id}/agendamentos`);
     }
 
-    async getServico(id) {
-        console.log(`🔍 Buscando serviço ID: ${id}`);
-        return await this.request(`/servicos/${id}`);
+    async getEstatisticasCliente(id) {
+        return await this.request(`/clientes/${id}/estatisticas`);
     }
 
-    async getProfissionaisPorServico(servicoId) {
-        console.log(`👨‍💼 Buscando profissionais do serviço ID: ${servicoId}`);
-        return await this.request(`/servicos/${servicoId}/profissionais`);
-    }
-
-    // ========== UTILITÁRIOS ==========
+    // ========== HEALTH CHECK ==========
     
     async healthCheck() {
         try {
-            console.log(`🏥 Verificando saúde da API...`);
             const result = await this.request('/health');
             return result;
         } catch (error) {
-            console.warn('⚠️ API não está respondendo');
+            console.warn('⚠️ API não está respondendo:', error.message);
             return { status: 'error', message: 'API offline' };
         }
     }
 }
 
 // ========== EXPORTAÇÃO GLOBAL ==========
-// Criar UMA ÚNICA instância
+// Criar UMA ÚNICA instância global
 const apiServiceInstance = new ApiService();
 
-// Disponibilizar a instância globalmente
+// Disponibilizar a instância globalmente com múltiplas referências
 window.ApiService = apiServiceInstance;
-window.api = apiServiceInstance;  // Alias para console
+window.apiService = apiServiceInstance;
+window.api = apiServiceInstance; // Alias para console
 
-// Teste automático de conexão
-document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🔌 Testando conexão com o backend...');
+console.log('🌐 ApiService global registrado:', typeof window.ApiService);
+
+// Teste automático de conexão ao carregar
+setTimeout(async () => {
+    console.log('🔌 Testando conexão com backend...');
     
     try {
         const response = await fetch('http://localhost:3000/api/health');
@@ -277,53 +253,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             const data = await response.json();
             console.log('✅ API do backend está respondendo:', data);
             
-            // Verificar se os métodos estão disponíveis
-            console.log('🔍 Verificando funções do ApiService:');
-            console.log('- getAgendamentos:', typeof window.ApiService.getAgendamentos);
+            // Verificar métodos básicos
+            console.log('🔍 Métodos ApiService disponíveis:');
             console.log('- getProfissionais:', typeof window.ApiService.getProfissionais);
             console.log('- getServicos:', typeof window.ApiService.getServicos);
+            console.log('- getAgendamentos:', typeof window.ApiService.getAgendamentos);
             
-            // Testar rapidamente as APIs da agenda
-            try {
-                const profissionais = await window.ApiService.getProfissionais();
-                console.log('✅ Teste getProfissionais funcionou:', profissionais?.length || '0', 'profissionais');
-            } catch (error) {
-                console.warn('⚠️ getProfissionais falhou:', error.message);
-            }
+        } else {
+            console.warn('⚠️ API do backend retornou erro:', response.status);
         }
     } catch (error) {
         console.error('❌ Não foi possível conectar à API:', error.message);
+        console.log('💡 Verifique se o backend está rodando em http://localhost:3000');
     }
-});
-
-// Adicionar CSS para mensagens flutuantes
-const style = document.createElement('style');
-style.textContent = `
-.mensagem-flutuante {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    color: white;
-    font-weight: 500;
-    z-index: 9999;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    animation: slideIn 0.3s ease-out;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-`;
-document.head.appendChild(style);
+}, 1000);
