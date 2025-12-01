@@ -1,9 +1,8 @@
+// routes/appointments.js - VERSÃO INTEGRADA E CORRIGIDA
 import express from 'express';
-import sqlite3 from 'sqlite3';
-import { DB_PATH } from '../database-config.js';
+import db from '../database/db.js';
 
 const router = express.Router();
-const db = new sqlite3.Database(DB_PATH);
 
 // GET - Listar todos os agendamentos
 router.get('/', (req, res) => {
@@ -24,9 +23,14 @@ router.get('/', (req, res) => {
   
   db.all(sql, [], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar agendamentos:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: rows 
@@ -56,9 +60,14 @@ router.get('/data/:data', (req, res) => {
   
   db.all(sql, [data], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar agendamentos por data:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: rows 
@@ -85,9 +94,14 @@ router.get('/periodo/:inicio/:fim', (req, res) => {
   
   db.all(sql, [inicio, fim], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar agendamentos por período:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: rows 
@@ -119,13 +133,21 @@ router.get('/:id', (req, res) => {
   
   db.get(sql, [id], (err, row) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar agendamento:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     if (!row) {
-      res.status(404).json({ error: 'Agendamento não encontrado' });
-      return;
+      return res.status(404).json({ 
+        success: false,
+        message: 'Agendamento não encontrado' 
+      });
     }
+    
     res.json({ 
       success: true,
       data: row 
@@ -148,7 +170,7 @@ router.post('/', (req, res) => {
   if (!cliente_id || !servico_id || !profissional_id || !data_agendamento) {
     return res.status(400).json({ 
       success: false,
-      error: 'Dados incompletos. Cliente, serviço, profissional e data são obrigatórios.' 
+      message: 'Dados incompletos. Cliente, serviço, profissional e data são obrigatórios.' 
     });
   }
 
@@ -167,13 +189,15 @@ router.post('/', (req, res) => {
     valor_servico || 0
   ], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao criar agendamento:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
-    res.json({
+    
+    res.status(201).json({
       success: true,
       message: 'Agendamento criado com sucesso',
       data: {
@@ -219,19 +243,21 @@ router.put('/:id', (req, res) => {
     id
   ], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao atualizar agendamento:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Agendamento não encontrado' 
+        message: 'Agendamento não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: 'Agendamento atualizado com sucesso' 
@@ -247,7 +273,7 @@ router.patch('/:id/status', (req, res) => {
   if (!status) {
     return res.status(400).json({ 
       success: false,
-      error: 'Status é obrigatório' 
+      message: 'Status é obrigatório' 
     });
   }
 
@@ -255,19 +281,21 @@ router.patch('/:id/status', (req, res) => {
   
   db.run(sql, [status, id], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao atualizar status do agendamento:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Agendamento não encontrado' 
+        message: 'Agendamento não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: `Status do agendamento atualizado para: ${status}` 
@@ -283,19 +311,21 @@ router.delete('/:id', (req, res) => {
   
   db.run(sql, [id], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao cancelar agendamento:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Agendamento não encontrado' 
+        message: 'Agendamento não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: 'Agendamento cancelado com sucesso' 
@@ -318,8 +348,12 @@ router.get('/estatisticas/hoje', (req, res) => {
   
   db.all(sql, [hoje], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar estatísticas de agendamentos:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
     
     const estatisticas = {
