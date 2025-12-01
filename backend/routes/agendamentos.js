@@ -1,7 +1,5 @@
 // backend/routes/agendamentos.js - VERSÃO COMPLETA ATUALIZADA
-import express from 'express';
-import db from '../database/db.js';
-
+const express = require('express');
 const router = express.Router();
 
 // GET - Listar todos os agendamentos com filtros
@@ -678,5 +676,4 @@ router.get('/disponibilidade/horarios', (req, res) => {
     });
   }
 });
-
-export default router;
+module.exports = router;
