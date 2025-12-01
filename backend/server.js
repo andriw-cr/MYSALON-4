@@ -1,4 +1,4 @@
-// backend/server.js - VERSÃO COMMONJS
+// backend/server.js - VERSÃO COMMONJS CORRIGIDA
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -166,6 +166,16 @@ app.put('/api/clientes/:id', (req, res) => {
     });
 });
 
+// ========== ROTAS DE AGENDA ==========
+
+// Importar rotas da agenda CORRETAMENTE
+const agendamentosRouter = require('./routes/agendamentos.js');
+const bloqueiosRouter = require('./routes/bloqueios.js');
+
+// Registrar rotas
+app.use('/api/agendamentos', agendamentosRouter);
+app.use('/api/bloqueios', bloqueiosRouter);
+
 // Redirecionar para páginas HTML
 app.get('/*', (req, res, next) => {
     if (req.path.startsWith('/api/')) return next();
@@ -179,14 +189,6 @@ app.get('/*', (req, res, next) => {
     }
 });
 
-// SUBSTITUA POR:
-const agendamentosRouter = require('./routes/agendamentos.js');
-const bloqueiosRouter = require('./routes/bloqueios.js');
-
-// ESTA PARTE PODE FICAR (mas use const):
-app.use('/api/agendamentos', agendamentosRouter);
-app.use('/api/bloqueios', bloqueiosRouter);
-
 // Iniciar servidor
 app.listen(PORT, () => {
     console.log(`
@@ -198,6 +200,8 @@ app.listen(PORT, () => {
     📅 Agenda:         http://localhost:${PORT}/html/agenda.html
     🧪 Health Check:   http://localhost:${PORT}/api/health
     👤 API Clientes:   http://localhost:${PORT}/api/clientes
+    📅 API Agenda:     http://localhost:${PORT}/api/agendamentos
+    🔒 API Bloqueios:  http://localhost:${PORT}/api/bloqueios
     ==============================
     `);
     console.log('📁 Frontend servido de:', frontendPath);
