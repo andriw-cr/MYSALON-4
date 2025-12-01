@@ -307,4 +307,73 @@ router.get('/categorias/list', (req, res) => {
   });
 });
 
+// Adicionar estas rotas ao arquivo existente:
+
+// GET - Profissionais que realizam o serviço
+router.get('/:id/profissionais', (req, res) => {
+  const { id } = req.params;
+  
+  const sql = `
+    SELECT 
+      sp.*,
+      p.nome_completo,
+      p.especialidade,
+      p.telefone,
+      p.email,
+      p.status as profissional_status
+    FROM servicos_profissionais sp
+    LEFT JOIN profissionais p ON sp.profissional_id = p.id
+    WHERE sp.servico_id = ? AND p.status = 'ativo'
+    ORDER BY p.nome_completo
+  `;
+  
+  db.all(sql, [id], (err, rows) => {
+    if (err) {
+      console.error('Erro ao buscar profissionais do serviço:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
+    }
+    
+    res.json({ 
+      success: true,
+      data: rows 
+    });
+  });
+});
+
+// GET - Preços e durações personalizadas por profissional
+router.get('/:id/precos-personalizados', (req, res) => {
+  const { id } = req.params;
+  
+  const sql = `
+    SELECT 
+      sp.profissional_id,
+      p.nome_completo,
+      sp.comissao_personalizada
+    FROM servicos_profissionais sp
+    LEFT JOIN profissionais p ON sp.profissional_id = p.id
+    WHERE sp.servico_id = ?
+    ORDER BY p.nome_completo
+  `;
+  
+  db.all(sql, [id], (err, rows) => {
+    if (err) {
+      console.error('Erro ao buscar preços personalizados:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
+    }
+    
+    res.json({ 
+      success: true,
+      data: rows 
+    });
+  });
+});
+
 export default router;

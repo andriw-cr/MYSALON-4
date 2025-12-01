@@ -387,5 +387,82 @@ router.get('/especialidades/list', (req, res) => {
     });
   });
 });
+// Adicionar estas rotas ao arquivo existente:
+
+// GET - Horários de trabalho do profissional
+router.get('/:id/horarios-trabalho', (req, res) => {
+  const { id } = req.params;
+  
+  const sql = `
+    SELECT 
+      horario_segunda,
+      horario_terca,
+      horario_quarta,
+      horario_quinta,
+      horario_sexta,
+      horario_sabado,
+      horario_domingo
+    FROM profissionais
+    WHERE id = ?
+  `;
+  
+  db.get(sql, [id], (err, row) => {
+    if (err) {
+      console.error('Erro ao buscar horários do profissional:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
+    }
+    
+    if (!row) {
+      return res.status(404).json({ 
+        success: false,
+        message: 'Profissional não encontrado' 
+      });
+    }
+    
+    res.json({ 
+      success: true,
+      data: row 
+    });
+  });
+});
+
+// GET - Serviços que o profissional realiza
+router.get('/:id/servicos', (req, res) => {
+  const { id } = req.params;
+  
+  const sql = `
+    SELECT 
+      sp.*,
+      s.nome as servico_nome,
+      s.categoria as servico_categoria,
+      s.preco_base,
+      s.duracao_minutos,
+      s.descricao
+    FROM servicos_profissionais sp
+    LEFT JOIN servicos s ON sp.servico_id = s.id
+    WHERE sp.profissional_id = ? AND s.status = 'ativo'
+    ORDER BY s.nome
+  `;
+  
+  db.all(sql, [id], (err, rows) => {
+    if (err) {
+      console.error('Erro ao buscar serviços do profissional:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
+    }
+    
+    res.json({ 
+      success: true,
+      data: rows 
+    });
+  });
+});
 
 export default router;

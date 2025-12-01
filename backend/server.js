@@ -179,6 +179,14 @@ app.get('/*', (req, res, next) => {
     }
 });
 
+// Adicionar estas linhas:
+import agendamentosRouter from './routes/agendamentos.js';
+import bloqueiosRouter from './routes/bloqueios.js';
+
+// Registar as rotas:
+app.use('/api/agendamentos', agendamentosRouter);
+app.use('/api/bloqueios', bloqueiosRouter);
+
 // Iniciar servidor
 app.listen(PORT, () => {
     console.log(`

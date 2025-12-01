@@ -179,3 +179,395 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+// ============================================
+// MÉTODOS DA AGENDA - ADICIONAR AO ApiService
+// ============================================
+
+const ApiService = {
+    // ... métodos existentes ...
+    
+    // ========== AGENDAMENTOS ==========
+    /**
+     * Listar agendamentos com filtros
+     * @param {Object} filtros - { data, profissional_id, status, cliente_id }
+     */
+    getAgendamentos: async (filtros = {}) => {
+        try {
+            const params = new URLSearchParams();
+            
+            // Adicionar filtros como parâmetros de query
+            Object.keys(filtros).forEach(key => {
+                if (filtros[key] !== null && filtros[key] !== undefined) {
+                    params.append(key, filtros[key]);
+                }
+            });
+            
+            const url = `/api/agendamentos${params.toString() ? `?${params.toString()}` : ''}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar agendamentos');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getAgendamentos:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Criar novo agendamento
+     * @param {Object} dados - Dados do agendamento
+     */
+    criarAgendamento: async (dados) => {
+        try {
+            const response = await fetch('/api/agendamentos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao criar agendamento');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.criarAgendamento:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Atualizar agendamento
+     * @param {Number} id - ID do agendamento
+     * @param {Object} dados - Dados atualizados
+     */
+    atualizarAgendamento: async (id, dados) => {
+        try {
+            const response = await fetch(`/api/agendamentos/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao atualizar agendamento');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.atualizarAgendamento:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Atualizar apenas status do agendamento
+     * @param {Number} id - ID do agendamento
+     * @param {String} status - Novo status
+     */
+    mudarStatusAgendamento: async (id, status) => {
+        try {
+            const response = await fetch(`/api/agendamentos/${id}/status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ status })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao mudar status do agendamento');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.mudarStatusAgendamento:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Cancelar/excluir agendamento (soft delete)
+     * @param {Number} id - ID do agendamento
+     */
+    excluirAgendamento: async (id) => {
+        try {
+            const response = await fetch(`/api/agendamentos/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao excluir agendamento');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.excluirAgendamento:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Buscar horários livres para um profissional
+     * @param {Number} profissionalId - ID do profissional
+     * @param {String} data - Data no formato YYYY-MM-DD
+     */
+    getHorariosLivres: async (profissionalId, data) => {
+        try {
+            const params = new URLSearchParams({
+                profissional_id: profissionalId,
+                data: data
+            });
+            
+            const response = await fetch(`/api/agendamentos/disponibilidade/horarios?${params}`);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar horários livres');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getHorariosLivres:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Verificar disponibilidade específica
+     * @param {Number} profissionalId - ID do profissional
+     * @param {String} dataHora - Data e hora no formato ISO
+     * @param {Number} duracao - Duração em minutos
+     */
+    verificarDisponibilidade: async (profissionalId, dataHora, duracao) => {
+        try {
+            const params = new URLSearchParams({
+                profissional_id: profissionalId,
+                data_hora: dataHora,
+                duracao: duracao
+            });
+            
+            const response = await fetch(`/api/agendamentos/disponibilidade/verificar?${params}`);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao verificar disponibilidade');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.verificarDisponibilidade:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Buscar serviços de um agendamento
+     * @param {Number} agendamentoId - ID do agendamento
+     */
+    getServicosAgendamento: async (agendamentoId) => {
+        try {
+            const response = await fetch(`/api/agendamentos/${agendamentoId}/servicos`);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar serviços do agendamento');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getServicosAgendamento:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Buscar estatísticas do dia
+     */
+    getEstatisticasHoje: async () => {
+        try {
+            const response = await fetch('/api/agendamentos/estatisticas/hoje');
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar estatísticas');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getEstatisticasHoje:', error);
+            throw error;
+        }
+    },
+    
+    // ========== BLOQUEIOS ==========
+    /**
+     * Listar bloqueios
+     * @param {Object} filtros - { profissional_id, data_inicio, data_fim }
+     */
+    getBloqueios: async (filtros = {}) => {
+        try {
+            const params = new URLSearchParams();
+            
+            Object.keys(filtros).forEach(key => {
+                if (filtros[key] !== null && filtros[key] !== undefined) {
+                    params.append(key, filtros[key]);
+                }
+            });
+            
+            const url = `/api/bloqueios${params.toString() ? `?${params.toString()}` : ''}`;
+            const response = await fetch(url);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar bloqueios');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getBloqueios:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Criar novo bloqueio
+     * @param {Object} dados - Dados do bloqueio
+     */
+    criarBloqueio: async (dados) => {
+        try {
+            const response = await fetch('/api/bloqueios', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao criar bloqueio');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.criarBloqueio:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Remover bloqueio
+     * @param {Number} id - ID do bloqueio
+     */
+    excluirBloqueio: async (id) => {
+        try {
+            const response = await fetch(`/api/bloqueios/${id}`, {
+                method: 'DELETE'
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao excluir bloqueio');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.excluirBloqueio:', error);
+            throw error;
+        }
+    },
+    
+    // ========== MÉTODOS AUXILIARES ==========
+    /**
+     * Buscar profissionais que realizam um serviço específico
+     * @param {Number} servicoId - ID do serviço
+     */
+    getProfissionaisPorServico: async (servicoId) => {
+        try {
+            const response = await fetch(`/api/servicos/${servicoId}/profissionais`);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar profissionais do serviço');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getProfissionaisPorServico:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Buscar serviços de um profissional
+     * @param {Number} profissionalId - ID do profissional
+     */
+    getServicosPorProfissional: async (profissionalId) => {
+        try {
+            const response = await fetch(`/api/profissionais/${profissionalId}/servicos`);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar serviços do profissional');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getServicosPorProfissional:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Buscar horários de trabalho de um profissional
+     * @param {Number} profissionalId - ID do profissional
+     */
+    getHorariosTrabalho: async (profissionalId) => {
+        try {
+            const response = await fetch(`/api/profissionais/${profissionalId}/horarios-trabalho`);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar horários de trabalho');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getHorariosTrabalho:', error);
+            throw error;
+        }
+    },
+    
+    /**
+     * Buscar estatísticas de um profissional
+     * @param {Number} profissionalId - ID do profissional
+     */
+    getEstatisticasProfissional: async (profissionalId) => {
+        try {
+            const response = await fetch(`/api/profissionais/${profissionalId}/estatisticas`);
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.message || 'Erro ao buscar estatísticas do profissional');
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Erro no ApiService.getEstatisticasProfissional:', error);
+            throw error;
+        }
+    }
+};
