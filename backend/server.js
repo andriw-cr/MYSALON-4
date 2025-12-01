@@ -168,13 +168,17 @@ app.put('/api/clientes/:id', (req, res) => {
 
 // ========== ROTAS DE AGENDA ==========
 
-// Importar rotas da agenda CORRETAMENTE
+// ========== ROTAS DE AGENDA ==========
 const agendamentosRouter = require('./routes/agendamentos.js');
 const bloqueiosRouter = require('./routes/bloqueios.js');
+const profissionaisRouter = require('./routes/profissionais.js');
+const servicosRouter = require('./routes/servicos.js');
 
-// Registrar rotas
 app.use('/api/agendamentos', agendamentosRouter);
 app.use('/api/bloqueios', bloqueiosRouter);
+app.use('/api/profissionais', profissionaisRouter);
+app.use('/api/servicos', servicosRouter);
+
 
 // Redirecionar para páginas HTML
 app.get('/*', (req, res, next) => {
