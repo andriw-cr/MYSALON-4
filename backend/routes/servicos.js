@@ -1,11 +1,10 @@
+// routes/services.js - VERSÃO INTEGRADA
 import express from 'express';
-import sqlite3 from 'sqlite3';
-import { DB_PATH } from '../database-config.js';
+import db from '../database/db.js';
 
 const router = express.Router();
-const db = new sqlite3.Database(DB_PATH);
 
-// GET - Listar todos os serviços
+// GET - Listar todos os serviços (com filtros)
 router.get('/', (req, res) => {
   const { categoria, status } = req.query;
   
@@ -26,12 +25,14 @@ router.get('/', (req, res) => {
   
   db.all(sql, params, (err, rows) => {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao buscar serviços:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       data: rows,
@@ -48,19 +49,21 @@ router.get('/:id', (req, res) => {
   
   db.get(sql, [id], (err, row) => {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao buscar serviço:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (!row) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Serviço não encontrado' 
+        message: 'Serviço não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       data: row 
@@ -83,21 +86,21 @@ router.post('/', (req, res) => {
   if (!nome || !preco_base || !duracao_minutos) {
     return res.status(400).json({ 
       success: false,
-      error: 'Nome, preço base e duração são obrigatórios' 
+      message: 'Nome, preço base e duração são obrigatórios' 
     });
   }
 
   if (preco_base <= 0) {
     return res.status(400).json({ 
       success: false,
-      error: 'Preço base deve ser maior que zero' 
+      message: 'Preço base deve ser maior que zero' 
     });
   }
 
   if (duracao_minutos <= 0) {
     return res.status(400).json({ 
       success: false,
-      error: 'Duração deve ser maior que zero' 
+      message: 'Duração deve ser maior que zero' 
     });
   }
 
@@ -116,13 +119,15 @@ router.post('/', (req, res) => {
     status
   ], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao criar serviço:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
-    res.json({
+    
+    res.status(201).json({
       success: true,
       message: 'Serviço criado com sucesso',
       data: {
@@ -166,19 +171,21 @@ router.put('/:id', (req, res) => {
     id
   ], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao atualizar serviço:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Serviço não encontrado' 
+        message: 'Serviço não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: 'Serviço atualizado com sucesso' 
@@ -194,19 +201,21 @@ router.delete('/:id', (req, res) => {
   
   db.run(sql, [id], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao inativar serviço:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Serviço não encontrado' 
+        message: 'Serviço não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: 'Serviço inativado com sucesso' 
@@ -222,9 +231,14 @@ router.get('/categoria/:categoria', (req, res) => {
   
   db.all(sql, [categoria], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar serviços por categoria:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: rows 
@@ -251,9 +265,14 @@ router.get('/estatisticas/populares', (req, res) => {
   
   db.all(sql, [], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar estatísticas:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: rows 
@@ -272,9 +291,14 @@ router.get('/categorias/list', (req, res) => {
   
   db.all(sql, [], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar categorias:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     const categorias = rows.map(row => row.categoria);
     res.json({ 
       success: true,

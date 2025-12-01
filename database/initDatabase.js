@@ -1,5 +1,5 @@
 // database/initDatabase.js
-const db = require('./db');
+import db from './db.js';
 
 function initDatabase() {
     console.log('🔄 Inicializando banco de dados...');
@@ -72,19 +72,19 @@ function initDatabase() {
 
     // Executar todas as queries de criação de tabelas
     const tables = [
-        createUsersTable,
-        createClientsTable,
-        createProfessionalsTable,
-        createServicesTable,
-        createAppointmentsTable
+        { sql: createUsersTable, name: 'users' },
+        { sql: createClientsTable, name: 'clients' },
+        { sql: createProfessionalsTable, name: 'professionals' },
+        { sql: createServicesTable, name: 'services' },
+        { sql: createAppointmentsTable, name: 'appointments' }
     ];
 
-    tables.forEach((sql, index) => {
-        db.run(sql, (err) => {
+    tables.forEach((table) => {
+        db.run(table.sql, (err) => {
             if (err) {
-                console.error(`❌ Erro ao criar tabela ${index + 1}:`, err.message);
+                console.error(`❌ Erro ao criar tabela ${table.name}:`, err.message);
             } else {
-                console.log(`✅ Tabela ${index + 1} criada/verificada com sucesso`);
+                console.log(`✅ Tabela ${table.name} criada/verificada com sucesso`);
             }
         });
     });
@@ -92,4 +92,4 @@ function initDatabase() {
     console.log('🎉 Inicialização do banco de dados concluída!');
 }
 
-module.exports = initDatabase;
+export default initDatabase;
