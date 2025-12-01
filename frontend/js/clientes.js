@@ -1,3 +1,22 @@
+function verificarApiService() {
+    const funcoesNecessarias = ['getClientes', 'criarCliente', 'getCliente', 'atualizarCliente', 'excluirCliente'];
+    const funcoesDisponiveis = [];
+    const funcoesFaltantes = [];
+    
+    funcoesNecessarias.forEach(funcao => {
+        if (typeof window.ApiService !== 'undefined' && typeof window.ApiService[funcao] === 'function') {
+            funcoesDisponiveis.push(funcao);
+        } else {
+            funcoesFaltantes.push(funcao);
+        }
+    });
+    
+    console.log('🔍 Status do ApiService:');
+    console.log('✅ Funções disponíveis:', funcoesDisponiveis);
+    console.log('❌ Funções faltantes:', funcoesFaltantes);
+    
+    return funcoesFaltantes.length === 0;
+}
 // Sistema de Gestão de Clientes - VERSÃO COMPLETA E CORRIGIDA
 class ClientesSystem {
     constructor() {
@@ -9,34 +28,42 @@ class ClientesSystem {
 
     async init() {
         try {
-            // VERIFICAÇÃO EXTRA - Debug do ApiService
+            // VERIFICAÇÃO CORRIGIDA - Sempre usar window.ApiService
             console.log('🔍 Debug ApiService:', {
-                ApiService: typeof ApiService,
-                getClientes: typeof ApiService?.getClientes,
-                criarCliente: typeof ApiService?.criarCliente
+                ApiService: typeof window.ApiService,
+                getClientes: typeof window.ApiService?.getClientes,
+                criarCliente: typeof window.ApiService?.criarCliente
             });
 
-            // Verificar se ApiService está disponível
-            if (typeof ApiService === 'undefined') {
+            // Verificar se ApiService está disponível como OBJETO
+            if (typeof window.ApiService === 'undefined' || window.ApiService === null) {
                 this.logError('ClientesSystem', 'ApiService não está disponível');
-                console.error('❌ ApiService não está disponível');
+                console.error('❌ ApiService não está disponível como objeto');
+                
+                // Tentar usar api global como fallback
+                if (typeof window.api !== 'undefined') {
+                    console.log('🔄 Usando window.api como fallback');
+                    window.ApiService = window.api;
+                } else {
+                    setTimeout(() => this.init(), 100);
+                    return;
+                }
+            }
+
+            // Verificar se as funções essenciais existem - SEMPRE USAR window.ApiService
+            if (typeof window.ApiService.getClientes !== 'function' || 
+                typeof window.ApiService.criarCliente !== 'function') {
+                
+                this.logError('ClientesSystem', 'Funções do ApiService não estão disponíveis');
+                console.error('❌ Funções do ApiService não estão disponíveis:', {
+                    getClientes: typeof window.ApiService.getClientes,
+                    criarCliente: typeof window.ApiService.criarCliente
+                });
+                
                 setTimeout(() => this.init(), 100);
                 return;
             }
 
-            // Verificar se as funções essenciais existem
-            if (typeof ApiService.getClientes !== 'function' || typeof ApiService.criarCliente !== 'function') {
-                this.logError('ClientesSystem', 'Funções do ApiService não estão disponíveis');
-                console.error('❌ Funções do ApiService não estão disponíveis');
-                
-                // Tentar recarregar após um tempo
-                setTimeout(() => this.init(), 500);
-                return;
-            }
-
-            // Aguardar um pouco para garantir que todas as funções estejam carregadas
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
             // Verificar funções de forma mais tolerante
             if (!this.verificarFuncoesApiTolerante()) {
                 this.logWarning('ClientesSystem', 'Algumas funções da API não estão disponíveis, usando modo de compatibilidade');
@@ -58,8 +85,9 @@ class ClientesSystem {
         const funcoesEssenciais = ['getClientes', 'criarCliente'];
         const funcoesOpcionais = ['getCliente', 'atualizarCliente', 'excluirCliente'];
         
+        // SEMPRE USAR window.ApiService
         const essenciaisFaltantes = funcoesEssenciais.filter(funcao => 
-            typeof ApiService[funcao] !== 'function'
+            typeof window.ApiService[funcao] !== 'function'
         );
 
         if (essenciaisFaltantes.length > 0) {
@@ -69,7 +97,7 @@ class ClientesSystem {
         }
 
         const opcionaisFaltantes = funcoesOpcionais.filter(funcao => 
-            typeof ApiService[funcao] !== 'function'
+            typeof window.ApiService[funcao] !== 'function'
         );
 
         if (opcionaisFaltantes.length > 0) {
@@ -90,12 +118,12 @@ class ClientesSystem {
         funcoesFaltantes.forEach(funcao => {
             switch(funcao) {
                 case 'getCliente':
-                    if (typeof ApiService.getCliente === 'undefined') {
-                        ApiService.getCliente = async function(id) {
+                    if (typeof window.ApiService.getCliente === 'undefined') {
+                        window.ApiService.getCliente = async function(id) {
                             self.logInfo('ApiService-Fallback', `Buscando cliente ID: ${id} (modo fallback)`);
                             console.log(`🔍 [Fallback] Buscando cliente ID: ${id}`);
                             try {
-                                const clientesResponse = await ApiService.getClientes();
+                                const clientesResponse = await window.ApiService.getClientes();
                                 if (clientesResponse && clientesResponse.success) {
                                     const cliente = clientesResponse.data.find(c => c.id == id);
                                     if (cliente) {
@@ -142,8 +170,8 @@ class ClientesSystem {
                     break;
                     
                 case 'atualizarCliente':
-                    if (typeof ApiService.atualizarCliente === 'undefined') {
-                        ApiService.atualizarCliente = async function(id, clienteData) {
+                    if (typeof window.ApiService.atualizarCliente === 'undefined') {
+                        window.ApiService.atualizarCliente = async function(id, clienteData) {
                             self.logInfo('ApiService-Fallback', `Atualizando cliente ID: ${id} (modo fallback)`, clienteData);
                             console.log(`✏️ [Fallback] Atualizando cliente ID: ${id}`, clienteData);
                             // Simular atualização local
@@ -169,8 +197,8 @@ class ClientesSystem {
                     break;
                     
                 case 'excluirCliente':
-                    if (typeof ApiService.excluirCliente === 'undefined') {
-                        ApiService.excluirCliente = async function(id) {
+                    if (typeof window.ApiService.excluirCliente === 'undefined') {
+                        window.ApiService.excluirCliente = async function(id) {
                             self.logInfo('ApiService-Fallback', `Excluindo cliente ID: ${id} (modo fallback)`);
                             console.log(`🗑️ [Fallback] Excluindo cliente ID: ${id}`);
                             // Simular exclusão local
@@ -321,7 +349,7 @@ class ClientesSystem {
             this.logInfo('ClientesSystem', 'Iniciando carregamento de clientes');
             console.log('🔄 Carregando clientes da API...');
             
-            const response = await ApiService.getClientes();
+            const response = await window.ApiService.getClientes();
             
             if (response && response.success) {
                 this.clientes = response.data || [];
@@ -668,10 +696,10 @@ class ClientesSystem {
 
             if (clienteId) {
                 // Editar cliente existente
-                response = await ApiService.atualizarCliente(clienteId, clienteData);
+                response = await window.ApiService.atualizarCliente(clienteId, clienteData);
             } else {
                 // Criar novo cliente
-                response = await ApiService.criarCliente(clienteData);
+                response = await window.ApiService.criarCliente(clienteData);
             }
 
             // Restaurar botão
@@ -709,7 +737,7 @@ class ClientesSystem {
             this.logInfo('ClientesSystem', `Iniciando edição do cliente ID: ${id}`);
             console.log('✏️ Editando cliente:', id);
             
-            const response = await ApiService.getCliente(id);
+            const response = await window.ApiService.getCliente(id);
             if (response && response.success) {
                 this.logSuccess('ClientesSystem', `Cliente ${id} carregado para edição`);
                 this.abrirModalCliente(response.data);
@@ -742,7 +770,7 @@ class ClientesSystem {
             this.logInfo('ClientesSystem', `Iniciando exclusão do cliente ID: ${id}`);
             console.log('🗑️ Excluindo cliente:', id);
 
-            const response = await ApiService.excluirCliente(id);
+            const response = await window.ApiService.excluirCliente(id);
             if (response && response.success) {
                 this.logSuccess('ClientesSystem', `Cliente ${id} excluído com sucesso`);
                 this.mostrarMensagem('Cliente excluído com sucesso!', 'success');

@@ -1,344 +1,197 @@
-// server.js - VERSÃO INTEGRADA
-import express from 'express';
-import cors from 'cors';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-
-// Importar inicialização do banco (precisa ser convertido para ES modules)
-import initDatabase from './database/initDatabase.js';
-
-// Importar rotas existentes (precisarão ser convertidas para ES modules)
-import servicesRoutes from './routes/services.js';
-import clientsRoutes from './routes/clients.js';
-import appointmentsRoutes from './routes/appointments.js';
-import professionalsRoutes from './routes/professionals.js';
-import usersRoutes from './routes/users.js';
-
-// Importar ApiService existente
-import ApiServiceClass from '../frontend/js/api.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// backend/server.js - VERSÃO COMMONJS
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
-// Configuração do CORS para permitir frontend local
-app.use(cors({
-    origin: ['http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3000', 'http://127.0.0.1:3000'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-// Middleware para parsing JSON
+// Middleware
+app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// Servir arquivos estáticos (frontend)
-app.use(express.static(join(__dirname, '../frontend')));
-
-// Inicializar banco de dados
-initDatabase();
-
-// Instância da ApiService
-const apiService = new ApiServiceClass();
-
-// Middleware de logging
+// Logging
 app.use((req, res, next) => {
-    console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+    console.log(`${new Date().toLocaleTimeString()} ${req.method} ${req.url}`);
     next();
 });
 
-// ✅ MANTER TODAS AS ROTAS EXISTENTES DE CLIENTES
-// GET /api/clientes - Listar todos os clientes
-app.get('/api/clientes', async (req, res) => {
-    try {
-        console.log('Buscando todos os clientes...');
-        const result = await apiService.getClientes();
-        
-        if (result.success) {
-            res.json({
-                success: true,
-                data: result.data,
-                count: result.data.length
-            });
-        } else {
-            res.status(500).json({
-                success: false,
-                message: 'Erro ao buscar clientes',
-                error: result.error
-            });
-        }
-    } catch (error) {
-        console.error('Erro ao buscar clientes:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro interno do servidor ao buscar clientes',
-            error: error.message
-        });
-    }
-});
+// Servir frontend
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
+console.log(`📁 Servindo frontend de: ${frontendPath}`);
 
-// GET /api/clientes/:id - Buscar cliente por ID
-app.get('/api/clientes/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        console.log(`Buscando cliente com ID: ${id}`);
-        
-        const result = await apiService.getCliente(parseInt(id));
-        
-        if (result.success) {
-            res.json({
-                success: true,
-                data: result.data
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: result.error || 'Cliente não encontrado'
-            });
-        }
-    } catch (error) {
-        console.error('Erro ao buscar cliente:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro interno do servidor ao buscar cliente',
-            error: error.message
-        });
-    }
-});
+// Conexão com banco
+const db = require('../database/db');
 
-// POST /api/clientes - Criar novo cliente
-app.post('/api/clientes', async (req, res) => {
-    try {
-        const { 
-            nome_completo, 
-            telefone, 
-            email, 
-            data_nascimento, 
-            genero, 
-            status, 
-            observacoes, 
-            pontos_fidelidade 
-        } = req.body;
-        
-        console.log('Criando novo cliente:', { nome_completo, telefone, email });
-        
-        // Validação básica
-        if (!nome_completo || !telefone) {
-            return res.status(400).json({
-                success: false,
-                message: 'Nome completo e telefone são obrigatórios'
-            });
-        }
+// ===== ROTAS DA API =====
 
-        const novoCliente = {
-            nome_completo,
-            telefone,
-            email: email || '',
-            data_nascimento: data_nascimento || '',
-            genero: genero || '',
-            status: status || 'ativo',
-            observacoes: observacoes || '',
-            pontos_fidelidade: pontos_fidelidade || 0
-        };
-
-        const result = await apiService.criarCliente(novoCliente);
-        
-        if (result.success) {
-            res.status(201).json({
-                success: true,
-                message: 'Cliente criado com sucesso',
-                data: result.data
-            });
-        } else {
-            res.status(400).json({
-                success: false,
-                message: result.error || 'Erro ao criar cliente'
-            });
-        }
-    } catch (error) {
-        console.error('Erro ao criar cliente:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro interno do servidor ao criar cliente',
-            error: error.message
-        });
-    }
-});
-
-// PUT /api/clientes/:id - Atualizar cliente
-app.put('/api/clientes/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { 
-            nome_completo, 
-            telefone, 
-            email, 
-            data_nascimento, 
-            genero, 
-            status, 
-            observacoes, 
-            pontos_fidelidade 
-        } = req.body;
-        
-        console.log(`Atualizando cliente ID: ${id}`, req.body);
-        
-        // Validação básica
-        if (!nome_completo || !telefone) {
-            return res.status(400).json({
-                success: false,
-                message: 'Nome completo e telefone são obrigatórios'
-            });
-        }
-
-        const clienteAtualizado = {
-            nome_completo,
-            telefone,
-            email: email || '',
-            data_nascimento: data_nascimento || '',
-            genero: genero || '',
-            status: status || 'ativo',
-            observacoes: observacoes || '',
-            pontos_fidelidade: pontos_fidelidade || 0
-        };
-
-        const result = await apiService.atualizarCliente(parseInt(id), clienteAtualizado);
-        
-        if (result.success) {
-            res.json({
-                success: true,
-                message: 'Cliente atualizado com sucesso',
-                data: result.data
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: result.error || 'Cliente não encontrado para atualização'
-            });
-        }
-    } catch (error) {
-        console.error('Erro ao atualizar cliente:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro interno do servidor ao atualizar cliente',
-            error: error.message
-        });
-    }
-});
-
-// DELETE /api/clientes/:id - Excluir cliente
-app.delete('/api/clientes/:id', async (req, res) => {
-    try {
-        const { id } = req.params;
-        console.log(`Excluindo cliente ID: ${id}`);
-        
-        const result = await apiService.excluirCliente(parseInt(id));
-        
-        if (result.success) {
-            res.json({
-                success: true,
-                message: 'Cliente excluído com sucesso',
-                data: result.data
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: result.error || 'Cliente não encontrado para exclusão'
-            });
-        }
-    } catch (error) {
-        console.error('Erro ao excluir cliente:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro interno do servidor ao excluir cliente',
-            error: error.message
-        });
-    }
-});
-
-// GET /api/clientes/buscar - Busca com filtros
-app.get('/api/clientes/buscar', async (req, res) => {
-    try {
-        const { nome, status } = req.query;
-        console.log(`Buscando clientes com filtros:`, { nome, status });
-        
-        const filtros = {};
-        if (nome) filtros.nome = nome;
-        if (status && status !== 'todos') filtros.status = status;
-
-        const result = await apiService.buscarClientes(filtros);
-        
-        if (result.success) {
-            res.json({
-                success: true,
-                data: result.data,
-                count: result.data.length
-            });
-        } else {
-            res.status(500).json({
-                success: false,
-                message: 'Erro na busca de clientes',
-                error: result.error
-            });
-        }
-    } catch (error) {
-        console.error('Erro ao buscar clientes:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Erro interno do servidor na busca de clientes',
-            error: error.message
-        });
-    }
-});
-
-// ✅ ADICIONAR OUTRAS ROTAS DA API
-app.use('/api/services', servicesRoutes);
-app.use('/api/clients', clientsRoutes);
-app.use('/api/appointments', appointmentsRoutes);
-app.use('/api/professionals', professionalsRoutes);
-app.use('/api/users', usersRoutes);
-
-// Rota de health check
+// Health check
 app.get('/api/health', (req, res) => {
-    res.json({
-        success: true,
-        message: 'API está funcionando',
-        timestamp: new Date().toISOString(),
-        database: 'SQLite'
+    db.get("SELECT 1 as test", (err) => {
+        res.json({
+            status: err ? 'database_error' : 'healthy',
+            timestamp: new Date().toISOString(),
+            database: err ? 'disconnected' : 'connected',
+            message: err ? 'Database error' : 'API funcionando'
+        });
     });
 });
 
-// Rota padrão
-app.get('/', (req, res) => {
-    res.json({ message: 'Bem-vindo ao MySalon API' });
-});
-
-// Middleware para rotas não encontradas
-app.use('*', (req, res) => {
-    res.status(404).json({
-        success: false,
-        message: 'Rota não encontrada'
+// Listar todos os clientes
+app.get('/api/clientes', (req, res) => {
+    const { search, status } = req.query;
+    
+    let sql = 'SELECT * FROM clientes WHERE 1=1';
+    const params = [];
+    
+    if (search) {
+        sql += ' AND (nome_completo LIKE ? OR telefone LIKE ? OR email LIKE ?)';
+        params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+    
+    if (status && status !== 'todos') {
+        sql += ' AND status = ?';
+        params.push(status);
+    }
+    
+    sql += ' ORDER BY nome_completo';
+    
+    db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.error('Erro ao buscar clientes:', err.message);
+            res.status(500).json({ 
+                success: false, 
+                error: err.message 
+            });
+        } else {
+            res.json({ 
+                success: true, 
+                data: rows,
+                total: rows.length 
+            });
+        }
     });
 });
 
-// Middleware de tratamento de erros global
-app.use((error, req, res, next) => {
-    console.error('Erro não tratado:', error);
-    res.status(500).json({
-        success: false,
-        message: 'Erro interno do servidor',
-        error: process.env.NODE_ENV === 'development' ? error.message : 'Erro interno'
+// Buscar cliente por ID
+app.get('/api/clientes/:id', (req, res) => {
+    const { id } = req.params;
+    
+    db.get('SELECT * FROM clientes WHERE id = ?', [id], (err, row) => {
+        if (err) {
+            res.status(500).json({ success: false, error: err.message });
+        } else if (row) {
+            res.json({ success: true, data: row });
+        } else {
+            res.status(404).json({ success: false, error: 'Cliente não encontrado' });
+        }
     });
 });
 
-// Inicialização do servidor
+// Criar novo cliente
+app.post('/api/clientes', (req, res) => {
+    const cliente = req.body;
+    
+    if (!cliente.nome_completo || !cliente.telefone) {
+        return res.status(400).json({ 
+            success: false, 
+            error: 'Nome e telefone são obrigatórios' 
+        });
+    }
+    
+    const sql = `INSERT INTO clientes (
+        nome_completo, telefone, email, data_nascimento, 
+        genero, status, observacoes, pontos_fidelidade, data_cadastro
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`;
+    
+    const params = [
+        cliente.nome_completo,
+        cliente.telefone,
+        cliente.email || '',
+        cliente.data_nascimento || '',
+        cliente.genero || '',
+        cliente.status || 'ativo',
+        cliente.observacoes || '',
+        cliente.pontos_fidelidade || 0
+    ];
+    
+    db.run(sql, params, function(err) {
+        if (err) {
+            console.error('Erro ao criar cliente:', err.message);
+            res.status(500).json({ success: false, error: err.message });
+        } else {
+            res.status(201).json({ 
+                success: true, 
+                message: 'Cliente criado',
+                id: this.lastID 
+            });
+        }
+    });
+});
+
+// Atualizar cliente
+app.put('/api/clientes/:id', (req, res) => {
+    const { id } = req.params;
+    const cliente = req.body;
+    
+    const sql = `UPDATE clientes SET 
+        nome_completo = ?, telefone = ?, email = ?, data_nascimento = ?,
+        genero = ?, status = ?, observacoes = ?, pontos_fidelidade = ?,
+        data_ultima_visita = datetime('now')
+        WHERE id = ?`;
+    
+    const params = [
+        cliente.nome_completo,
+        cliente.telefone,
+        cliente.email || '',
+        cliente.data_nascimento || '',
+        cliente.genero || '',
+        cliente.status || 'ativo',
+        cliente.observacoes || '',
+        cliente.pontos_fidelidade || 0,
+        id
+    ];
+    
+    db.run(sql, params, function(err) {
+        if (err) {
+            res.status(500).json({ success: false, error: err.message });
+        } else if (this.changes === 0) {
+            res.status(404).json({ success: false, error: 'Cliente não encontrado' });
+        } else {
+            res.json({ success: true, message: 'Cliente atualizado' });
+        }
+    });
+});
+
+// Redirecionar para páginas HTML
+app.get('/*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next();
+    
+    const htmlPath = path.join(__dirname, '../frontend/html', req.path === '/' ? 'dashboard.html' : req.path);
+    if (fs.existsSync(htmlPath) && htmlPath.endsWith('.html')) {
+        res.sendFile(htmlPath);
+    } else {
+        // Fallback para dashboard
+        res.sendFile(path.join(__dirname, '../frontend/html/dashboard.html'));
+    }
+});
+
+// Iniciar servidor
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor rodando na porta ${PORT}`);
-    console.log(`📊 API disponível em: http://localhost:${PORT}/api`);
-    console.log(`❤️  Health check: http://localhost:${PORT}/api/health`);
-    console.log(`👥 Clientes: http://localhost:${PORT}/api/clientes`);
-    console.log(`💼 Serviços: http://localhost:${PORT}/api/services`);
-    console.log(`📅 Agendamentos: http://localhost:${PORT}/api/appointments`);
+    console.log(`
+    🚀 MY SALON - SISTEMA INICIADO
+    ==============================
+    📡 Servidor:       http://localhost:${PORT}
+    📊 Dashboard:      http://localhost:${PORT}/html/dashboard.html
+    👥 Clientes:       http://localhost:${PORT}/html/clientes.html
+    📅 Agenda:         http://localhost:${PORT}/html/agenda.html
+    🧪 Health Check:   http://localhost:${PORT}/api/health
+    👤 API Clientes:   http://localhost:${PORT}/api/clientes
+    ==============================
+    `);
+    console.log('📁 Frontend servido de:', frontendPath);
+    console.log('💾 Banco de dados: SQLite (30 tabelas, 7 clientes)');
 });
-
-export default app;

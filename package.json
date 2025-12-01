@@ -2,12 +2,14 @@
   "name": "salao-api",
   "version": "1.0.0",
   "description": "API para gerenciamento de clientes do salão",
-  "type": "module",
+  "type": "commonjs",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "init-db": "node ./database/initDatabase.js"
+    "init-db": "node ./database/initDatabase.js",
+    "test-db": "node test-db.js",
+    "convert-es6": "node convert-to-cjs.js"
   },
   "dependencies": {
     "cors": "^2.8.5",

@@ -1,6 +1,6 @@
-// routes/clients.js - VERSÃO INTEGRADA E CORRIGIDA
-import express from 'express';
-import db from '../database/db.js';
+// routes/clientes.js - VERSÃO COMMONJS (Node.js padrão)
+const express = require('express');
+const db = require('../database/db.js');
 
 const router = express.Router();
 
@@ -320,5 +320,4 @@ router.patch('/:id/pontos', (req, res) => {
     });
   });
 });
-
-export default router;
+module.exports = router;
