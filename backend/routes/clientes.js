@@ -1,11 +1,10 @@
+// routes/clients.js - VERSÃO INTEGRADA E CORRIGIDA
 import express from 'express';
-import sqlite3 from 'sqlite3';
-import { DB_PATH } from '../database-config.js';
+import db from '../database/db.js';
 
 const router = express.Router();
-const db = new sqlite3.Database(DB_PATH);
 
-// GET - Listar todos os clientes
+// GET - Listar todos os clientes (com busca e filtros)
 router.get('/', (req, res) => {
   const { search, status } = req.query;
   
@@ -29,12 +28,14 @@ router.get('/', (req, res) => {
   
   db.all(sql, params, (err, rows) => {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao buscar clientes:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       data: rows,
@@ -51,19 +52,21 @@ router.get('/:id', (req, res) => {
   
   db.get(sql, [id], (err, row) => {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao buscar cliente:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (!row) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Cliente não encontrado' 
+        message: 'Cliente não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       data: row 
@@ -87,7 +90,7 @@ router.post('/', (req, res) => {
   if (!nome_completo) {
     return res.status(400).json({ 
       success: false,
-      error: 'Nome completo é obrigatório' 
+      message: 'Nome completo é obrigatório' 
     });
   }
 
@@ -107,13 +110,15 @@ router.post('/', (req, res) => {
     observacoes
   ], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao criar cliente:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
-    res.json({
+    
+    res.status(201).json({
       success: true,
       message: 'Cliente criado com sucesso',
       data: {
@@ -160,19 +165,21 @@ router.put('/:id', (req, res) => {
     id
   ], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao atualizar cliente:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Cliente não encontrado' 
+        message: 'Cliente não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: 'Cliente atualizado com sucesso' 
@@ -188,19 +195,21 @@ router.delete('/:id', (req, res) => {
   
   db.run(sql, [id], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao inativar cliente:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Cliente não encontrado' 
+        message: 'Cliente não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: 'Cliente inativado com sucesso' 
@@ -226,9 +235,14 @@ router.get('/:id/agendamentos', (req, res) => {
   
   db.all(sql, [id], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar agendamentos do cliente:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: rows 
@@ -252,9 +266,14 @@ router.get('/:id/estatisticas', (req, res) => {
   
   db.get(sql, [id], (err, row) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar estatísticas do cliente:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: row 
@@ -270,7 +289,7 @@ router.patch('/:id/pontos', (req, res) => {
   if (!pontos || pontos <= 0) {
     return res.status(400).json({ 
       success: false,
-      error: 'Pontos devem ser um número positivo' 
+      message: 'Pontos devem ser um número positivo' 
     });
   }
 
@@ -280,19 +299,21 @@ router.patch('/:id/pontos', (req, res) => {
   
   db.run(sql, [pontos, id], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao atualizar pontos do cliente:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Cliente não encontrado' 
+        message: 'Cliente não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: `Pontos ${operacao === 'adicionar' ? 'adicionados' : 'removidos'} com sucesso` 
