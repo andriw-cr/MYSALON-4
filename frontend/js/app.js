@@ -1541,3 +1541,339 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('🎉 Sistema BeautySys inicializado com sucesso!');
 });
+
+// frontend/js/app.js
+/**
+ * SCRIPT PRINCIPAL DA PÁGINA DE AGENDA
+ * Integração dos modais existentes com o sistema
+ */
+
+// Aguardar o DOM estar pronto
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('📱 Página de agenda carregada');
+    
+    // Verificar se o sistema de agenda foi carregado
+    if (typeof window.agendaSystem === 'undefined') {
+        console.warn('⚠️ AgendaSystem não carregado, inicializando funcionalidades básicas...');
+        initBasicAgendaFunctionality();
+    }
+    
+    // Configurar sidebar toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function() {
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebar) {
+                sidebar.classList.toggle('hidden');
+            }
+        });
+    }
+    
+    // Configurar funcionalidades específicas da agenda
+    setupAgendaSpecificFeatures();
+});
+
+/**
+ * Inicializar funcionalidades básicas se o sistema não carregar
+ */
+function initBasicAgendaFunctionality() {
+    console.log('🔄 Inicializando funcionalidades básicas da agenda...');
+    
+    // Configurar modais básicos
+    setupBasicModals();
+    
+    // Configurar navegação básica
+    setupBasicNavigation();
+    
+    // Configurar interações básicas
+    setupBasicInteractions();
+}
+
+/**
+ * Configurar funcionalidades específicas da agenda
+ */
+function setupAgendaSpecificFeatures() {
+    // Atualizar linha do horário atual
+    updateCurrentTimeLine();
+    
+    // Configurar eventos de arrastar para agendamentos
+    setupDragAndDrop();
+    
+    // Atualizar estatísticas em tempo real
+    updateRealTimeStats();
+}
+
+/**
+ * Atualizar linha do horário atual na grade
+ */
+function updateCurrentTimeLine() {
+    const currentTimeSlot = document.getElementById('current-time-slot');
+    if (!currentTimeSlot) return;
+    
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    // Calcular posição baseado no horário (8:00 - 18:00)
+    const startHour = 8;
+    const totalMinutes = (currentHour - startHour) * 60 + currentMinute;
+    const position = (totalMinutes / (10 * 60)) * 100; // 10 horas de trabalho
+    
+    if (position >= 0 && position <= 100) {
+        currentTimeSlot.style.top = `${position}%`;
+        currentTimeSlot.style.display = 'block';
+        
+        // Atualizar a cada minuto
+        setInterval(updateCurrentTimeLine, 60000);
+    }
+}
+
+/**
+ * Configurar arrastar e soltar para agendamentos
+ */
+function setupDragAndDrop() {
+    const appointmentBlocks = document.querySelectorAll('.appointment-block');
+    
+    appointmentBlocks.forEach(block => {
+        block.setAttribute('draggable', 'true');
+        
+        block.addEventListener('dragstart', function(e) {
+            e.dataTransfer.setData('text/plain', this.id || 'appointment');
+            this.classList.add('dragging');
+        });
+        
+        block.addEventListener('dragend', function() {
+            this.classList.remove('dragging');
+        });
+    });
+    
+    const scheduleSlots = document.querySelectorAll('.schedule-slot');
+    
+    scheduleSlots.forEach(slot => {
+        slot.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('drop-target');
+        });
+        
+        slot.addEventListener('dragleave', function() {
+            this.classList.remove('drop-target');
+        });
+        
+        slot.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('drop-target');
+            
+            const appointmentId = e.dataTransfer.getData('text/plain');
+            console.log(`Movendo agendamento ${appointmentId} para este slot`);
+            
+            // Aqui você implementaria a lógica para atualizar o horário no backend
+            // agendaSystem.updateAppointmentTime(appointmentId, newTime);
+        });
+    });
+}
+
+/**
+ * Atualizar estatísticas em tempo real
+ */
+function updateRealTimeStats() {
+    // Atualizar a cada 30 segundos
+    setInterval(async () => {
+        try {
+            if (window.ApiService && window.ApiService.getEstatisticasHoje) {
+                const stats = await window.ApiService.getEstatisticasHoje();
+                if (stats && window.agendaSystem) {
+                    window.agendaSystem.updateStatistics(stats);
+                }
+            }
+        } catch (error) {
+            console.warn('⚠️ Não foi possível atualizar estatísticas:', error);
+        }
+    }, 30000);
+}
+
+/**
+ * Configurar modais básicos
+ */
+function setupBasicModals() {
+    // Fechar modais ao clicar fora
+    document.querySelectorAll('.modal').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.add('hidden');
+            }
+        });
+    });
+    
+    // Fechar modais com ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.add('hidden');
+            });
+        }
+    });
+}
+
+/**
+ * Configurar navegação básica
+ */
+function setupBasicNavigation() {
+    const prevDate = document.getElementById('prevDate');
+    const nextDate = document.getElementById('nextDate');
+    const currentDateEl = document.getElementById('currentDate');
+    
+    if (prevDate && nextDate && currentDateEl) {
+        let currentDate = new Date();
+        
+        function updateDateDisplay() {
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            };
+            currentDateEl.textContent = currentDate.toLocaleDateString('pt-BR', options);
+        }
+        
+        prevDate.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() - 1);
+            updateDateDisplay();
+        });
+        
+        nextDate.addEventListener('click', () => {
+            currentDate.setDate(currentDate.getDate() + 1);
+            updateDateDisplay();
+        });
+        
+        updateDateDisplay();
+    }
+}
+
+/**
+ * Configurar interações básicas
+ */
+function setupBasicInteractions() {
+    // Botões de ação nos agendamentos
+    document.querySelectorAll('.action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const action = this.textContent.trim().toLowerCase();
+            console.log(`Ação: ${action} clicada`);
+            
+            // Simular ações básicas
+            switch(true) {
+                case this.classList.contains('confirm-btn'):
+                    this.closest('.appointment-block').classList.add('confirmed');
+                    showNotification('Agendamento confirmado!', 'success');
+                    break;
+                    
+                case this.classList.contains('cancel-appointment'):
+                    if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
+                        this.closest('.appointment-block').classList.add('cancelled');
+                        showNotification('Agendamento cancelado!', 'warning');
+                    }
+                    break;
+                    
+                case this.classList.contains('whatsapp-btn'):
+                    showNotification('Abrindo WhatsApp...', 'info');
+                    break;
+            }
+        });
+    });
+}
+
+/**
+ * Mostrar notificação
+ */
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+        <span>${message}</span>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}
+
+// Adicionar estilos para notificações
+const style = document.createElement('style');
+style.textContent = `
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    border-radius: 8px;
+    color: white;
+    font-weight: 500;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideIn 0.3s ease-out;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 300px;
+}
+
+.notification-success {
+    background-color: #10B981;
+}
+
+.notification-error {
+    background-color: #EF4444;
+}
+
+.notification-warning {
+    background-color: #F59E0B;
+}
+
+.notification-info {
+    background-color: #3B82F6;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+.drop-target {
+    background-color: #F3F4F6;
+    border: 2px dashed #8B5CF6;
+}
+
+.current-time-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: #EF4444;
+    z-index: 10;
+}
+
+.current-time-line::before {
+    content: '';
+    position: absolute;
+    left: -8px;
+    top: -6px;
+    width: 14px;
+    height: 14px;
+    background-color: #EF4444;
+    border-radius: 50%;
+}
+`;
+document.head.appendChild(style);
