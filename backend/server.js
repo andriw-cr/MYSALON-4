@@ -179,11 +179,11 @@ app.get('/*', (req, res, next) => {
     }
 });
 
-// Adicionar estas linhas:
-import agendamentosRouter from './routes/agendamentos.js';
-import bloqueiosRouter from './routes/bloqueios.js';
+// SUBSTITUA POR:
+const agendamentosRouter = require('./routes/agendamentos.js');
+const bloqueiosRouter = require('./routes/bloqueios.js');
 
-// Registar as rotas:
+// ESTA PARTE PODE FICAR (mas use const):
 app.use('/api/agendamentos', agendamentosRouter);
 app.use('/api/bloqueios', bloqueiosRouter);
 
