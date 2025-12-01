@@ -1,9 +1,8 @@
+// routes/professionals.js - VERSÃO INTEGRADA E CORRIGIDA
 import express from 'express';
-import sqlite3 from 'sqlite3';
-import { DB_PATH } from '../database-config.js';
+import db from '../database/db.js';
 
 const router = express.Router();
-const db = new sqlite3.Database(DB_PATH);
 
 // GET - Listar todos os profissionais
 router.get('/', (req, res) => {
@@ -26,12 +25,14 @@ router.get('/', (req, res) => {
   
   db.all(sql, params, (err, rows) => {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao buscar profissionais:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       data: rows,
@@ -48,19 +49,21 @@ router.get('/:id', (req, res) => {
   
   db.get(sql, [id], (err, row) => {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao buscar profissional:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (!row) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Profissional não encontrado' 
+        message: 'Profissional não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       data: row 
@@ -84,14 +87,14 @@ router.post('/', (req, res) => {
   if (!nome_completo) {
     return res.status(400).json({ 
       success: false,
-      error: 'Nome completo é obrigatório' 
+      message: 'Nome completo é obrigatório' 
     });
   }
 
   if (comissao_padrao < 0 || comissao_padrao > 100) {
     return res.status(400).json({ 
       success: false,
-      error: 'Comissão deve estar entre 0 e 100' 
+      message: 'Comissão deve estar entre 0 e 100' 
     });
   }
 
@@ -111,13 +114,15 @@ router.post('/', (req, res) => {
     observacoes
   ], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao criar profissional:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
-    res.json({
+    
+    res.status(201).json({
       success: true,
       message: 'Profissional criado com sucesso',
       data: {
@@ -162,19 +167,21 @@ router.put('/:id', (req, res) => {
     id
   ], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao atualizar profissional:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Profissional não encontrado' 
+        message: 'Profissional não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: 'Profissional atualizado com sucesso' 
@@ -190,19 +197,21 @@ router.delete('/:id', (req, res) => {
   
   db.run(sql, [id], function(err) {
     if (err) {
-      res.status(400).json({ 
+      console.error('Erro ao inativar profissional:', err.message);
+      return res.status(500).json({ 
         success: false,
+        message: 'Erro interno do servidor',
         error: err.message 
       });
-      return;
     }
+    
     if (this.changes === 0) {
-      res.status(404).json({ 
+      return res.status(404).json({ 
         success: false,
-        error: 'Profissional não encontrado' 
+        message: 'Profissional não encontrado' 
       });
-      return;
     }
+    
     res.json({ 
       success: true,
       message: 'Profissional inativado com sucesso' 
@@ -243,9 +252,14 @@ router.get('/:id/agendamentos', (req, res) => {
   
   db.all(sql, params, (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar agendamentos do profissional:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: rows 
@@ -280,9 +294,14 @@ router.get('/:id/estatisticas', (req, res) => {
   
   db.get(sql, params, (err, row) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar estatísticas do profissional:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     res.json({ 
       success: true,
       data: row 
@@ -298,7 +317,7 @@ router.get('/:id/horarios-disponiveis', (req, res) => {
   if (!data) {
     return res.status(400).json({ 
       success: false,
-      error: 'Data é obrigatória' 
+      message: 'Data é obrigatória' 
     });
   }
 
@@ -316,8 +335,12 @@ router.get('/:id/horarios-disponiveis', (req, res) => {
   
   db.all(sql, [id, data], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar horários do profissional:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
 
     // Gerar horários disponíveis (simplificado)
@@ -349,9 +372,14 @@ router.get('/especialidades/list', (req, res) => {
   
   db.all(sql, [], (err, rows) => {
     if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+      console.error('Erro ao buscar especialidades:', err.message);
+      return res.status(500).json({ 
+        success: false,
+        message: 'Erro interno do servidor',
+        error: err.message 
+      });
     }
+    
     const especialidades = rows.map(row => row.especialidade);
     res.json({ 
       success: true,
