@@ -1,7 +1,20 @@
+// server.js - VERSÃO INTEGRADA
 import express from 'express';
 import cors from 'cors';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+
+// Importar inicialização do banco (precisa ser convertido para ES modules)
+import initDatabase from './database/initDatabase.js';
+
+// Importar rotas existentes (precisarão ser convertidas para ES modules)
+import servicesRoutes from './routes/services.js';
+import clientsRoutes from './routes/clients.js';
+import appointmentsRoutes from './routes/appointments.js';
+import professionalsRoutes from './routes/professionals.js';
+import usersRoutes from './routes/users.js';
+
+// Importar ApiService existente
 import ApiServiceClass from '../frontend/js/api.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -20,6 +33,12 @@ app.use(cors({
 // Middleware para parsing JSON
 app.use(express.json());
 
+// Servir arquivos estáticos (frontend)
+app.use(express.static(join(__dirname, '../frontend')));
+
+// Inicializar banco de dados
+initDatabase();
+
 // Instância da ApiService
 const apiService = new ApiServiceClass();
 
@@ -29,8 +48,7 @@ app.use((req, res, next) => {
     next();
 });
 
-// Endpoints da API Clientes
-
+// ✅ MANTER TODAS AS ROTAS EXISTENTES DE CLIENTES
 // GET /api/clientes - Listar todos os clientes
 app.get('/api/clientes', async (req, res) => {
     try {
@@ -273,6 +291,13 @@ app.get('/api/clientes/buscar', async (req, res) => {
     }
 });
 
+// ✅ ADICIONAR OUTRAS ROTAS DA API
+app.use('/api/services', servicesRoutes);
+app.use('/api/clients', clientsRoutes);
+app.use('/api/appointments', appointmentsRoutes);
+app.use('/api/professionals', professionalsRoutes);
+app.use('/api/users', usersRoutes);
+
 // Rota de health check
 app.get('/api/health', (req, res) => {
     res.json({
@@ -281,6 +306,11 @@ app.get('/api/health', (req, res) => {
         timestamp: new Date().toISOString(),
         database: 'SQLite'
     });
+});
+
+// Rota padrão
+app.get('/', (req, res) => {
+    res.json({ message: 'Bem-vindo ao MySalon API' });
 });
 
 // Middleware para rotas não encontradas
@@ -307,6 +337,8 @@ app.listen(PORT, () => {
     console.log(`📊 API disponível em: http://localhost:${PORT}/api`);
     console.log(`❤️  Health check: http://localhost:${PORT}/api/health`);
     console.log(`👥 Clientes: http://localhost:${PORT}/api/clientes`);
+    console.log(`💼 Serviços: http://localhost:${PORT}/api/services`);
+    console.log(`📅 Agendamentos: http://localhost:${PORT}/api/appointments`);
 });
 
 export default app;
