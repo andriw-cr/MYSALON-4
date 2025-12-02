@@ -1,132 +1,87 @@
-// backend/routes/bloqueios.js - CRIAR NOVO ARQUIVO
-import express from 'express';
-import db from '../database/db.js';
-
+const express = require('express');
 const router = express.Router();
 
-// GET - Listar bloqueios
+// Listar bloqueios
 router.get('/', (req, res) => {
-  const { profissional_id, data, tipo_bloqueio } = req.query;
-  
-  let sql = 'SELECT * FROM bloqueios_horario WHERE 1=1';
-  const params = [];
-  
-  if (profissional_id) {
-    sql += ' AND profissional_id = ?';
-    params.push(profissional_id);
-  }
-  
-  if (data) {
-    sql += ' AND data_bloqueio = ?';
-    params.push(data);
-  }
-  
-  if (tipo_bloqueio) {
-    sql += ' AND tipo_bloqueio = ?';
-    params.push(tipo_bloqueio);
-  }
-  
-  sql += ' ORDER BY data_bloqueio, hora_inicio';
-  
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      console.error('Erro ao buscar bloqueios:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
+    const { profissional_id, data_inicio, data_fim } = req.query;
+    
+    let sql = 'SELECT * FROM bloqueios_horario WHERE 1=1';
+    const params = [];
+    
+    if (profissional_id) {
+        sql += ' AND profissional_id = ?';
+        params.push(profissional_id);
     }
     
-    res.json({ 
-      success: true,
-      data: rows 
+    if (data_inicio) {
+        sql += ' AND data_inicio >= ?';
+        params.push(data_inicio);
+    }
+    
+    if (data_fim) {
+        sql += ' AND data_fim <= ?';
+        params.push(data_fim);
+    }
+    
+    sql += ' ORDER BY data_inicio ASC';
+    
+    req.db.all(sql, params, (err, rows) => {
+        if (err) {
+            console.error('Erro ao buscar bloqueios:', err.message);
+            res.status(500).json({ error: err.message });
+        } else {
+            res.json(rows);
+        }
     });
-  });
 });
 
-// POST - Criar bloqueio
+// Criar novo bloqueio
 router.post('/', (req, res) => {
-  const {
-    profissional_id,
-    data_bloqueio,
-    hora_inicio,
-    hora_fim,
-    motivo,
-    tipo_bloqueio = 'manual',
-    recorrente = false,
-    dia_semana = null
-  } = req.body;
-  
-  if (!profissional_id || !data_bloqueio || !hora_inicio || !hora_fim) {
-    return res.status(400).json({ 
-      success: false,
-      message: 'Profissional, data e horários são obrigatórios' 
-    });
-  }
-  
-  const sql = `
-    INSERT INTO bloqueios_horario 
-    (profissional_id, data_bloqueio, hora_inicio, hora_fim, motivo, 
-     tipo_bloqueio, recorrente, dia_semana, data_criacao)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-  `;
-  
-  db.run(sql, [
-    profissional_id,
-    data_bloqueio,
-    hora_inicio,
-    hora_fim,
-    motivo,
-    tipo_bloqueio,
-    recorrente ? 1 : 0,
-    dia_semana
-  ], function(err) {
-    if (err) {
-      console.error('Erro ao criar bloqueio:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
+    const { profissional_id, data_inicio, data_fim, motivo } = req.body;
+    
+    if (!data_inicio || !data_fim) {
+        return res.status(400).json({ error: 'Data início e data fim são obrigatórias' });
     }
     
-    res.status(201).json({
-      success: true,
-      message: 'Bloqueio criado com sucesso',
-      data: { id: this.lastID }
+    const sql = `
+        INSERT INTO bloqueios_horario 
+        (profissional_id, data_inicio, data_fim, motivo, data_criacao)
+        VALUES (?, ?, ?, ?, datetime('now'))
+    `;
+    
+    const params = [
+        profissional_id || null, // Pode ser null para bloquear todos
+        data_inicio,
+        data_fim,
+        motivo || 'Horário bloqueado'
+    ];
+    
+    req.db.run(sql, params, function(err) {
+        if (err) {
+            console.error('Erro ao criar bloqueio:', err.message);
+            res.status(500).json({ error: err.message });
+        } else {
+            res.status(201).json({ 
+                id: this.lastID,
+                message: 'Bloqueio criado com sucesso'
+            });
+        }
     });
-  });
 });
 
-// DELETE - Remover bloqueio
+// Remover bloqueio
 router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  
-  const sql = 'DELETE FROM bloqueios_horario WHERE id = ?';
-  
-  db.run(sql, [id], function(err) {
-    if (err) {
-      console.error('Erro ao remover bloqueio:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
+    const { id } = req.params;
     
-    if (this.changes === 0) {
-      return res.status(404).json({ 
-        success: false,
-        message: 'Bloqueio não encontrado' 
-      });
-    }
-    
-    res.json({ 
-      success: true,
-      message: 'Bloqueio removido com sucesso' 
+    req.db.run('DELETE FROM bloqueios_horario WHERE id = ?', [id], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else if (this.changes === 0) {
+            res.status(404).json({ error: 'Bloqueio não encontrado' });
+        } else {
+            res.json({ message: 'Bloqueio removido com sucesso' });
+        }
     });
-  });
 });
 
-export default router;
+module.exports = router;

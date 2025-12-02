@@ -1,682 +1,244 @@
-// backend/routes/agendamentos.js - VERSÃO COMPLETA ATUALIZADA
-import express from 'express';
-import db from '../database/db.js';
-
+const express = require('express');
 const router = express.Router();
 
-// GET - Listar todos os agendamentos com filtros
+// Listar todos os agendamentos
 router.get('/', (req, res) => {
-  const { data, status, cliente_id, profissional_id } = req.query;
-  
-  let sql = `
-    SELECT 
-      a.*, 
-      c.nome_completo as cliente_nome, 
-      c.telefone as cliente_telefone,
-      c.email as cliente_email,
-      s.nome as servico_nome, 
-      s.duracao_minutos,
-      s.preco_base,
-      p.nome_completo as profissional_nome,
-      p.especialidade as profissional_especialidade
-    FROM agendamentos a
-    LEFT JOIN clientes c ON a.cliente_id = c.id
-    LEFT JOIN servicos s ON a.servico_id = s.id
-    LEFT JOIN profissionais p ON a.profissional_id = p.id
-    WHERE 1=1
-  `;
-  
-  const params = [];
-  
-  if (data) {
-    sql += ' AND date(a.data_agendamento) = ?';
-    params.push(data);
-  }
-  
-  if (status) {
-    sql += ' AND a.status = ?';
-    params.push(status);
-  }
-  
-  if (cliente_id) {
-    sql += ' AND a.cliente_id = ?';
-    params.push(cliente_id);
-  }
-  
-  if (profissional_id) {
-    sql += ' AND a.profissional_id = ?';
-    params.push(profissional_id);
-  }
-  
-  sql += ' ORDER BY a.data_agendamento DESC';
-  
-  db.all(sql, params, (err, rows) => {
-    if (err) {
-      console.error('Erro ao buscar agendamentos:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
+    const { data, profissional_id, status, cliente_id } = req.query;
     
-    res.json({ 
-      success: true,
-      data: rows,
-      total: rows.length
-    });
-  });
-});
-
-// GET - Agendamentos por data específica
-router.get('/data/:data', (req, res) => {
-  const { data } = req.params;
-  const sql = `
-    SELECT 
-      a.*, 
-      c.nome_completo as cliente_nome, 
-      c.telefone as cliente_telefone,
-      c.email as cliente_email,
-      s.nome as servico_nome, 
-      s.duracao_minutos,
-      s.preco_base,
-      p.nome_completo as profissional_nome,
-      p.especialidade as profissional_especialidade,
-      p.telefone as profissional_telefone
-    FROM agendamentos a
-    LEFT JOIN clientes c ON a.cliente_id = c.id
-    LEFT JOIN servicos s ON a.servico_id = s.id
-    LEFT JOIN profissionais p ON a.profissional_id = p.id
-    WHERE date(a.data_agendamento) = ?
-    ORDER BY a.data_agendamento
-  `;
-  
-  db.all(sql, [data], (err, rows) => {
-    if (err) {
-      console.error('Erro ao buscar agendamentos por data:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    res.json({ 
-      success: true,
-      data: rows 
-    });
-  });
-});
-
-// GET - Agendamentos por período
-router.get('/periodo/:inicio/:fim', (req, res) => {
-  const { inicio, fim } = req.params;
-  const sql = `
-    SELECT 
-      a.*, 
-      c.nome_completo as cliente_nome, 
-      c.telefone as cliente_telefone,
-      s.nome as servico_nome, 
-      s.duracao_minutos,
-      p.nome_completo as profissional_nome
-    FROM agendamentos a
-    LEFT JOIN clientes c ON a.cliente_id = c.id
-    LEFT JOIN servicos s ON a.servico_id = s.id
-    LEFT JOIN profissionais p ON a.profissional_id = p.id
-    WHERE date(a.data_agendamento) BETWEEN ? AND ?
-    ORDER BY a.data_agendamento
-  `;
-  
-  db.all(sql, [inicio, fim], (err, rows) => {
-    if (err) {
-      console.error('Erro ao buscar agendamentos por período:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    res.json({ 
-      success: true,
-      data: rows 
-    });
-  });
-});
-
-// GET - Agendamento por ID
-router.get('/:id', (req, res) => {
-  const { id } = req.params;
-  const sql = `
-    SELECT 
-      a.*, 
-      c.nome_completo as cliente_nome, 
-      c.telefone as cliente_telefone,
-      c.email as cliente_email,
-      c.data_nascimento as cliente_nascimento,
-      s.nome as servico_nome, 
-      s.descricao as servico_descricao,
-      s.duracao_minutos,
-      s.preco_base as valor_servico_base,
-      s.categoria as servico_categoria,
-      p.nome_completo as profissional_nome,
-      p.telefone as profissional_telefone,
-      p.email as profissional_email,
-      p.especialidade as profissional_especialidade
-    FROM agendamentos a
-    LEFT JOIN clientes c ON a.cliente_id = c.id
-    LEFT JOIN servicos s ON a.servico_id = s.id
-    LEFT JOIN profissionais p ON a.profissional_id = p.id
-    WHERE a.id = ?
-  `;
-  
-  db.get(sql, [id], (err, row) => {
-    if (err) {
-      console.error('Erro ao buscar agendamento:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    if (!row) {
-      return res.status(404).json({ 
-        success: false,
-        message: 'Agendamento não encontrado' 
-      });
-    }
-    
-    res.json({ 
-      success: true,
-      data: row 
-    });
-  });
-});
-
-// GET - Serviços do agendamento (tabela agendamento_servicos)
-router.get('/:id/servicos', (req, res) => {
-  const { id } = req.params;
-  const sql = `
-    SELECT 
-      asr.*,
-      s.nome as servico_nome,
-      s.descricao as servico_descricao,
-      s.preco_base,
-      s.duracao_minutos,
-      p.nome_completo as profissional_nome
-    FROM agendamento_servicos asr
-    LEFT JOIN servicos s ON asr.servico_id = s.id
-    LEFT JOIN profissionais p ON asr.profissional_id = p.id
-    WHERE asr.agendamento_id = ?
-    ORDER BY asr.id
-  `;
-  
-  db.all(sql, [id], (err, rows) => {
-    if (err) {
-      console.error('Erro ao buscar serviços do agendamento:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    res.json({ 
-      success: true,
-      data: rows 
-    });
-  });
-});
-
-// POST - Criar novo agendamento (completo)
-router.post('/', (req, res) => {
-  const {
-    cliente_id,
-    profissional_id,
-    data_agendamento,
-    duracao_estimada,
-    status = 'agendado',
-    valor_servico,
-    desconto_aplicado = 0,
-    valor_final,
-    pontos_utilizados = 0,
-    observacoes = '',
-    recorrente = false,
-    agendamento_pai_id = null,
-    notificado_whatsapp = false,
-    gorjeta = 0,
-    metodo_pagamento,
-    pago = false,
-    entrada_paga = 0,
-    permite_desconto = true,
-    permite_pontos_fidelidade = true
-  } = req.body;
-
-  // Validações
-  if (!cliente_id || !profissional_id || !data_agendamento) {
-    return res.status(400).json({ 
-      success: false,
-      message: 'Cliente, profissional e data são obrigatórios' 
-    });
-  }
-
-  // Calcular valor final se não fornecido
-  const valorFinal = valor_final || (valor_servico - desconto_aplicado);
-  
-  const sql = `
-    INSERT INTO agendamentos 
-    (cliente_id, profissional_id, data_agendamento, duracao_estimada, status,
-     valor_servico, desconto_aplicado, valor_final, pontos_utilizados, observacoes,
-     recorrente, agendamento_pai_id, notificado_whatsapp, gorjeta, metodo_pagamento,
-     pago, entrada_paga, permite_desconto, permite_pontos_fidelidade, data_criacao)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-  `;
-  
-  db.run(sql, [
-    cliente_id,
-    profissional_id,
-    data_agendamento,
-    duracao_estimada,
-    status,
-    valor_servico,
-    desconto_aplicado,
-    valorFinal,
-    pontos_utilizados,
-    observacoes,
-    recorrente ? 1 : 0,
-    agendamento_pai_id,
-    notificado_whatsapp ? 1 : 0,
-    gorjeta,
-    metodo_pagamento,
-    pago ? 1 : 0,
-    entrada_paga,
-    permite_desconto ? 1 : 0,
-    permite_pontos_fidelidade ? 1 : 0
-  ], function(err) {
-    if (err) {
-      console.error('Erro ao criar agendamento:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    const agendamentoId = this.lastID;
-    
-    // Se houver serviços específicos no body
-    if (req.body.servicos && Array.isArray(req.body.servicos)) {
-      const servicosPromises = req.body.servicos.map(servico => {
-        return new Promise((resolve, reject) => {
-          const sqlServico = `
-            INSERT INTO agendamento_servicos 
-            (agendamento_id, servico_id, profissional_id, preco, duracao_minutos, observacoes)
-            VALUES (?, ?, ?, ?, ?, ?)
-          `;
-          
-          db.run(sqlServico, [
-            agendamentoId,
-            servico.servico_id,
-            servico.profissional_id || profissional_id,
-            servico.preco,
-            servico.duracao_minutos,
-            servico.observacoes || ''
-          ], function(err) {
-            if (err) reject(err);
-            else resolve();
-          });
-        });
-      });
-      
-      Promise.all(servicosPromises)
-        .then(() => {
-          res.status(201).json({
-            success: true,
-            message: 'Agendamento criado com sucesso',
-            data: { id: agendamentoId }
-          });
-        })
-        .catch(error => {
-          console.error('Erro ao adicionar serviços:', error);
-          res.status(500).json({
-            success: false,
-            message: 'Agendamento criado, mas erro ao adicionar serviços',
-            error: error.message
-          });
-        });
-    } else {
-      res.status(201).json({
-        success: true,
-        message: 'Agendamento criado com sucesso',
-        data: { id: agendamentoId }
-      });
-    }
-  });
-});
-
-// PUT - Atualizar agendamento
-router.put('/:id', (req, res) => {
-  const { id } = req.params;
-  const { 
-    cliente_id,
-    profissional_id,
-    data_agendamento,
-    duracao_estimada,
-    status,
-    valor_servico,
-    desconto_aplicado,
-    valor_final,
-    pontos_utilizados,
-    observacoes,
-    recorrente,
-    agendamento_pai_id,
-    notificado_whatsapp,
-    data_notificacao,
-    gorjeta,
-    metodo_pagamento,
-    pago,
-    entrada_paga
-  } = req.body;
-  
-  const sql = `
-    UPDATE agendamentos 
-    SET cliente_id = ?, profissional_id = ?, data_agendamento = ?, 
-        duracao_estimada = ?, status = ?, valor_servico = ?, 
-        desconto_aplicado = ?, valor_final = ?, pontos_utilizados = ?, 
-        observacoes = ?, recorrente = ?, agendamento_pai_id = ?, 
-        notificado_whatsapp = ?, data_notificacao = ?, gorjeta = ?, 
-        metodo_pagamento = ?, pago = ?, entrada_paga = ?,
-        data_criacao = COALESCE(data_criacao, CURRENT_TIMESTAMP)
-    WHERE id = ?
-  `;
-  
-  db.run(sql, [
-    cliente_id,
-    profissional_id,
-    data_agendamento,
-    duracao_estimada,
-    status,
-    valor_servico,
-    desconto_aplicado,
-    valor_final,
-    pontos_utilizados,
-    observacoes,
-    recorrente ? 1 : 0,
-    agendamento_pai_id,
-    notificado_whatsapp ? 1 : 0,
-    data_notificacao,
-    gorjeta,
-    metodo_pagamento,
-    pago ? 1 : 0,
-    entrada_paga,
-    id
-  ], function(err) {
-    if (err) {
-      console.error('Erro ao atualizar agendamento:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    if (this.changes === 0) {
-      return res.status(404).json({ 
-        success: false,
-        message: 'Agendamento não encontrado' 
-      });
-    }
-    
-    res.json({ 
-      success: true,
-      message: 'Agendamento atualizado com sucesso' 
-    });
-  });
-});
-
-// PATCH - Atualizar status do agendamento
-router.patch('/:id/status', (req, res) => {
-  const { id } = req.params;
-  const { status } = req.body;
-  
-  if (!status) {
-    return res.status(400).json({ 
-      success: false,
-      message: 'Status é obrigatório' 
-    });
-  }
-
-  const sql = 'UPDATE agendamentos SET status = ? WHERE id = ?';
-  
-  db.run(sql, [status, id], function(err) {
-    if (err) {
-      console.error('Erro ao atualizar status do agendamento:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    if (this.changes === 0) {
-      return res.status(404).json({ 
-        success: false,
-        message: 'Agendamento não encontrado' 
-      });
-    }
-    
-    res.json({ 
-      success: true,
-      message: `Status do agendamento atualizado para: ${status}` 
-    });
-  });
-});
-
-// DELETE - Cancelar agendamento (soft delete)
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  
-  const sql = 'UPDATE agendamentos SET status = "cancelado" WHERE id = ?';
-  
-  db.run(sql, [id], function(err) {
-    if (err) {
-      console.error('Erro ao cancelar agendamento:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    if (this.changes === 0) {
-      return res.status(404).json({ 
-        success: false,
-        message: 'Agendamento não encontrado' 
-      });
-    }
-    
-    res.json({ 
-      success: true,
-      message: 'Agendamento cancelado com sucesso' 
-    });
-  });
-});
-
-// GET - Estatísticas de agendamentos do dia
-router.get('/estatisticas/hoje', (req, res) => {
-  const hoje = new Date().toISOString().split('T')[0];
-  
-  const sql = `
-    SELECT 
-      status,
-      COUNT(*) as total,
-      COALESCE(SUM(valor_final), 0) as faturamento
-    FROM agendamentos 
-    WHERE date(data_agendamento) = ?
-    GROUP BY status
-  `;
-  
-  db.all(sql, [hoje], (err, rows) => {
-    if (err) {
-      console.error('Erro ao buscar estatísticas de agendamentos:', err.message);
-      return res.status(500).json({ 
-        success: false,
-        message: 'Erro interno do servidor',
-        error: err.message 
-      });
-    }
-    
-    const estatisticas = {
-      total: 0,
-      agendado: { quantidade: 0, faturamento: 0 },
-      confirmado: { quantidade: 0, faturamento: 0 },
-      em_andamento: { quantidade: 0, faturamento: 0 },
-      concluido: { quantidade: 0, faturamento: 0 },
-      cancelado: { quantidade: 0, faturamento: 0 },
-      faturamento_total: 0
-    };
-    
-    rows.forEach(row => {
-      estatisticas[row.status] = { 
-        quantidade: row.total, 
-        faturamento: row.faturamento 
-      };
-      estatisticas.total += row.total;
-      estatisticas.faturamento_total += row.faturamento;
-    });
-    
-    res.json({ 
-      success: true,
-      data: estatisticas 
-    });
-  });
-});
-
-// GET - Disponibilidade de horários
-router.get('/disponibilidade/horarios', (req, res) => {
-  const { profissional_id, data, servico_id } = req.query;
-  
-  if (!profissional_id || !data) {
-    return res.status(400).json({ 
-      success: false,
-      message: 'Profissional e data são obrigatórios' 
-    });
-  }
-
-  // Buscar duração do serviço
-  let duracaoServico = 60; // default 60 minutos
-  if (servico_id) {
-    const sqlServico = 'SELECT duracao_minutos FROM servicos WHERE id = ?';
-    db.get(sqlServico, [servico_id], (err, servico) => {
-      if (!err && servico) {
-        duracaoServico = servico.duracao_minutos;
-      }
-      continuarConsulta();
-    });
-  } else {
-    continuarConsulta();
-  }
-
-  function continuarConsulta() {
-    // Buscar agendamentos do profissional na data
-    const sqlAgendamentos = `
-      SELECT 
-        data_agendamento,
-        strftime('%H:%M', data_agendamento) as hora_inicio,
-        s.duracao_minutos
-      FROM agendamentos a
-      LEFT JOIN servicos s ON a.servico_id = s.id
-      WHERE a.profissional_id = ? 
-        AND date(a.data_agendamento) = ? 
-        AND a.status NOT IN ('cancelado', 'nao_compareceu')
-      ORDER BY data_agendamento
+    let sql = `
+        SELECT 
+            a.*,
+            c.nome_completo as cliente_nome,
+            c.telefone as cliente_telefone,
+            p.nome as profissional_nome,
+            (SELECT COUNT(*) FROM agendamento_servicos WHERE agendamento_id = a.id) as servicos_count
+        FROM agendamentos a
+        LEFT JOIN clientes c ON a.cliente_id = c.id
+        LEFT JOIN profissionais p ON a.profissional_id = p.id
+        WHERE 1=1
     `;
     
-    // Buscar bloqueios de horário
-    const sqlBloqueios = `
-      SELECT hora_inicio, hora_fim, motivo, tipo_bloqueio
-      FROM bloqueios_horario
-      WHERE profissional_id = ? AND data_bloqueio = ?
-    `;
+    const params = [];
     
-    db.all(sqlAgendamentos, [profissional_id, data], (err, agendamentos) => {
-      if (err) {
-        console.error('Erro ao buscar agendamentos:', err.message);
-        return res.status(500).json({ 
-          success: false,
-          message: 'Erro interno do servidor',
-          error: err.message 
-        });
-      }
-      
-      db.all(sqlBloqueios, [profissional_id, data], (err, bloqueios) => {
+    if (data) {
+        sql += ' AND DATE(a.data_hora) = ?';
+        params.push(data);
+    }
+    
+    if (profissional_id) {
+        sql += ' AND a.profissional_id = ?';
+        params.push(profissional_id);
+    }
+    
+    if (status) {
+        sql += ' AND a.status = ?';
+        params.push(status);
+    }
+    
+    if (cliente_id) {
+        sql += ' AND a.cliente_id = ?';
+        params.push(cliente_id);
+    }
+    
+    sql += ' ORDER BY a.data_hora ASC';
+    
+    req.db.all(sql, params, (err, rows) => {
         if (err) {
-          console.error('Erro ao buscar bloqueios:', err.message);
-          return res.status(500).json({ 
-            success: false,
-            message: 'Erro interno do servidor',
-            error: err.message 
-          });
+            console.error('Erro ao buscar agendamentos:', err.message);
+            res.status(500).json({ error: err.message });
+        } else {
+            res.json(rows);
         }
-        
-        // Gerar horários disponíveis (08:00 às 18:00, intervalos de 30 min)
-        const horariosDisponiveis = [];
-        const horaInicio = 8; // 08:00
-        const horaFim = 18;   // 18:00
-        
-        for (let hora = horaInicio; hora < horaFim; hora++) {
-          for (let minuto = 0; minuto < 60; minuto += 30) {
-            const horarioStr = `${hora.toString().padStart(2, '0')}:${minuto.toString().padStart(2, '0')}`;
-            
-            // Verificar se horário está livre
-            const conflitoAgendamento = agendamentos.some(ag => {
-              const horaAg = ag.hora_inicio;
-              const duracaoAg = ag.duracao_minutos || 60;
-              const [hAg, mAg] = horaAg.split(':').map(Number);
-              const fimAg = hAg * 60 + mAg + duracaoAg;
-              const inicioNovo = hora * 60 + minuto;
-              const fimNovo = inicioNovo + duracaoServico;
-              
-              // Verificar sobreposição
-              return (inicioNovo < fimAg && fimNovo > hAg * 60 + mAg);
-            });
-            
-            const conflitoBloqueio = bloqueios.some(blq => {
-              const [hIni, mIni] = blq.hora_inicio.split(':').map(Number);
-              const [hFim, mFim] = blq.hora_fim.split(':').map(Number);
-              const inicioNovo = hora * 60 + minuto;
-              const fimNovo = inicioNovo + duracaoServico;
-              const inicioBloqueio = hIni * 60 + mIni;
-              const fimBloqueio = hFim * 60 + mFim;
-              
-              return (inicioNovo < fimBloqueio && fimNovo > inicioBloqueio);
-            });
-            
-            if (!conflitoAgendamento && !conflitoBloqueio) {
-              horariosDisponiveis.push({
-                horario: horarioStr,
-                disponivel: true,
-                duracao_minutos: duracaoServico
-              });
-            }
-          }
-        }
-        
-        res.json({ 
-          success: true,
-          data: {
-            profissional_id,
-            data,
-            horarios_disponiveis: horariosDisponiveis,
-            total_disponivel: horariosDisponiveis.length,
-            agendamentos: agendamentos.length,
-            bloqueios: bloqueios.length
-          }
-        });
-      });
     });
-  }
 });
 
-export default router;
+// Buscar agendamento por ID
+router.get('/:id', (req, res) => {
+    const { id } = req.params;
+    
+    const sql = `
+        SELECT 
+            a.*,
+            c.nome_completo as cliente_nome,
+            c.telefone as cliente_telefone,
+            p.nome as profissional_nome
+        FROM agendamentos a
+        LEFT JOIN clientes c ON a.cliente_id = c.id
+        LEFT JOIN profissionais p ON a.profissional_id = p.id
+        WHERE a.id = ?
+    `;
+    
+    req.db.get(sql, [id], (err, row) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else if (!row) {
+            res.status(404).json({ error: 'Agendamento não encontrado' });
+        } else {
+            res.json(row);
+        }
+    });
+});
+
+// Buscar serviços de um agendamento
+router.get('/:id/servicos', (req, res) => {
+    const { id } = req.params;
+    
+    const sql = `
+        SELECT s.* 
+        FROM servicos s
+        INNER JOIN agendamento_servicos as_rel ON s.id = as_rel.servico_id
+        WHERE as_rel.agendamento_id = ?
+    `;
+    
+    req.db.all(sql, [id], (err, rows) => {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else {
+            res.json(rows);
+        }
+    });
+});
+
+// Criar novo agendamento
+router.post('/', (req, res) => {
+    const { cliente_id, profissional_id, data_hora, observacoes, valor, status, servicos } = req.body;
+    
+    const sql = `
+        INSERT INTO agendamentos 
+        (cliente_id, profissional_id, data_hora, observacoes, valor, status, data_criacao)
+        VALUES (?, ?, ?, ?, ?, ?, datetime('now'))
+    `;
+    
+    const params = [
+        cliente_id,
+        profissional_id,
+        data_hora,
+        observacoes || '',
+        valor || 0,
+        status || 'agendado'
+    ];
+    
+    req.db.run(sql, params, function(err) {
+        if (err) {
+            console.error('Erro ao criar agendamento:', err.message);
+            res.status(500).json({ error: err.message });
+        } else {
+            const agendamentoId = this.lastID;
+            
+            // Vincular serviços se fornecidos
+            if (servicos && Array.isArray(servicos)) {
+                servicos.forEach(servicoId => {
+                    req.db.run(
+                        'INSERT INTO agendamento_servicos (agendamento_id, servico_id) VALUES (?, ?)',
+                        [agendamentoId, servicoId],
+                        (err) => {
+                            if (err) {
+                                console.error('Erro ao vincular serviço:', err.message);
+                            }
+                        }
+                    );
+                });
+            }
+            
+            res.status(201).json({ 
+                id: agendamentoId,
+                message: 'Agendamento criado com sucesso'
+            });
+        }
+    });
+});
+
+// Atualizar status do agendamento
+router.patch('/:id/status', (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+    
+    if (!status) {
+        return res.status(400).json({ error: 'Status é obrigatório' });
+    }
+    
+    const sql = 'UPDATE agendamentos SET status = ? WHERE id = ?';
+    
+    req.db.run(sql, [status, id], function(err) {
+        if (err) {
+            res.status(500).json({ error: err.message });
+        } else if (this.changes === 0) {
+            res.status(404).json({ error: 'Agendamento não encontrado' });
+        } else {
+            res.json({ message: 'Status atualizado com sucesso' });
+        }
+    });
+});
+
+// Buscar estatísticas do dia
+router.get('/estatisticas/hoje', (req, res) => {
+    const hoje = new Date().toISOString().split('T')[0];
+    
+    const sql = `
+        SELECT 
+            COUNT(*) as total_hoje,
+            SUM(CASE WHEN status = 'agendado' THEN 1 ELSE 0 END) as agendados,
+            SUM(CASE WHEN status = 'confirmado' THEN 1 ELSE 0 END) as confirmados,
+            SUM(CASE WHEN status = 'em_andamento' THEN 1 ELSE 0 END) as em_andamento,
+            SUM(CASE WHEN status = 'concluido' THEN 1 ELSE 0 END) as concluidos,
+            SUM(CASE WHEN status = 'cancelado' THEN 1 ELSE 0 END) as cancelados
+        FROM agendamentos 
+        WHERE DATE(data_hora) = ?
+    `;
+    
+    req.db.get(sql, [hoje], (err, row) => {
+        if (err) {
+            console.error('Erro ao buscar estatísticas:', err.message);
+            res.status(500).json({ error: err.message });
+        } else {
+            res.json(row);
+        }
+    });
+});
+
+// Buscar horários disponíveis
+router.get('/disponibilidade/horarios', (req, res) => {
+    const { profissional_id, data } = req.query;
+    
+    if (!profissional_id || !data) {
+        return res.status(400).json({ error: 'Profissional e data são obrigatórios' });
+    }
+    
+    // Horários de trabalho padrão (8:00 às 18:00)
+    const horariosTrabalho = [
+        '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
+        '11:00', '11:30', '13:00', '13:30', '14:00', '14:30',
+        '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
+    ];
+    
+    // Buscar agendamentos existentes
+    const sql = `
+        SELECT TIME(data_hora) as hora
+        FROM agendamentos 
+        WHERE profissional_id = ? 
+        AND DATE(data_hora) = ?
+        AND status NOT IN ('cancelado', 'concluido')
+    `;
+    
+    req.db.all(sql, [profissional_id, data], (err, rows) => {
+        if (err) {
+            console.error('Erro ao buscar agendamentos:', err.message);
+            res.status(500).json({ error: err.message });
+        } else {
+            const horariosOcupados = rows.map(row => row.hora.substring(0, 5));
+            
+            // Filtrar horários disponíveis
+            const horariosDisponiveis = horariosTrabalho
+                .filter(hora => !horariosOcupados.includes(hora))
+                .map(hora => ({
+                    data_hora: `${data}T${hora}:00`,
+                    hora: hora,
+                    disponivel: true
+                }));
+            
+            res.json(horariosDisponiveis);
+        }
+    });
+});
+
+module.exports = router;
