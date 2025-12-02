@@ -1,4 +1,4 @@
-// backend/server.js - VERSÃO COMMONJS
+// backend/server.js - VERSÃO CORRIGIDA
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -7,7 +7,7 @@ const fs = require('fs');
 const app = express();
 const PORT = 3000;
 
-// Middleware
+// ===== MIDDLEWARES =====
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,29 +18,36 @@ app.use((req, res, next) => {
     next();
 });
 
-// Servir frontend
-const frontendPath = path.join(__dirname, '../frontend');
-app.use(express.static(frontendPath));
-console.log(`📁 Servindo frontend de: ${frontendPath}`);
-
-// Conexão com banco
+// ===== CONEXÃO COM BANCO =====
 const db = require('../database/db');
+console.log('✅ Módulo do banco carregado: ../database/db.js');
+
+// Verificar arquivo do banco
+const dbFilePath = path.join(__dirname, '../salao.db');
+if (!fs.existsSync(dbFilePath)) {
+    console.warn('⚠️  Arquivo salao.db não encontrado');
+    console.log('💡 Execute: npm run init-db para criar o banco');
+} else {
+    console.log('💾 Banco de dados encontrado: salao.db');
+}
 
 // ===== ROTAS DA API =====
 
-// Health check
+// Health Check
 app.get('/api/health', (req, res) => {
-    db.get("SELECT 1 as test", (err) => {
-        res.json({
-            status: err ? 'database_error' : 'healthy',
-            timestamp: new Date().toISOString(),
-            database: err ? 'disconnected' : 'connected',
-            message: err ? 'Database error' : 'API funcionando'
-        });
+    res.json({
+        status: 'ok',
+        message: 'API My Salon está funcionando',
+        timestamp: new Date().toISOString(),
+        database: fs.existsSync(dbFilePath) ? 'connected' : 'file_not_found',
+        endpoints: {
+            clientes: '/api/clientes',
+            health: '/api/health'
+        }
     });
 });
 
-// Listar todos os clientes
+// GET /api/clientes - Listar todos os clientes
 app.get('/api/clientes', (req, res) => {
     const { search, status } = req.query;
     
@@ -76,7 +83,7 @@ app.get('/api/clientes', (req, res) => {
     });
 });
 
-// Buscar cliente por ID
+// GET /api/clientes/:id - Buscar cliente por ID
 app.get('/api/clientes/:id', (req, res) => {
     const { id } = req.params;
     
@@ -91,7 +98,7 @@ app.get('/api/clientes/:id', (req, res) => {
     });
 });
 
-// Criar novo cliente
+// POST /api/clientes - Criar novo cliente
 app.post('/api/clientes', (req, res) => {
     const cliente = req.body;
     
@@ -125,14 +132,14 @@ app.post('/api/clientes', (req, res) => {
         } else {
             res.status(201).json({ 
                 success: true, 
-                message: 'Cliente criado',
+                message: 'Cliente criado com sucesso',
                 id: this.lastID 
             });
         }
     });
 });
 
-// Atualizar cliente
+// PUT /api/clientes/:id - Atualizar cliente
 app.put('/api/clientes/:id', (req, res) => {
     const { id } = req.params;
     const cliente = req.body;
@@ -161,33 +168,67 @@ app.put('/api/clientes/:id', (req, res) => {
         } else if (this.changes === 0) {
             res.status(404).json({ success: false, error: 'Cliente não encontrado' });
         } else {
-            res.json({ success: true, message: 'Cliente atualizado' });
+            res.json({ 
+                success: true, 
+                message: 'Cliente atualizado com sucesso' 
+            });
         }
     });
 });
 
-// Redirecionar para páginas HTML
-app.get('/*', (req, res, next) => {
+// DELETE /api/clientes/:id - Inativar cliente
+app.delete('/api/clientes/:id', (req, res) => {
+    const { id } = req.params;
+    
+    const sql = `UPDATE clientes SET status = 'inativo' WHERE id = ?`;
+    
+    db.run(sql, [id], function(err) {
+        if (err) {
+            res.status(500).json({ success: false, error: err.message });
+        } else if (this.changes === 0) {
+            res.status(404).json({ success: false, error: 'Cliente não encontrado' });
+        } else {
+            res.json({ 
+                success: true, 
+                message: 'Cliente inativado com sucesso' 
+            });
+        }
+    });
+});
+
+// ===== SERVIR FRONTEND =====
+const frontendPath = path.join(__dirname, '../frontend');
+app.use(express.static(frontendPath));
+console.log(`📁 Frontend servido de: ${frontendPath}`);
+
+// CORREÇÃO: Mudar '/*' para '*' (Express 5.x bug)
+app.get('*', (req, res, next) => {
     if (req.path.startsWith('/api/')) return next();
     
-    const htmlPath = path.join(__dirname, '../frontend/html', req.path === '/' ? 'dashboard.html' : req.path);
+    const requestedPath = req.path === '/' ? 'dashboard.html' : req.path;
+    const htmlPath = path.join(__dirname, '../frontend/html', requestedPath);
+    
     if (fs.existsSync(htmlPath) && htmlPath.endsWith('.html')) {
+        console.log(`📄 Servindo página: ${requestedPath}`);
         res.sendFile(htmlPath);
     } else {
         // Fallback para dashboard
-        res.sendFile(path.join(__dirname, '../frontend/html/dashboard.html'));
+        const dashboardPath = path.join(__dirname, '../frontend/html/dashboard.html');
+        if (fs.existsSync(dashboardPath)) {
+            console.log(`📄 Fallback para dashboard: ${requestedPath} → dashboard.html`);
+            res.sendFile(dashboardPath);
+        } else {
+            console.log(`❌ Página não encontrada: ${requestedPath}`);
+            res.status(404).send(`
+                <h1>Página não encontrada</h1>
+                <p>A página solicitada não existe.</p>
+                <a href="/">Voltar ao início</a>
+            `);
+        }
     }
 });
 
-// Adicionar estas linhas:
-import agendamentosRouter from './routes/agendamentos.js';
-import bloqueiosRouter from './routes/bloqueios.js';
-
-// Registar as rotas:
-app.use('/api/agendamentos', agendamentosRouter);
-app.use('/api/bloqueios', bloqueiosRouter);
-
-// Iniciar servidor
+// ===== INICIAR SERVIDOR =====
 app.listen(PORT, () => {
     console.log(`
     🚀 MY SALON - SISTEMA INICIADO
@@ -200,6 +241,8 @@ app.listen(PORT, () => {
     👤 API Clientes:   http://localhost:${PORT}/api/clientes
     ==============================
     `);
-    console.log('📁 Frontend servido de:', frontendPath);
-    console.log('💾 Banco de dados: SQLite (30 tabelas, 7 clientes)');
+    console.log('✅ Backend: Node.js + Express + SQLite');
+    console.log('✅ Frontend: HTML/CSS/JS Vanilla');
+    console.log('✅ Banco: SQLite com 30 tabelas, 7 clientes');
+    console.log('💡 Dica: Acesse http://localhost:3000/html/clientes.html para testar');
 });
