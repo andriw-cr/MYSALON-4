@@ -1,4 +1,4 @@
-// backend/server.js - VERSÃO COMMONJS
+// backend/server.js - VERSÃO CORRIGIDA
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -196,20 +196,6 @@ app.delete('/api/clientes/:id', (req, res) => {
     });
 });
 
-// ========== ROTAS DE AGENDA ==========
-
-// ========== ROTAS DE AGENDA ==========
-const agendamentosRouter = require('./routes/agendamentos.js');
-const bloqueiosRouter = require('./routes/bloqueios.js');
-const profissionaisRouter = require('./routes/profissionais.js');
-const servicosRouter = require('./routes/servicos.js');
-
-app.use('/api/agendamentos', agendamentosRouter);
-app.use('/api/bloqueios', bloqueiosRouter);
-app.use('/api/profissionais', profissionaisRouter);
-app.use('/api/servicos', servicosRouter);
-
-
 // ===== SERVIR FRONTEND =====
 const frontendPath = path.join(__dirname, '../frontend');
 app.use(express.static(frontendPath));
@@ -227,17 +213,20 @@ app.get('*', (req, res, next) => {
         res.sendFile(htmlPath);
     } else {
         // Fallback para dashboard
-        res.sendFile(path.join(__dirname, '../frontend/html/dashboard.html'));
+        const dashboardPath = path.join(__dirname, '../frontend/html/dashboard.html');
+        if (fs.existsSync(dashboardPath)) {
+            console.log(`📄 Fallback para dashboard: ${requestedPath} → dashboard.html`);
+            res.sendFile(dashboardPath);
+        } else {
+            console.log(`❌ Página não encontrada: ${requestedPath}`);
+            res.status(404).send(`
+                <h1>Página não encontrada</h1>
+                <p>A página solicitada não existe.</p>
+                <a href="/">Voltar ao início</a>
+            `);
+        }
     }
 });
-
-// Adicionar estas linhas:
-import agendamentosRouter from './routes/agendamentos.js';
-import bloqueiosRouter from './routes/bloqueios.js';
-
-// Registar as rotas:
-app.use('/api/agendamentos', agendamentosRouter);
-app.use('/api/bloqueios', bloqueiosRouter);
 
 // ===== INICIAR SERVIDOR =====
 app.listen(PORT, () => {
@@ -250,8 +239,6 @@ app.listen(PORT, () => {
     📅 Agenda:         http://localhost:${PORT}/html/agenda.html
     🧪 Health Check:   http://localhost:${PORT}/api/health
     👤 API Clientes:   http://localhost:${PORT}/api/clientes
-    📅 API Agenda:     http://localhost:${PORT}/api/agendamentos
-    🔒 API Bloqueios:  http://localhost:${PORT}/api/bloqueios
     ==============================
     `);
     console.log('✅ Backend: Node.js + Express + SQLite');
