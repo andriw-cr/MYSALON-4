@@ -85,9 +85,15 @@
                             <h3 class="text-lg font-semibold">Gerenciar Clientes</h3>
                             <p class="text-gray-500 text-sm">Cadastre, edite e visualize informações dos clientes</p>
                         </div>
-                        <div class="flex space-x-3">
-                            <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center">
-                                <i class="fas fa-filter mr-2"></i>Filtrar
+                        <div class="flex flex-wrap gap-3">
+                            <button id="btnFiltroAtivos" class="px-4 py-2 bg-purple-100 text-purple-700 rounded-lg flex items-center">
+                                <i class="fas fa-user-check mr-2"></i>Ativos
+                            </button>
+                            <button id="btnFiltroInativos" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center">
+                                <i class="fas fa-user-slash mr-2"></i>Inativos
+                            </button>
+                            <button id="btnFiltroTodos" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center">
+                                <i class="fas fa-users mr-2"></i>Todos
                             </button>
                             <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center">
                                 <i class="fas fa-download mr-2"></i>Exportar
@@ -100,7 +106,7 @@
                 </div>
 
                 <!-- Estatísticas Rápidas -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-6 gap-4 mb-6">
                     <div class="bg-white rounded-lg shadow p-4">
                         <div class="flex justify-between items-center">
                             <div>
@@ -115,11 +121,33 @@
                     <div class="bg-white rounded-lg shadow p-4">
                         <div class="flex justify-between items-center">
                             <div>
+                                <p class="text-gray-500 text-sm">Clientes Ativos</p>
+                                <h3 class="text-xl font-bold mt-1" id="clientesAtivos">0</h3>
+                            </div>
+                            <div class="bg-green-100 p-3 rounded-full">
+                                <i class="fas fa-user-check text-green-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p class="text-gray-500 text-sm">Clientes Inativos</p>
+                                <h3 class="text-xl font-bold mt-1" id="clientesInativos">0</h3>
+                            </div>
+                            <div class="bg-red-100 p-3 rounded-full">
+                                <i class="fas fa-user-slash text-red-600"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <div class="flex justify-between items-center">
+                            <div>
                                 <p class="text-gray-500 text-sm">Novos Este Mês</p>
                                 <h3 class="text-xl font-bold mt-1" id="novosClientes">0</h3>
                             </div>
-                            <div class="bg-green-100 p-3 rounded-full">
-                                <i class="fas fa-user-plus text-green-600"></i>
+                            <div class="bg-blue-100 p-3 rounded-full">
+                                <i class="fas fa-user-plus text-blue-600"></i>
                             </div>
                         </div>
                     </div>
@@ -140,8 +168,8 @@
                                 <p class="text-gray-500 text-sm">Fidelidade Ouro</p>
                                 <h3 class="text-xl font-bold mt-1" id="clientesFidelidade">0</h3>
                             </div>
-                            <div class="bg-blue-100 p-3 rounded-full">
-                                <i class="fas fa-crown text-blue-600"></i>
+                            <div class="bg-pink-100 p-3 rounded-full">
+                                <i class="fas fa-crown text-pink-600"></i>
                             </div>
                         </div>
                     </div>
@@ -149,6 +177,9 @@
 
                 <!-- Tabela de Clientes -->
                 <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-200">
+                        <h3 id="tituloTabelaClientes" class="text-lg font-semibold text-gray-900">Clientes Ativos</h3>
+                    </div>
                     <div class="overflow-x-auto">
                         <table id="tabelaClientes" class="min-w-full client-table">
                             <thead class="bg-gray-50">
@@ -278,184 +309,6 @@
                     </button>
                     <button type="button" class="cancel-btn mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                         Cancelar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal de Visualização de Cliente -->
-    <div id="viewClientModal" class="fixed inset-0 overflow-y-auto modal hidden z-50">
-        <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
-            
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            
-            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="viewModalTitle">
-                                Detalhes do Cliente
-                            </h3>
-                            <div class="mt-4">
-                                <div class="bg-white">
-                                    <!-- Cabeçalho com Foto e Informações Básicas -->
-                                    <div class="flex items-start space-x-6 mb-6">
-                                        <div class="flex-shrink-0">
-                                            <img id="viewClientPhoto" class="h-24 w-24 rounded-full" src="https://ui-avatars.com/api/?name=Maria+Silva&background=8b5cf6&color=fff" alt="">
-                                        </div>
-                                        <div class="flex-1">
-                                            <h4 id="viewClientName" class="text-xl font-bold text-gray-900">Maria Silva</h4>
-                                            <p id="viewClientInfo" class="text-gray-600">Feminino • 32 anos • Aniversário: 15/03/1991</p>
-                                            <div class="mt-2">
-                                                <span id="viewClientStatus" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                    Ativo
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Grid de Informações -->
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <!-- Informações de Contato -->
-                                        <div class="space-y-4">
-                                            <div>
-                                                <h5 class="text-sm font-medium text-gray-500 mb-2">CONTATO</h5>
-                                                <div class="space-y-2">
-                                                    <div class="flex items-center">
-                                                        <i class="fas fa-phone text-gray-400 mr-3"></i>
-                                                        <span id="viewClientPhone" class="text-sm">(11) 98765-4321</span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <i class="fas fa-envelope text-gray-400 mr-3"></i>
-                                                        <span id="viewClientEmail" class="text-sm">maria.silva@email.com</span>
-                                                    </div>
-                                                    <div class="flex items-center">
-                                                        <i class="fas fa-map-marker-alt text-gray-400 mr-3"></i>
-                                                        <span id="viewClientAddress" class="text-sm">Rua das Flores, 123 - São Paulo, SP</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Informações de Fidelidade -->
-                                            <div>
-                                                <h5 class="text-sm font-medium text-gray-500 mb-2">FIDELIDADE</h5>
-                                                <div class="space-y-2">
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Pontos Acumulados:</span>
-                                                        <span id="viewClientPoints" class="text-sm font-medium">1.250 pts</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Nível:</span>
-                                                        <span class="text-sm font-medium text-purple-600">VIP</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Cashback Disponível:</span>
-                                                        <span id="viewClientCashback" class="text-sm font-medium text-green-600">R$ 45,00</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <!-- Estatísticas e Histórico -->
-                                        <div class="space-y-4">
-                                            <div>
-                                                <h5 class="text-sm font-medium text-gray-500 mb-2">ESTATÍSTICAS</h5>
-                                                <div class="space-y-2">
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Total Gasto:</span>
-                                                        <span id="viewClientTotalSpent" class="text-sm font-medium">R$ 1.245,00</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Última Visita:</span>
-                                                        <span id="viewClientLastVisit" class="text-sm font-medium">15/10/2023</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Total de Visitas:</span>
-                                                        <span id="viewClientTotalVisits" class="text-sm font-medium">24</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Ticket Médio:</span>
-                                                        <span id="viewClientAverageTicket" class="text-sm font-medium">R$ 51,88</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <!-- Serviços Preferidos -->
-                                            <div>
-                                                <h5 class="text-sm font-medium text-gray-500 mb-2">SERVIÇOS PREFERIDOS</h5>
-                                                <div class="space-y-1">
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Corte Feminino</span>
-                                                        <span class="text-sm text-gray-500">12x</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Coloração</span>
-                                                        <span class="text-sm text-gray-500">8x</span>
-                                                    </div>
-                                                    <div class="flex justify-between">
-                                                        <span class="text-sm text-gray-600">Hidratação</span>
-                                                        <span class="text-sm text-gray-500">6x</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Observações -->
-                                    <div class="mt-6 pt-6 border-t border-gray-200">
-                                        <h5 class="text-sm font-medium text-gray-500 mb-2">OBSERVAÇÕES</h5>
-                                        <p id="viewClientNotes" class="text-sm text-gray-600">Cliente prefere horários no período da manhã. Tem alergia a produtos com amônia.</p>
-                                    </div>
-
-                                    <!-- Histórico Recente -->
-                                    <div class="mt-6 pt-6 border-t border-gray-200">
-                                        <h5 class="text-sm font-medium text-gray-500 mb-3">HISTÓRICO RECENTE</h5>
-                                        <div class="space-y-3">
-                                            <div class="flex justify-between items-center text-sm">
-                                                <div>
-                                                    <span class="font-medium">Corte e Escova</span>
-                                                    <span class="text-gray-500 ml-2">- Carla Silva</span>
-                                                </div>
-                                                <div class="text-right">
-                                                    <span class="text-gray-900">R$ 60,00</span>
-                                                    <div class="text-gray-500">15/10/2023</div>
-                                                </div>
-                                            </div>
-                                            <div class="flex justify-between items-center text-sm">
-                                                <div>
-                                                    <span class="font-medium">Hidratação</span>
-                                                    <span class="text-gray-500 ml-2">- Carla Silva</span>
-                                                </div>
-                                                <div class="text-right">
-                                                    <span class="text-gray-900">R$ 45,00</span>
-                                                    <div class="text-gray-500">01/10/2023</div>
-                                                </div>
-                                            </div>
-                                            <div class="flex justify-between items-center text-sm">
-                                                <div>
-                                                    <span class="font-medium">Manicure</span>
-                                                    <span class="text-gray-500 ml-2">- Amanda Costa</span>
-                                                </div>
-                                                <div class="text-right">
-                                                    <span class="text-gray-900">R$ 35,00</span>
-                                                    <div class="text-gray-500">25/09/2023</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button type="button" id="editClientFromView" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-purple-600 text-base font-medium text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        <i class="fas fa-edit mr-2"></i>Editar Cliente
-                    </button>
-                    <button type="button" class="close-modal mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-                        Fechar
                     </button>
                 </div>
             </div>
