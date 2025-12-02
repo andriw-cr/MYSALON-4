@@ -7,6 +7,159 @@ const fs = require('fs');
 const app = express();
 const PORT = 3000;
 
+// ==================== ROTAS DE AGENDAMENTOS ====================
+app.get('/api/agendamentos/estatisticas/hoje', (req, res) => {
+    console.log('[API] Recebida requisição para /api/agendamentos/estatisticas/hoje');
+    
+    try {
+        const db = require('../database/db');
+        const hoje = new Date().toISOString().split('T')[0];
+        
+        console.log(`[API] Buscando agendamentos para hoje: ${hoje}`);
+        
+        // CONSULTA 1: Estatísticas gerais do dia
+        const sqlEstatisticas = `
+            SELECT 
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'confirmado' THEN 1 ELSE 0 END) as confirmados,
+                SUM(CASE WHEN status = 'pendente' THEN 1 ELSE 0 END) as pendentes,
+                SUM(CASE WHEN status = 'cancelado' THEN 1 ELSE 0 END) as cancelados,
+                SUM(CASE WHEN status = 'concluido' THEN 1 ELSE 0 END) as concluidos,
+                SUM(CASE WHEN pago = 1 THEN valor_final ELSE 0 END) as receita_confirmada,
+                SUM(valor_final) as receita_estimada_total,
+                SUM(gorjeta) as gorjeta_total
+            FROM agendamentos 
+            WHERE DATE(data_agendamento) = ?
+        `;
+        
+        db.get(sqlEstatisticas, [hoje], (err, estatisticas) => {
+            if (err) {
+                console.error('[API] Erro na consulta de estatísticas:', err);
+                return res.status(500).json({ 
+                    error: 'Erro no banco de dados',
+                    detalhes: err.message 
+                });
+            }
+            
+            // Se não encontrou agendamentos hoje
+            if (!estatisticas.total) {
+                estatisticas = {
+                    total: 0,
+                    confirmados: 0,
+                    pendentes: 0,
+                    cancelados: 0,
+                    concluidos: 0,
+                    receita_confirmada: 0,
+                    receita_estimada_total: 0,
+                    gorjeta_total: 0
+                };
+            }
+            
+            // CONSULTA 2: Agendamentos detalhados do dia
+            const sqlAgendamentos = `
+                SELECT 
+                    a.id,
+                    a.data_agendamento,
+                    a.status,
+                    a.valor_final,
+                    a.valor_servico,
+                    a.desconto_aplicado,
+                    a.gorjeta,
+                    a.pago,
+                    a.observacoes,
+                    c.nome_completo as cliente_nome,
+                    c.telefone as cliente_telefone,
+                    s.nome as servico_nome,
+                    p.nome_completo as profissional_nome,
+                    p.especialidade as profissional_especialidade
+                FROM agendamentos a
+                LEFT JOIN clientes c ON a.cliente_id = c.id
+                LEFT JOIN servicos s ON a.servico_id = s.id
+                LEFT JOIN profissionais p ON a.profissional_id = p.id
+                WHERE DATE(a.data_agendamento) = ?
+                ORDER BY a.data_agendamento ASC
+                LIMIT 20
+            `;
+            
+            db.all(sqlAgendamentos, [hoje], (err2, agendamentosDetalhados) => {
+                if (err2) {
+                    console.error('[API] Erro na consulta de detalhes:', err2);
+                    // Retornar só as estatísticas se der erro nos detalhes
+                    return res.json({
+                        ...estatisticas,
+                        agendamentos: [],
+                        mensagem: 'Estatísticas carregadas, detalhes com erro'
+                    });
+                }
+                
+                // CONSULTA 3: Distribuição por profissional
+                const sqlProfissionais = `
+                    SELECT 
+                        p.nome_completo,
+                        p.especialidade,
+                        COUNT(a.id) as total_agendamentos,
+                        SUM(a.valor_final) as valor_total
+                    FROM agendamentos a
+                    LEFT JOIN profissionais p ON a.profissional_id = p.id
+                    WHERE DATE(a.data_agendamento) = ?
+                    GROUP BY p.id, p.nome_completo
+                    ORDER BY total_agendamentos DESC
+                `;
+                
+                db.all(sqlProfissionais, [hoje], (err3, porProfissional) => {
+                    if (err3) {
+                        console.error('[API] Erro na consulta por profissional:', err3);
+                        porProfissional = [];
+                    }
+                    
+                    // CONSULTA 4: Distribuição por horário
+                    const sqlHorarios = `
+                        SELECT 
+                            strftime('%H:00', a.data_agendamento) as hora,
+                            COUNT(*) as quantidade,
+                            SUM(a.valor_final) as valor_total
+                        FROM agendamentos a
+                        WHERE DATE(a.data_agendamento) = ?
+                        GROUP BY strftime('%H', a.data_agendamento)
+                        ORDER BY hora
+                    `;
+                    
+                    db.all(sqlHorarios, [hoje], (err4, porHorario) => {
+                        if (err4) {
+                            console.error('[API] Erro na consulta por horário:', err4);
+                            porHorario = [];
+                        }
+                        
+                        // Formatar resposta final
+                        const resposta = {
+                            ...estatisticas,
+                            data_consulta: hoje,
+                            agendamentos: agendamentosDetalhados || [],
+                            distribuicao_profissionais: porProfissional || [],
+                            distribuicao_horarios: porHorario || [],
+                            proximos_agendamentos: agendamentosDetalhados
+                                .filter(a => a.status === 'confirmado' || a.status === 'pendente')
+                                .slice(0, 5)
+                        };
+                        
+                        console.log(`[API] Estatísticas encontradas: ${estatisticas.total} agendamentos para hoje`);
+                        console.log(`[API] Receita estimada: R$ ${estatisticas.receita_estimada_total || 0}`);
+                        
+                        res.json(resposta);
+                    });
+                });
+            });
+        });
+    } catch (error) {
+        console.error('[API] Erro geral no endpoint:', error);
+        res.status(500).json({ 
+            error: 'Erro interno do servidor',
+            detalhes: error.message,
+            mensagem: 'Por favor, tente novamente mais tarde'
+        });
+    }
+});
+
 // ===== MIDDLEWARES =====
 app.use(cors());
 app.use(express.json());
