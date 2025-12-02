@@ -273,39 +273,81 @@ class ClientesSystem {
 
     // ==================== MODAL DE CLIENTE ====================
     
-    abrirModalCliente(cliente = null) {
-        console.log('🚪 Abrindo modal de cliente...');
-        
-        const modal = document.getElementById('clientModal');
-        const titulo = document.getElementById('modalClienteTitle');
-        
-        if (!modal || !titulo) {
-            console.error('❌ Modal não encontrado');
-            this.mostrarMensagem('Erro: Modal não encontrado', 'error');
-            return;
-        }
-        
-        if (cliente) {
-            // Modo edição
-            titulo.textContent = 'Editar Cliente';
-            this.preencherFormularioCliente(cliente);
-        } else {
-            // Modo novo
-            titulo.textContent = 'Novo Cliente';
-            this.limparFormularioCliente();
-        }
-        
-        // Mostrar modal
-        modal.classList.remove('hidden');
-        
-        // Focar no primeiro campo
-        setTimeout(() => {
-            const primeiroCampo = document.getElementById('nome_completo');
-            if (primeiroCampo) {
-                primeiroCampo.focus();
-            }
-        }, 100);
+abrirModalCliente(cliente = null) {
+    console.log('🚪 Abrindo modal de cliente...');
+    
+    const modal = document.getElementById('clientModal');
+    const titulo = document.getElementById('modalClienteTitle');
+    
+    if (!modal || !titulo) {
+        console.error('❌ Modal não encontrado');
+        this.mostrarMensagem('Erro: Modal não encontrado', 'error');
+        return;
     }
+    
+    if (cliente) {
+        // Modo edição
+        titulo.textContent = 'Editar Cliente';
+        this.preencherFormularioCliente(cliente);
+    } else {
+        // Modo novo
+        titulo.textContent = 'Novo Cliente';
+        this.limparFormularioCliente();
+    }
+    
+    // === CORREÇÃO CRÍTICA ===
+    // Remover classe hidden
+    modal.classList.remove('hidden');
+    
+    // Forçar estilos importantes
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    modal.style.zIndex = '9999';
+    
+    // Garantir que o conteúdo do modal seja visível
+    const modalContent = modal.querySelector('.inline-block');
+    if (modalContent) {
+        modalContent.style.zIndex = '10000';
+        modalContent.style.position = 'relative';
+    }
+    
+    // Prevenir scroll do body
+    document.body.style.overflow = 'hidden';
+    
+    // Focar no primeiro campo
+    setTimeout(() => {
+        const primeiroCampo = document.getElementById('nome_completo');
+        if (primeiroCampo) {
+            primeiroCampo.focus();
+        }
+    }, 100);
+    
+    console.log('✅ Modal aberto com correções aplicadas');
+}
+
+// E também atualize a função fecharModalCliente:
+fecharModalCliente() {
+    const modal = document.getElementById('clientModal');
+    if (modal) {
+        modal.classList.add('hidden');
+        
+        // Restaurar estilos
+        modal.style.display = 'none';
+        modal.style.backgroundColor = 'transparent';
+        
+        // Restaurar scroll do body
+        document.body.style.overflow = 'auto';
+        
+        this.limparFormularioCliente();
+    }
+}
     
     preencherFormularioCliente(cliente) {
         console.log(`📝 Preenchendo formulário para cliente: ${cliente.nome_completo}`);
