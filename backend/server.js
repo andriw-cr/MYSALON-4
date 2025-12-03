@@ -349,6 +349,10 @@ app.delete('/api/clientes/:id', (req, res) => {
     });
 });
 
+// ===== ROTAS DE SERVIÇOS =====
+const servicosRouter = require('./routes/servicos');
+app.use('/api/servicos', servicosRouter);
+
 // ===== SERVIR FRONTEND =====
 const frontendPath = path.join(__dirname, '../frontend');
 app.use(express.static(frontendPath));
