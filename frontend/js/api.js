@@ -1,3 +1,5 @@
+// SUBSTITUA TODO O ARQUIVO api.js POR ESTA VERSÃO CORRIGIDA:
+
 // frontend/js/api.js - VERSÃO CORRIGIDA E FINAL
 // CLIENTE HTTP PARA API DO BACKEND
 
@@ -130,7 +132,7 @@ class ApiService {
         return await this.request(`/profissionais/${profissionalId}/estatisticas`);
     }
 
-    // ========== SERVIÇOS ==========
+    // ========== SERVIÇOS - MÉTODOS COMPLETOS ==========
     
     async getServicos() {
         return await this.request('/servicos');
@@ -142,6 +144,70 @@ class ApiService {
 
     async getProfissionaisPorServico(servicoId) {
         return await this.request(`/servicos/${servicoId}/profissionais`);
+    }
+
+    async criarServico(dadosServico) {
+        try {
+            console.log('📝 Criando serviço:', dadosServico);
+            const response = await this.request('/servicos', {
+                method: 'POST',
+                body: JSON.stringify(dadosServico)
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao criar serviço:', error);
+            throw error;
+        }
+    }
+
+    async atualizarServico(id, dadosServico) {
+        try {
+            console.log(`✏️ Atualizando serviço ${id}:`, dadosServico);
+            const response = await this.request(`/servicos/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(dadosServico)
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao atualizar serviço:', error);
+            throw error;
+        }
+    }
+
+    async inativarServico(id) {
+        try {
+            console.log(`🚫 Inativando serviço ${id}`);
+            const response = await this.request(`/servicos/${id}/inativar`, {
+                method: 'PATCH'
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao inativar serviço:', error);
+            throw error;
+        }
+    }
+
+    async reativarServico(id) {
+        try {
+            console.log(`🔄 Reativando serviço ${id}`);
+            const response = await this.request(`/servicos/${id}/reativar`, {
+                method: 'PATCH'
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao reativar serviço:', error);
+            throw error;
+        }
+    }
+
+    async getCategorias() {
+        try {
+            const response = await this.request('/servicos/categorias');
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar categorias:', error);
+            return { success: false, data: [] };
+        }
     }
 
     // ========== BLOQUEIOS ==========
@@ -257,7 +323,8 @@ setTimeout(async () => {
             console.log('🔍 Métodos ApiService disponíveis:');
             console.log('- getProfissionais:', typeof window.ApiService.getProfissionais);
             console.log('- getServicos:', typeof window.ApiService.getServicos);
-            console.log('- getAgendamentos:', typeof window.ApiService.getAgendamentos);
+            console.log('- criarServico:', typeof window.ApiService.criarServico);
+            console.log('- atualizarServico:', typeof window.ApiService.atualizarServico);
             
         } else {
             console.warn('⚠️ API do backend retornou erro:', response.status);

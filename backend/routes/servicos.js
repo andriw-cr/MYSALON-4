@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 const fs = require('fs');
 
-// ==================== CONEXÃO COM BANCO ====================
+// ==================== CONEXÃO SIMPLES E EFETIVA ====================
 let db = null;
 
 const getDatabase = () => {
@@ -12,37 +12,38 @@ const getDatabase = () => {
     
     console.log('[SERVICOS] Conectando ao banco...');
     
-    // Procurar banco - AGORA PROCURANDO salao.db PRIMEIRO
-    const possiblePaths = [
-        'salao.db',                      // Pasta atual
-        'backend/salao.db',              // Pasta backend
-        path.join(__dirname, '../salao.db'),  // Uma pasta acima
-        path.join(__dirname, '../../salao.db'), // Duas pastas acima
-        'database.db',                   // Fallback
-        'backend/database.db'            // Fallback
-    ];
+    const dbPath = path.join(__dirname, '../../salao.db');
     
-    for (const dbPath of possiblePaths) {
-        if (fs.existsSync(dbPath)) {
-            console.log(`[SERVICOS] ✅ Banco encontrado: ${dbPath}`);
-            db = new sqlite3.Database(dbPath);
-            return db;
-        }
+    if (!fs.existsSync(dbPath)) {
+        console.error('[SERVICOS] ❌ Banco não encontrado em:', dbPath);
+        db = new sqlite3.Database(':memory:');
+        return db;
     }
     
-    console.error('[SERVICOS] ❌ Nenhum banco encontrado!');
-    // Fallback: criar em memória
-    db = new sqlite3.Database(':memory:');
+    console.log(`[SERVICOS] ✅ Banco encontrado: ${dbPath}`);
+    
+    // Conexão SIMPLES sem complicações
+    db = new sqlite3.Database(dbPath, (err) => {
+        if (err) {
+            console.error('[SERVICOS] ❌ Erro na conexão:', err.message);
+        } else {
+            console.log('[SERVICOS] ✅ Conexão estabelecida');
+            // Configurações mínimas necessárias
+            db.run('PRAGMA journal_mode = WAL;');
+            db.run('PRAGMA busy_timeout = 3000;');
+        }
+    });
+    
     return db;
 };
 
-// Middleware
+// Middleware simples
 router.use((req, res, next) => {
     req.db = getDatabase();
     next();
 });
 
-// ==================== ENDPOINTS OTIMIZADOS ====================
+// ==================== ENDPOINTS SIMPLES E FUNCIONAIS ====================
 
 // GET /api/servicos - Listar todos
 router.get('/', (req, res) => {
@@ -56,7 +57,12 @@ router.get('/', (req, res) => {
             descricao,
             preco_base,
             duracao_minutos,
-            COALESCE(status, 'ativo') as status
+            COALESCE(status, 'ativo') as status,
+            permite_agendamento_online,
+            permite_desconto,
+            permite_pontos_fidelidade,
+            max_clientes_por_horario,
+            intervalo_entre_atendimentos
         FROM servicos 
         ORDER BY nome
     `, [], (err, rows) => {
@@ -64,8 +70,7 @@ router.get('/', (req, res) => {
             console.error('[SERVICOS] Erro:', err.message);
             res.status(500).json({ 
                 success: false, 
-                error: err.message,
-                message: 'Erro no banco de dados'
+                error: 'Erro no banco de dados'
             });
         } else {
             console.log(`[SERVICOS] ✅ ${rows.length} serviços encontrados`);
@@ -78,43 +83,7 @@ router.get('/', (req, res) => {
     });
 });
 
-// GET /api/servicos/ativos
-router.get('/ativos', (req, res) => {
-    req.db.all(`
-        SELECT * FROM servicos 
-        WHERE status = 'ativo' OR status IS NULL 
-        ORDER BY nome
-    `, [], (err, rows) => {
-        if (err) {
-            res.json({ success: true, data: [] });
-        } else {
-            res.json({ success: true, data: rows });
-        }
-    });
-});
-
-// GET /api/servicos/categorias/list
-router.get('/categorias/list', (req, res) => {
-    req.db.all(`
-        SELECT DISTINCT categoria 
-        FROM servicos 
-        WHERE categoria IS NOT NULL 
-        ORDER BY categoria
-    `, [], (err, rows) => {
-        if (err) {
-            // Fallback para categorias conhecidas
-            res.json({ 
-                success: true, 
-                data: ['cabelo', 'unhas', 'estetica', 'barba', 'maquiagem', 'outros']
-            });
-        } else {
-            const categorias = rows.map(r => r.categoria).filter(c => c);
-            res.json({ success: true, data: categorias });
-        }
-    });
-});
-
-// POST /api/servicos - Criar
+// POST /api/servicos - Criar novo
 router.post('/', (req, res) => {
     const servico = req.body;
     console.log('[SERVICOS] POST /api/servicos:', servico.nome);
@@ -126,8 +95,9 @@ router.post('/', (req, res) => {
     const sql = `
         INSERT INTO servicos (
             nome, categoria, descricao, preco_base, duracao_minutos, status,
-            permite_agendamento_online, permite_desconto, permite_pontos_fidelidade
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            permite_agendamento_online, permite_desconto, permite_pontos_fidelidade,
+            max_clientes_por_horario, intervalo_entre_atendimentos
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     req.db.run(sql, [
@@ -137,9 +107,7 @@ router.post('/', (req, res) => {
         servico.preco_base || 0,
         servico.duracao_minutos || 30,
         'ativo',
-        1, // permite_agendamento_online
-        1, // permite_desconto
-        1  // permite_pontos_fidelidade
+        1, 1, 1, 1, 0
     ], function(err) {
         if (err) {
             console.error('[SERVICOS] Erro POST:', err.message);
@@ -155,25 +123,12 @@ router.post('/', (req, res) => {
     });
 });
 
-// GET /api/servicos/:id
-router.get('/:id', (req, res) => {
-    const id = req.params.id;
-    
-    req.db.get('SELECT * FROM servicos WHERE id = ?', [id], (err, row) => {
-        if (err) {
-            res.status(500).json({ success: false, error: err.message });
-        } else if (row) {
-            res.json({ success: true, data: row });
-        } else {
-            res.status(404).json({ success: false, error: 'Serviço não encontrado' });
-        }
-    });
-});
-
 // PUT /api/servicos/:id - Atualizar
 router.put('/:id', (req, res) => {
     const id = req.params.id;
     const servico = req.body;
+    
+    console.log(`[SERVICOS] PUT /api/servicos/${id}:`, servico.nome);
     
     if (!servico.nome) {
         return res.status(400).json({ success: false, error: 'Nome é obrigatório' });
@@ -185,8 +140,7 @@ router.put('/:id', (req, res) => {
             categoria = ?,
             descricao = ?,
             preco_base = ?,
-            duracao_minutos = ?,
-            updated_at = CURRENT_TIMESTAMP
+            duracao_minutos = ?
         WHERE id = ?
     `;
     
@@ -199,11 +153,20 @@ router.put('/:id', (req, res) => {
         id
     ], function(err) {
         if (err) {
-            res.status(500).json({ success: false, error: err.message });
+            console.error('[SERVICOS] ❌ Erro PUT:', err.message);
+            res.status(500).json({ 
+                success: false, 
+                error: err.message
+            });
         } else if (this.changes === 0) {
             res.status(404).json({ success: false, error: 'Serviço não encontrado' });
         } else {
-            res.json({ success: true, message: 'Serviço atualizado' });
+            console.log(`[SERVICOS] ✅ Atualizado ID: ${id}`);
+            res.json({ 
+                success: true, 
+                message: 'Serviço atualizado com sucesso',
+                changes: this.changes 
+            });
         }
     });
 });
@@ -211,41 +174,166 @@ router.put('/:id', (req, res) => {
 // DELETE /api/servicos/:id - Inativar
 router.delete('/:id', (req, res) => {
     const id = req.params.id;
+    console.log(`[SERVICOS] DELETE /api/servicos/${id}`);
     
-    req.db.run(`UPDATE servicos SET status = 'inativo' WHERE id = ?`, [id], function(err) {
-        if (err) {
-            res.status(500).json({ success: false, error: err.message });
-        } else if (this.changes === 0) {
-            res.status(404).json({ success: false, error: 'Serviço não encontrado' });
-        } else {
-            res.json({ success: true, message: 'Serviço inativado' });
+    req.db.run(
+        `UPDATE servicos SET status = 'inativo' WHERE id = ?`, 
+        [id], 
+        function(err) {
+            if (err) {
+                res.status(500).json({ success: false, error: err.message });
+            } else if (this.changes === 0) {
+                res.status(404).json({ success: false, error: 'Serviço não encontrado' });
+            } else {
+                res.json({ success: true, message: 'Serviço inativado' });
+            }
         }
-    });
+    );
 });
 
 // PATCH /api/servicos/:id/reativar
 router.patch('/:id/reativar', (req, res) => {
     const id = req.params.id;
+    console.log(`[SERVICOS] PATCH /api/servicos/${id}/reativar`);
     
-    req.db.run(`UPDATE servicos SET status = 'ativo' WHERE id = ?`, [id], function(err) {
+    req.db.run(
+        `UPDATE servicos SET status = 'ativo' WHERE id = ?`, 
+        [id], 
+        function(err) {
+            if (err) {
+                res.status(500).json({ success: false, error: err.message });
+            } else if (this.changes === 0) {
+                res.status(404).json({ success: false, error: 'Serviço não encontrado' });
+            } else {
+                res.json({ success: true, message: 'Serviço reativado' });
+            }
+        }
+    );
+});
+
+// GET /api/servicos/ativos
+router.get('/ativos', (req, res) => {
+    console.log('[SERVICOS] GET /api/servicos/ativos');
+    
+    req.db.all(`
+        SELECT 
+            id, 
+            nome, 
+            COALESCE(categoria, 'outros') as categoria,
+            descricao,
+            preco_base,
+            duracao_minutos
+        FROM servicos 
+        WHERE status = 'ativo'
+        ORDER BY nome
+    `, [], (err, rows) => {
         if (err) {
+            console.error('[SERVICOS] Erro:', err.message);
             res.status(500).json({ success: false, error: err.message });
-        } else if (this.changes === 0) {
+        } else {
+            console.log(`[SERVICOS] ✅ ${rows.length} serviços ativos encontrados`);
+            res.json({ success: true, data: rows });
+        }
+    });
+});
+
+// ADICIONE ESTES ENDPOINTS AO ARQUIVO servicos.js (após o endpoint GET /ativos)
+
+// GET /api/servicos/categorias/list - Listar categorias únicas
+router.get('/categorias/list', (req, res) => {
+    console.log('[SERVICOS] GET /api/servicos/categorias/list');
+    
+    req.db.all(`
+        SELECT DISTINCT COALESCE(categoria, 'outros') as categoria,
+        COUNT(*) as total_servicos,
+        COUNT(CASE WHEN status = 'ativo' THEN 1 END) as ativos
+        FROM servicos
+        WHERE status IN ('ativo', 'inativo')
+        GROUP BY COALESCE(categoria, 'outros')
+        ORDER BY categoria
+    `, [], (err, rows) => {
+        if (err) {
+            console.error('[SERVICOS] Erro ao buscar categorias:', err.message);
+            res.status(500).json({ success: false, error: err.message });
+        } else {
+            console.log(`[SERVICOS] ✅ ${rows.length} categorias encontradas`);
+            res.json({ success: true, data: rows });
+        }
+    });
+});
+
+// GET /api/servicos/:id - Buscar serviço específico
+router.get('/:id', (req, res) => {
+    const id = req.params.id;
+    console.log(`[SERVICOS] GET /api/servicos/${id}`);
+    
+    req.db.get(`
+        SELECT 
+            id, 
+            nome, 
+            COALESCE(categoria, 'outros') as categoria,
+            descricao,
+            preco_base,
+            duracao_minutos,
+            COALESCE(status, 'ativo') as status,
+            permite_agendamento_online,
+            permite_desconto,
+            permite_pontos_fidelidade,
+            max_clientes_por_horario,
+            intervalo_entre_atendimentos
+        FROM servicos 
+        WHERE id = ?
+    `, [id], (err, row) => {
+        if (err) {
+            console.error('[SERVICOS] Erro ao buscar serviço:', err.message);
+            res.status(500).json({ success: false, error: err.message });
+        } else if (!row) {
             res.status(404).json({ success: false, error: 'Serviço não encontrado' });
         } else {
-            res.json({ success: true, message: 'Serviço reativado' });
+            console.log(`[SERVICOS] ✅ Serviço ${id} encontrado`);
+            res.json({ success: true, data: row });
+        }
+    });
+});
+
+// ADICIONE TAMBÉM ESTE ENDPOINT PARA TESTE:
+// GET /api/servicos/test/health - Teste rápido
+router.get('/test/health', (req, res) => {
+    console.log('[SERVICOS] Test health endpoint');
+    res.json({
+        success: true,
+        message: 'Serviços API funcionando',
+        timestamp: new Date().toISOString(),
+        endpoints: {
+            list: 'GET /api/servicos',
+            byId: 'GET /api/servicos/:id',
+            create: 'POST /api/servicos',
+            update: 'PUT /api/servicos/:id',
+            delete: 'DELETE /api/servicos/:id',
+            categories: 'GET /api/servicos/categorias/list',
+            active: 'GET /api/servicos/ativos'
         }
     });
 });
 
 // Health check
 router.get('/health/check', (req, res) => {
-    req.db.get("SELECT COUNT(*) as total FROM servicos", (err, row) => {
+    console.log('[SERVICOS] Health check');
+    
+    req.db.get('SELECT COUNT(*) as total FROM servicos', [], (err, row) => {
         if (err) {
-            res.json({ success: false, error: err.message });
+            res.status(500).json({
+                success: false,
+                service: 'servicos',
+                status: 'offline',
+                error: err.message,
+                timestamp: new Date().toISOString()
+            });
         } else {
-            res.json({ 
-                success: true, 
+            res.json({
+                success: true,
+                service: 'servicos',
+                status: 'online',
                 total_servicos: row.total,
                 timestamp: new Date().toISOString()
             });
