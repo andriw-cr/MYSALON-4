@@ -1877,3 +1877,51 @@ style.textContent = `
 }
 `;
 document.head.appendChild(style);
+// No arquivo api.js, adicione:
+
+// Métodos para profissionais
+async function getProfissionais() {
+    return await fetch('/api/profissionais').then(res => res.json());
+}
+
+async function getProfissional(id) {
+    return await fetch(`/api/profissionais/${id}`).then(res => res.json());
+}
+
+async function criarProfissional(data) {
+    return await fetch('/api/profissionais', {
+        method: 'POST',
+        body: data
+    }).then(res => res.json());
+}
+
+async function atualizarProfissional(id, data) {
+    return await fetch(`/api/profissionais/${id}`, {
+        method: 'PUT',
+        body: data
+    }).then(res => res.json());
+}
+
+async function inativarProfissional(id) {
+    return await fetch(`/api/profissionais/${id}`, {
+        method: 'DELETE'
+    }).then(res => res.json());
+}
+
+async function reativarProfissional(id) {
+    return await fetch(`/api/profissionais/${id}/reativar`, {
+        method: 'PATCH'
+    }).then(res => res.json());
+}
+
+async function getProfissionaisAtivos() {
+    return await fetch('/api/profissionais/ativos').then(res => res.json());
+}
+
+async function getProfissionaisEstatisticas() {
+    return await fetch('/api/profissionais/estatisticas').then(res => res.json());
+}
+
+async function getProfissionalAgendamentos(id) {
+    return await fetch(`/api/profissionais/${id}/agendamentos`).then(res => res.json());
+}

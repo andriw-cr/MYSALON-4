@@ -1,13 +1,8 @@
 const express = require('express');
 const router = express.Router();
+const db = require('../database/db'); // Importar a conexão diretamente
 
-// Middleware para verificar conexão com banco
-router.use((req, res, next) => {
-    if (!req.db) {
-        return res.status(500).json({ error: 'Database connection not available' });
-    }
-    next();
-});
+console.log('✅ Rotas de profissionais carregadas');
 
 // Validação de dados do profissional
 const validateProfessional = (data, isUpdate = false) => {
@@ -52,11 +47,14 @@ router.get('/', (req, res) => {
     
     sql += ' ORDER BY nome ASC';
     
-    req.db.all(sql, params, (err, rows) => {
+    console.log(`📊 Buscando profissionais: ${sql}`);
+    
+    db.all(sql, params, (err, rows) => {
         if (err) {
-            console.error('Erro ao buscar profissionais:', err);
+            console.error('❌ Erro ao buscar profissionais:', err);
             return res.status(500).json({ error: err.message });
         }
+        console.log(`✅ ${rows.length} profissionais encontrados`);
         res.json(rows);
     });
 });
@@ -65,14 +63,18 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
     const { id } = req.params;
     
-    req.db.get('SELECT * FROM profissionais WHERE id = ?', [id], (err, row) => {
+    console.log(`🔍 Buscando profissional ID: ${id}`);
+    
+    db.get('SELECT * FROM profissionais WHERE id = ?', [id], (err, row) => {
         if (err) {
-            console.error('Erro ao buscar profissional:', err);
+            console.error('❌ Erro ao buscar profissional:', err);
             return res.status(500).json({ error: err.message });
         }
         if (!row) {
+            console.log(`⚠️ Profissional ${id} não encontrado`);
             return res.status(404).json({ error: 'Profissional não encontrado' });
         }
+        console.log(`✅ Profissional encontrado: ${row.nome}`);
         res.json(row);
     });
 });
@@ -81,16 +83,18 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     const profissional = req.body;
     
+    console.log('📝 Criando novo profissional:', profissional.nome);
+    
     // Validação
     const errors = validateProfessional(profissional);
     if (errors.length > 0) {
+        console.log('❌ Erros de validação:', errors);
         return res.status(400).json({ errors });
     }
     
     // Definir valores padrão
     profissional.status = profissional.status || 'ativo';
-    profissional.criado_em = new Date().toISOString();
-    profissional.atualizado_em = new Date().toISOString();
+    const dataAtual = new Date().toISOString();
     
     const sql = `
         INSERT INTO profissionais (
@@ -98,28 +102,50 @@ router.post('/', (req, res) => {
             telefone, email, endereco, cidade, estado, cep,
             funcao, especialidade, data_admissao, tipo_contrato,
             salario, comissao, banco, agencia, conta, tipo_conta,
-            status, observacoes, criado_em, atualizado_em
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            status, observacoes, data_cadastro
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     const params = [
-        profissional.nome, profissional.cpf, profissional.rg, profissional.data_nascimento,
-        profissional.genero, profissional.estado_civil, profissional.telefone, profissional.email,
-        profissional.endereco, profissional.cidade, profissional.estado, profissional.cep,
-        profissional.funcao, profissional.especialidade, profissional.data_admissao,
-        profissional.tipo_contrato, profissional.salario, profissional.comissao,
-        profissional.banco, profissional.agencia, profissional.conta, profissional.tipo_conta,
-        profissional.status, profissional.observacoes, profissional.criado_em, profissional.atualizado_em
+        profissional.nome, 
+        profissional.cpf || null,
+        profissional.rg || null,
+        profissional.data_nascimento || null,
+        profissional.genero || null,
+        profissional.estado_civil || null,
+        profissional.telefone || null,
+        profissional.email || null,
+        profissional.endereco || null,
+        profissional.cidade || null,
+        profissional.estado || null,
+        profissional.cep || null,
+        profissional.funcao || null,
+        profissional.especialidade || null,
+        profissional.data_admissao || null,
+        profissional.tipo_contrato || null,
+        profissional.salario || null,
+        profissional.comissao || null,
+        profissional.banco || null,
+        profissional.agencia || null,
+        profissional.conta || null,
+        profissional.tipo_conta || null,
+        profissional.status,
+        profissional.observacoes || null,
+        dataAtual
     ];
     
-    req.db.run(sql, params, function(err) {
+    console.log('📋 Executando SQL:', sql.substring(0, 100) + '...');
+    
+    db.run(sql, params, function(err) {
         if (err) {
-            console.error('Erro ao criar profissional:', err);
+            console.error('❌ Erro ao criar profissional:', err);
             return res.status(500).json({ error: err.message });
         }
         
+        console.log(`✅ Profissional criado com ID: ${this.lastID}`);
+        
         // Retornar o profissional criado
-        req.db.get('SELECT * FROM profissionais WHERE id = ?', [this.lastID], (err, row) => {
+        db.get('SELECT * FROM profissionais WHERE id = ?', [this.lastID], (err, row) => {
             if (err) {
                 return res.status(500).json({ error: err.message });
             }
@@ -133,47 +159,91 @@ router.put('/:id', (req, res) => {
     const { id } = req.params;
     const profissional = req.body;
     
+    console.log(`✏️ Atualizando profissional ID: ${id}`);
+    
     // Validação
     const errors = validateProfessional(profissional, true);
     if (errors.length > 0) {
+        console.log('❌ Erros de validação:', errors);
         return res.status(400).json({ errors });
     }
     
     // Verificar se o profissional existe
-    req.db.get('SELECT id FROM profissionais WHERE id = ?', [id], (err, row) => {
+    db.get('SELECT id FROM profissionais WHERE id = ?', [id], (err, row) => {
         if (err) {
-            console.error('Erro ao verificar profissional:', err);
+            console.error('❌ Erro ao verificar profissional:', err);
             return res.status(500).json({ error: err.message });
         }
         if (!row) {
+            console.log(`⚠️ Profissional ${id} não encontrado`);
             return res.status(404).json({ error: 'Profissional não encontrado' });
         }
         
         // Atualizar campos
-        profissional.atualizado_em = new Date().toISOString();
+        const dataAtual = new Date().toISOString();
         
         const fields = [];
         const values = [];
         
-        Object.keys(profissional).forEach(key => {
-            if (key !== 'id' && key !== 'criado_em') {
-                fields.push(`${key} = ?`);
+        // Mapear campos para atualizar
+        const fieldMap = {
+            nome: 'nome',
+            cpf: 'cpf',
+            rg: 'rg',
+            data_nascimento: 'data_nascimento',
+            genero: 'genero',
+            estado_civil: 'estado_civil',
+            telefone: 'telefone',
+            email: 'email',
+            endereco: 'endereco',
+            cidade: 'cidade',
+            estado: 'estado',
+            cep: 'cep',
+            funcao: 'funcao',
+            especialidade: 'especialidade',
+            data_admissao: 'data_admissao',
+            tipo_contrato: 'tipo_contrato',
+            salario: 'salario',
+            comissao: 'comissao',
+            banco: 'banco',
+            agencia: 'agencia',
+            conta: 'conta',
+            tipo_conta: 'tipo_conta',
+            status: 'status',
+            observacoes: 'observacoes'
+        };
+        
+        Object.keys(fieldMap).forEach(key => {
+            if (profissional[key] !== undefined) {
+                fields.push(`${fieldMap[key]} = ?`);
                 values.push(profissional[key]);
             }
         });
+        
+        // Adicionar data de atualização
+        fields.push('data_ultima_atualizacao = ?');
+        values.push(dataAtual);
+        
+        if (fields.length === 0) {
+            return res.status(400).json({ error: 'Nenhum campo para atualizar' });
+        }
         
         values.push(id);
         
         const sql = `UPDATE profissionais SET ${fields.join(', ')} WHERE id = ?`;
         
-        req.db.run(sql, values, function(err) {
+        console.log('📋 Executando SQL:', sql.substring(0, 100) + '...');
+        
+        db.run(sql, values, function(err) {
             if (err) {
-                console.error('Erro ao atualizar profissional:', err);
+                console.error('❌ Erro ao atualizar profissional:', err);
                 return res.status(500).json({ error: err.message });
             }
             
+            console.log(`✅ Profissional ${id} atualizado (${this.changes} alterações)`);
+            
             // Retornar o profissional atualizado
-            req.db.get('SELECT * FROM profissionais WHERE id = ?', [id], (err, row) => {
+            db.get('SELECT * FROM profissionais WHERE id = ?', [id], (err, row) => {
                 if (err) {
                     return res.status(500).json({ error: err.message });
                 }
@@ -187,18 +257,23 @@ router.put('/:id', (req, res) => {
 router.delete('/:id', (req, res) => {
     const { id } = req.params;
     
-    const sql = 'UPDATE profissionais SET status = "inativo", atualizado_em = ? WHERE id = ?';
-    const atualizado_em = new Date().toISOString();
+    console.log(`🚫 Inativando profissional ID: ${id}`);
     
-    req.db.run(sql, [atualizado_em, id], function(err) {
+    const sql = 'UPDATE profissionais SET status = "inativo", data_ultima_atualizacao = ? WHERE id = ?';
+    const dataAtual = new Date().toISOString();
+    
+    db.run(sql, [dataAtual, id], function(err) {
         if (err) {
-            console.error('Erro ao inativar profissional:', err);
+            console.error('❌ Erro ao inativar profissional:', err);
             return res.status(500).json({ error: err.message });
         }
         
         if (this.changes === 0) {
+            console.log(`⚠️ Profissional ${id} não encontrado`);
             return res.status(404).json({ error: 'Profissional não encontrado' });
         }
+        
+        console.log(`✅ Profissional ${id} inativado com sucesso`);
         
         res.json({ 
             message: 'Profissional inativado com sucesso',
@@ -212,18 +287,23 @@ router.delete('/:id', (req, res) => {
 router.patch('/:id/reativar', (req, res) => {
     const { id } = req.params;
     
-    const sql = 'UPDATE profissionais SET status = "ativo", atualizado_em = ? WHERE id = ?';
-    const atualizado_em = new Date().toISOString();
+    console.log(`🔄 Reativando profissional ID: ${id}`);
     
-    req.db.run(sql, [atualizado_em, id], function(err) {
+    const sql = 'UPDATE profissionais SET status = "ativo", data_ultima_atualizacao = ? WHERE id = ?';
+    const dataAtual = new Date().toISOString();
+    
+    db.run(sql, [dataAtual, id], function(err) {
         if (err) {
-            console.error('Erro ao reativar profissional:', err);
+            console.error('❌ Erro ao reativar profissional:', err);
             return res.status(500).json({ error: err.message });
         }
         
         if (this.changes === 0) {
+            console.log(`⚠️ Profissional ${id} não encontrado`);
             return res.status(404).json({ error: 'Profissional não encontrado' });
         }
+        
+        console.log(`✅ Profissional ${id} reativado com sucesso`);
         
         res.json({ 
             message: 'Profissional reativado com sucesso',
@@ -235,11 +315,14 @@ router.patch('/:id/reativar', (req, res) => {
 
 // LISTAR APENAS PROFISSIONAIS ATIVOS
 router.get('/ativos', (req, res) => {
-    req.db.all('SELECT id, nome, especialidade, telefone, email, funcao, comissao FROM profissionais WHERE status = "ativo" ORDER BY nome ASC', (err, rows) => {
+    console.log('👥 Listando profissionais ativos');
+    
+    db.all('SELECT id, nome, especialidade, telefone, email, funcao, comissao FROM profissionais WHERE status = "ativo" ORDER BY nome ASC', (err, rows) => {
         if (err) {
-            console.error('Erro ao buscar profissionais ativos:', err);
+            console.error('❌ Erro ao buscar profissionais ativos:', err);
             return res.status(500).json({ error: err.message });
         }
+        console.log(`✅ ${rows.length} profissionais ativos encontrados`);
         res.json(rows);
     });
 });
@@ -248,20 +331,23 @@ router.get('/ativos', (req, res) => {
 router.get('/:id/agendamentos', (req, res) => {
     const { id } = req.params;
     
+    console.log(`📅 Buscando agendamentos do profissional ID: ${id}`);
+    
     const sql = `
         SELECT a.*, c.nome_completo as cliente_nome
         FROM agendamentos a
         LEFT JOIN clientes c ON a.cliente_id = c.id
         WHERE a.profissional_id = ?
-        ORDER BY a.data_hora DESC
+        ORDER BY a.data_agendamento DESC
         LIMIT 50
     `;
     
-    req.db.all(sql, [id], (err, rows) => {
+    db.all(sql, [id], (err, rows) => {
         if (err) {
-            console.error('Erro ao buscar agendamentos:', err);
+            console.error('❌ Erro ao buscar agendamentos:', err);
             return res.status(500).json({ error: err.message });
         }
+        console.log(`✅ ${rows.length} agendamentos encontrados`);
         res.json(rows);
     });
 });
@@ -269,6 +355,8 @@ router.get('/:id/agendamentos', (req, res) => {
 // BUSCAR SERVIÇOS DO PROFISSIONAL
 router.get('/:id/servicos', (req, res) => {
     const { id } = req.params;
+    
+    console.log(`✂️ Buscando serviços do profissional ID: ${id}`);
     
     const sql = `
         SELECT s.* 
@@ -278,11 +366,12 @@ router.get('/:id/servicos', (req, res) => {
         AND s.status = 'ativo'
     `;
     
-    req.db.all(sql, [id], (err, rows) => {
+    db.all(sql, [id], (err, rows) => {
         if (err) {
-            console.error('Erro ao buscar serviços do profissional:', err);
+            console.error('❌ Erro ao buscar serviços do profissional:', err);
             return res.status(500).json({ error: err.message });
         }
+        console.log(`✅ ${rows.length} serviços encontrados`);
         res.json(rows);
     });
 });
@@ -290,6 +379,8 @@ router.get('/:id/servicos', (req, res) => {
 // BUSCAR HORÁRIOS DE TRABALHO DO PROFISSIONAL
 router.get('/:id/horarios-trabalho', (req, res) => {
     const { id } = req.params;
+    
+    console.log(`🕐 Buscando horários do profissional ID: ${id}`);
     
     // Buscar da tabela horarios_trabalho se existir
     const sql = `
@@ -308,10 +399,10 @@ router.get('/:id/horarios-trabalho', (req, res) => {
             END
     `;
     
-    req.db.all(sql, [id], (err, rows) => {
+    db.all(sql, [id], (err, rows) => {
         if (err) {
             // Se a tabela não existir, retornar horários padrão
-            console.log('Tabela horarios_trabalho não encontrada, retornando padrão');
+            console.log('⚠️ Tabela horarios_trabalho não encontrada, retornando padrão');
             
             const horariosPadrao = {
                 segunda: { inicio: '08:00', fim: '18:00', disponivel: true },
@@ -335,6 +426,7 @@ router.get('/:id/horarios-trabalho', (req, res) => {
                     disponivel: row.disponivel === 1
                 };
             });
+            console.log(`✅ ${rows.length} horários encontrados`);
             res.json(horarios);
         } else {
             // Retornar horários padrão se não houver registros
@@ -347,6 +439,7 @@ router.get('/:id/horarios-trabalho', (req, res) => {
                 sabado: { inicio: '08:00', fim: '13:00', disponivel: true },
                 domingo: { inicio: null, fim: null, disponivel: false }
             };
+            console.log('⚠️ Nenhum horário encontrado, retornando padrão');
             res.json(horariosPadrao);
         }
     });
@@ -356,30 +449,36 @@ router.get('/:id/horarios-trabalho', (req, res) => {
 router.get('/:id/estatisticas', (req, res) => {
     const { id } = req.params;
     
+    console.log(`📊 Buscando estatísticas do profissional ID: ${id}`);
+    
     const sql = `
         SELECT 
             COUNT(*) as total_agendamentos,
             SUM(CASE WHEN status = 'concluido' THEN 1 ELSE 0 END) as concluidos,
             SUM(CASE WHEN status = 'cancelado' THEN 1 ELSE 0 END) as cancelados,
-            AVG(valor) as valor_medio,
-            SUM(CASE WHEN status = 'concluido' THEN valor ELSE 0 END) as faturamento_total
+            AVG(valor_final) as valor_medio,
+            SUM(CASE WHEN status = 'concluido' THEN valor_final ELSE 0 END) as faturamento_total
         FROM agendamentos 
         WHERE profissional_id = ?
-        AND strftime('%Y-%m', data_hora) = strftime('%Y-%m', 'now')
+        AND strftime('%Y-%m', data_agendamento) = strftime('%Y-%m', 'now')
     `;
     
-    req.db.get(sql, [id], (err, row) => {
+    db.get(sql, [id], (err, row) => {
         if (err) {
-            console.error('Erro ao buscar estatísticas:', err);
+            console.error('❌ Erro ao buscar estatísticas:', err);
             return res.status(500).json({ error: err.message });
         }
-        res.json(row || {
+        
+        const estatisticas = row || {
             total_agendamentos: 0,
             concluidos: 0,
             cancelados: 0,
             valor_medio: 0,
             faturamento_total: 0
-        });
+        };
+        
+        console.log(`✅ Estatísticas encontradas: ${estatisticas.total_agendamentos} agendamentos`);
+        res.json(estatisticas);
     });
 });
 
