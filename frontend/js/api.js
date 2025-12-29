@@ -1,6 +1,4 @@
-// SUBSTITUA TODO O ARQUIVO api.js POR ESTA VERSÃO CORRIGIDA:
-
-// frontend/js/api.js - VERSÃO CORRIGIDA E FINAL
+// frontend/js/api.js - VERSÃO COMPLETA COM MÉTODOS DE PROFISSIONAIS
 // CLIENTE HTTP PARA API DO BACKEND
 
 class ApiService {
@@ -36,6 +34,262 @@ class ApiService {
         } catch (error) {
             console.error(`❌ Request Error ${endpoint}:`, error);
             throw error;
+        }
+    }
+
+    // ========== PROFISSIONAIS - MÉTODOS COMPLETOS ==========
+    
+    async getProfissionais(filtros = {}) {
+        const params = new URLSearchParams();
+        
+        Object.keys(filtros).forEach(key => {
+            if (filtros[key] !== null && filtros[key] !== undefined) {
+                params.append(key, filtros[key]);
+            }
+        });
+        
+        const queryString = params.toString();
+        const endpoint = `/profissionais${queryString ? `?${queryString}` : ''}`;
+        
+        return await this.request(endpoint);
+    }
+
+    async getProfissional(id) {
+        try {
+            console.log(`👤 Buscando profissional ${id}`);
+            const response = await this.request(`/profissionais/${id}`);
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar profissional:', error);
+            throw error;
+        }
+    }
+
+    async criarProfissional(dadosProfissional) {
+        try {
+            console.log('📝 Criando profissional:', dadosProfissional);
+            const response = await this.request('/profissionais', {
+                method: 'POST',
+                body: JSON.stringify(dadosProfissional)
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao criar profissional:', error);
+            throw error;
+        }
+    }
+
+    async atualizarProfissional(id, dadosProfissional) {
+        try {
+            console.log(`✏️ Atualizando profissional ${id}:`, dadosProfissional);
+            const response = await this.request(`/profissionais/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(dadosProfissional)
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao atualizar profissional:', error);
+            throw error;
+        }
+    }
+
+    async inativarProfissional(id) {
+        try {
+            console.log(`🚫 Inativando profissional ${id}`);
+            const response = await this.request(`/profissionais/${id}`, {
+                method: 'DELETE'
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao inativar profissional:', error);
+            throw error;
+        }
+    }
+
+    async reativarProfissional(id) {
+        try {
+            console.log(`🔄 Reativando profissional ${id}`);
+            const response = await this.request(`/profissionais/${id}/reativar`, {
+                method: 'PATCH'
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao reativar profissional:', error);
+            throw error;
+        }
+    }
+
+    async getProfissionaisAtivos() {
+        try {
+            console.log('👥 Buscando profissionais ativos');
+            const response = await this.request('/profissionais/ativos');
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar profissionais ativos:', error);
+            return [];
+        }
+    }
+
+    async getServicosPorProfissional(profissionalId) {
+        try {
+            console.log(`✂️ Buscando serviços do profissional ${profissionalId}`);
+            const response = await this.request(`/profissionais/${profissionalId}/servicos`);
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar serviços do profissional:', error);
+            return [];
+        }
+    }
+
+    async getAgendamentosProfissional(profissionalId) {
+        try {
+            console.log(`📅 Buscando agendamentos do profissional ${profissionalId}`);
+            const response = await this.request(`/profissionais/${profissionalId}/agendamentos`);
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar agendamentos do profissional:', error);
+            return [];
+        }
+    }
+
+    async getHorariosTrabalho(profissionalId) {
+        try {
+            console.log(`🕐 Buscando horários do profissional ${profissionalId}`);
+            const response = await this.request(`/profissionais/${profissionalId}/horarios-trabalho`);
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar horários do profissional:', error);
+            // Retornar horários padrão em caso de erro
+            return {
+                segunda: { inicio: '08:00', fim: '18:00', disponivel: true },
+                terca: { inicio: '08:00', fim: '18:00', disponivel: true },
+                quarta: { inicio: '08:00', fim: '18:00', disponivel: true },
+                quinta: { inicio: '08:00', fim: '18:00', disponivel: true },
+                sexta: { inicio: '08:00', fim: '18:00', disponivel: true },
+                sabado: { inicio: '08:00', fim: '13:00', disponivel: true },
+                domingo: { inicio: null, fim: null, disponivel: false }
+            };
+        }
+    }
+
+    async getEstatisticasProfissional(profissionalId) {
+        try {
+            console.log(`📊 Buscando estatísticas do profissional ${profissionalId}`);
+            const response = await this.request(`/profissionais/${profissionalId}/estatisticas`);
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar estatísticas do profissional:', error);
+            return {
+                total_agendamentos: 0,
+                concluidos: 0,
+                cancelados: 0,
+                valor_medio: 0,
+                faturamento_total: 0
+            };
+        }
+    }
+
+    // ========== SERVIÇOS - MÉTODOS COMPLETOS ==========
+    
+    async getServicos(filtros = {}) {
+        const params = new URLSearchParams();
+        
+        Object.keys(filtros).forEach(key => {
+            if (filtros[key] !== null && filtros[key] !== undefined) {
+                params.append(key, filtros[key]);
+            }
+        });
+        
+        const queryString = params.toString();
+        const endpoint = `/servicos${queryString ? `?${queryString}` : ''}`;
+        
+        return await this.request(endpoint);
+    }
+
+    async getServico(id) {
+        try {
+            console.log(`🔍 Buscando serviço ${id}`);
+            const response = await this.request(`/servicos/${id}`);
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar serviço:', error);
+            throw error;
+        }
+    }
+
+    async getProfissionaisPorServico(servicoId) {
+        try {
+            console.log(`👥 Buscando profissionais do serviço ${servicoId}`);
+            const response = await this.request(`/servicos/${servicoId}/profissionais`);
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar profissionais do serviço:', error);
+            return [];
+        }
+    }
+
+    async criarServico(dadosServico) {
+        try {
+            console.log('📝 Criando serviço:', dadosServico);
+            const response = await this.request('/servicos', {
+                method: 'POST',
+                body: JSON.stringify(dadosServico)
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao criar serviço:', error);
+            throw error;
+        }
+    }
+
+    async atualizarServico(id, dadosServico) {
+        try {
+            console.log(`✏️ Atualizando serviço ${id}:`, dadosServico);
+            const response = await this.request(`/servicos/${id}`, {
+                method: 'PUT',
+                body: JSON.stringify(dadosServico)
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao atualizar serviço:', error);
+            throw error;
+        }
+    }
+
+    async inativarServico(id) {
+        try {
+            console.log(`🚫 Inativando serviço ${id}`);
+            const response = await this.request(`/servicos/${id}/inativar`, {
+                method: 'PATCH'
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao inativar serviço:', error);
+            throw error;
+        }
+    }
+
+    async reativarServico(id) {
+        try {
+            console.log(`🔄 Reativando serviço ${id}`);
+            const response = await this.request(`/servicos/${id}/reativar`, {
+                method: 'PATCH'
+            });
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao reativar serviço:', error);
+            throw error;
+        }
+    }
+
+    async getCategorias() {
+        try {
+            console.log('🏷️ Buscando categorias de serviços');
+            const response = await this.request('/servicos/categorias');
+            return response;
+        } catch (error) {
+            console.error('❌ Erro ao buscar categorias:', error);
+            return { success: false, data: [] };
         }
     }
 
@@ -110,137 +364,7 @@ class ApiService {
         return await this.request('/agendamentos/estatisticas/hoje');
     }
 
-    // ========== PROFISSIONAIS ==========
-    
-    async getProfissionais() {
-        return await this.request('/profissionais');
-    }
-
-    async getProfissional(id) {
-        return await this.request(`/profissionais/${id}`);
-    }
-
-    async getServicosPorProfissional(profissionalId) {
-        return await this.request(`/profissionais/${profissionalId}/servicos`);
-    }
-
-    async getHorariosTrabalho(profissionalId) {
-        return await this.request(`/profissionais/${profissionalId}/horarios-trabalho`);
-    }
-
-    async getEstatisticasProfissional(profissionalId) {
-        return await this.request(`/profissionais/${profissionalId}/estatisticas`);
-    }
-
-    // ========== SERVIÇOS - MÉTODOS COMPLETOS ==========
-    
-    async getServicos() {
-        return await this.request('/servicos');
-    }
-
-    async getServico(id) {
-        return await this.request(`/servicos/${id}`);
-    }
-
-    async getProfissionaisPorServico(servicoId) {
-        return await this.request(`/servicos/${servicoId}/profissionais`);
-    }
-
-    async criarServico(dadosServico) {
-        try {
-            console.log('📝 Criando serviço:', dadosServico);
-            const response = await this.request('/servicos', {
-                method: 'POST',
-                body: JSON.stringify(dadosServico)
-            });
-            return response;
-        } catch (error) {
-            console.error('❌ Erro ao criar serviço:', error);
-            throw error;
-        }
-    }
-
-    async atualizarServico(id, dadosServico) {
-        try {
-            console.log(`✏️ Atualizando serviço ${id}:`, dadosServico);
-            const response = await this.request(`/servicos/${id}`, {
-                method: 'PUT',
-                body: JSON.stringify(dadosServico)
-            });
-            return response;
-        } catch (error) {
-            console.error('❌ Erro ao atualizar serviço:', error);
-            throw error;
-        }
-    }
-
-    async inativarServico(id) {
-        try {
-            console.log(`🚫 Inativando serviço ${id}`);
-            const response = await this.request(`/servicos/${id}/inativar`, {
-                method: 'PATCH'
-            });
-            return response;
-        } catch (error) {
-            console.error('❌ Erro ao inativar serviço:', error);
-            throw error;
-        }
-    }
-
-    async reativarServico(id) {
-        try {
-            console.log(`🔄 Reativando serviço ${id}`);
-            const response = await this.request(`/servicos/${id}/reativar`, {
-                method: 'PATCH'
-            });
-            return response;
-        } catch (error) {
-            console.error('❌ Erro ao reativar serviço:', error);
-            throw error;
-        }
-    }
-
-    async getCategorias() {
-        try {
-            const response = await this.request('/servicos/categorias');
-            return response;
-        } catch (error) {
-            console.error('❌ Erro ao buscar categorias:', error);
-            return { success: false, data: [] };
-        }
-    }
-
-    // ========== BLOQUEIOS ==========
-    
-    async getBloqueios(filtros = {}) {
-        const params = new URLSearchParams();
-        
-        Object.keys(filtros).forEach(key => {
-            if (filtros[key] !== null && filtros[key] !== undefined) {
-                params.append(key, filtros[key]);
-            }
-        });
-        
-        const queryString = params.toString();
-        const endpoint = `/bloqueios${queryString ? `?${queryString}` : ''}`;
-        
-        return await this.request(endpoint);
-    }
-
-    async criarBloqueio(dados) {
-        return await this.request('/bloqueios', {
-            method: 'POST',
-            body: JSON.stringify(dados)
-        });
-    }
-
-    async excluirBloqueio(id) {
-        return await this.request(`/bloqueios/${id}`, {
-            method: 'DELETE'
-        });
-    }
-
-    // ========== CLIENTES (mantido para compatibilidade) ==========
+    // ========== CLIENTES ==========
     
     async getClientes(filtros = {}) {
         const params = new URLSearchParams();
@@ -285,6 +409,36 @@ class ApiService {
         return await this.request(`/clientes/${id}/estatisticas`);
     }
 
+    // ========== BLOQUEIOS ==========
+    
+    async getBloqueios(filtros = {}) {
+        const params = new URLSearchParams();
+        
+        Object.keys(filtros).forEach(key => {
+            if (filtros[key] !== null && filtros[key] !== undefined) {
+                params.append(key, filtros[key]);
+            }
+        });
+        
+        const queryString = params.toString();
+        const endpoint = `/bloqueios${queryString ? `?${queryString}` : ''}`;
+        
+        return await this.request(endpoint);
+    }
+
+    async criarBloqueio(dados) {
+        return await this.request('/bloqueios', {
+            method: 'POST',
+            body: JSON.stringify(dados)
+        });
+    }
+
+    async excluirBloqueio(id) {
+        return await this.request(`/bloqueios/${id}`, {
+            method: 'DELETE'
+        });
+    }
+
     // ========== HEALTH CHECK ==========
     
     async healthCheck() {
@@ -294,6 +448,43 @@ class ApiService {
         } catch (error) {
             console.warn('⚠️ API não está respondendo:', error.message);
             return { status: 'error', message: 'API offline' };
+        }
+    }
+
+    // ========== TESTES ESPECÍFICOS ==========
+    
+    async testProfissionais() {
+        try {
+            console.log('🧪 Testando endpoints de profissionais...');
+            
+            // Testar listagem
+            const lista = await this.getProfissionais();
+            console.log('✅ Lista de profissionais:', lista?.length || 0);
+            
+            // Testar endpoint de teste do backend
+            const teste = await this.request('/profissionais/test/health');
+            console.log('✅ Teste de saúde:', teste);
+            
+            // Verificar métodos disponíveis
+            console.log('🔍 Métodos de profissionais disponíveis:');
+            console.log('- getProfissionais:', typeof this.getProfissionais);
+            console.log('- criarProfissional:', typeof this.criarProfissional);
+            console.log('- atualizarProfissional:', typeof this.atualizarProfissional);
+            console.log('- inativarProfissional:', typeof this.inativarProfissional);
+            console.log('- reativarProfissional:', typeof this.reativarProfissional);
+            console.log('- getProfissionaisAtivos:', typeof this.getProfissionaisAtivos);
+            
+            return {
+                success: true,
+                listaCount: lista?.length || 0,
+                testeBackend: teste
+            };
+        } catch (error) {
+            console.error('❌ Teste de profissionais falhou:', error);
+            return {
+                success: false,
+                error: error.message
+            };
         }
     }
 }
@@ -308,6 +499,10 @@ window.apiService = apiServiceInstance;
 window.api = apiServiceInstance; // Alias para console
 
 console.log('🌐 ApiService global registrado:', typeof window.ApiService);
+console.log('👤 Métodos de profissionais disponíveis globalmente:');
+console.log('- ApiService.criarProfissional:', typeof window.ApiService.criarProfissional);
+console.log('- ApiService.atualizarProfissional:', typeof window.ApiService.atualizarProfissional);
+console.log('- ApiService.getProfissionaisAtivos:', typeof window.ApiService.getProfissionaisAtivos);
 
 // Teste automático de conexão ao carregar
 setTimeout(async () => {
@@ -319,12 +514,19 @@ setTimeout(async () => {
             const data = await response.json();
             console.log('✅ API do backend está respondendo:', data);
             
-            // Verificar métodos básicos
-            console.log('🔍 Métodos ApiService disponíveis:');
-            console.log('- getProfissionais:', typeof window.ApiService.getProfissionais);
-            console.log('- getServicos:', typeof window.ApiService.getServicos);
-            console.log('- criarServico:', typeof window.ApiService.criarServico);
-            console.log('- atualizarServico:', typeof window.ApiService.atualizarServico);
+            // Testar endpoints de profissionais
+            try {
+                const testeProfissionais = await apiServiceInstance.testProfissionais();
+                console.log('🧪 Resultado do teste de profissionais:', testeProfissionais);
+                
+                if (testeProfissionais.success) {
+                    console.log(`✅ Sistema de profissionais: ${testeProfissionais.listaCount} profissionais carregados`);
+                } else {
+                    console.warn('⚠️ Sistema de profissionais pode não estar totalmente funcional');
+                }
+            } catch (testError) {
+                console.warn('⚠️ Não foi possível testar endpoints de profissionais:', testError.message);
+            }
             
         } else {
             console.warn('⚠️ API do backend retornou erro:', response.status);

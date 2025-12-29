@@ -1,0 +1,120 @@
+$Projeto = "C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3"
+$Destino = "C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação"
+
+$NomeProjeto = Split-Path $Projeto -Leaf
+$Data = Get-Date -Format "yyyy-MM-dd_HH-mm"
+
+# Montagem correta dos nomes de arquivos
+$NomeTXT = "$NomeProjeto" + "_" + "$Data" + ".txt"
+$NomeJSON = "$NomeProjeto" + "_" + "$Data" + ".json"
+$NomeZIP = "$NomeProjeto" + "_" + "$Data" + ".zip"
+$NomeREL = "$NomeProjeto" + "_" + "$Data" + "_Relatorio.txt"
+
+# Agora sim, Join-Path funciona corretamente
+$ArquivoTXT = Join-Path $Destino $NomeTXT
+$ArquivoJSON = Join-Path $Destino $NomeJSON
+$ArquivoZIP = Join-Path $Destino $NomeZIP
+$ArquivoREL = Join-Path $Destino $NomeREL
+
+# Cria pasta de destino se necessário
+If (!(Test-Path $Destino)) {
+    New-Item -ItemType Directory -Path $Destino | Out-Null
+}
+
+"--------------------------------------------------" | Out-File $ArquivoTXT
+"Estrutura do projeto: $Projeto" | Out-File $ArquivoTXT -Append
+"Gerado em: $(Get-Date)" | Out-File $ArquivoTXT -Append
+"--------------------------------------------------`n" | Out-File $ArquivoTXT -Append
+
+# Função recursiva para TXT + JSON
+function Listar-Arvore {
+    param (
+        [string]$Caminho,
+        [int]$Nivel
+    )
+
+    $Indent = " " * ($Nivel * 3)
+    $ResultadoJSON = @()
+
+    Get-ChildItem -LiteralPath $Caminho | Sort-Object Name | ForEach-Object {
+
+        $ItemPath = $_.FullName
+
+        # Pasta
+        if ($_.PSIsContainer) {
+
+            # Trata node_modules especialmente
+            if ($_.Name -eq "node_modules") {
+
+                "$Indent [PASTA OCULTA]  $ItemPath" | Out-File $ArquivoTXT -Append
+                "$Indent    Conteúdo não exibido por ser muito grande" | Out-File $ArquivoTXT -Append
+
+                $ResultadoJSON += @{
+                    type = "folder_hidden"
+                    name = $_.Name
+                    path = $ItemPath
+                }
+
+                return
+            }
+
+            "$Indent [PASTA]  $ItemPath" | Out-File $ArquivoTXT -Append
+
+            $Sub = Listar-Arvore -Caminho $ItemPath -Nivel ($Nivel + 1)
+
+            $ResultadoJSON += @{
+                type = "folder"
+                name = $_.Name
+                path = $ItemPath
+                children = $Sub
+            }
+        }
+        else { 
+            "$Indent [ARQUIVO] $ItemPath" | Out-File $ArquivoTXT -Append
+
+            $ResultadoJSON += @{
+                type = "file"
+                name = $_.Name
+                path = $ItemPath
+                size_bytes = $_.Length
+            }
+        }
+    }
+
+    return $ResultadoJSON
+}
+
+# Gera JSON baseado na árvore
+$JSON = Listar-Arvore -Caminho $Projeto -Nivel 0 | ConvertTo-Json -Depth 50
+$JSON | Out-File $ArquivoJSON -Encoding UTF8
+
+# GERA ZIP ignorando node_modules
+If (Test-Path $ArquivoZIP) { Remove-Item $ArquivoZIP -Force }
+
+$ArquivosParaZip = Get-ChildItem -Path $Projeto -Recurse -File | Where-Object {
+    $_.FullName -notmatch "node_modules"
+}
+
+Compress-Archive -Path $ArquivosParaZip.FullName -DestinationPath $ArquivoZIP -Force
+
+# RELATÓRIO ANALÍTICO
+$totalArquivos = ($ArquivosParaZip | Measure-Object).Count
+$totalPastas = (Get-ChildItem -Path $Projeto -Recurse -Directory | Where-Object {
+    $_.FullName -notmatch "node_modules"
+} | Measure-Object).Count
+
+$tamanhoTotal = ($ArquivosParaZip | Measure-Object Length -Sum).Sum
+
+"Título: Relatório Analítico do Projeto $NomeProjeto" | Out-File $ArquivoREL
+"Gerado em: $(Get-Date)" | Out-File $ArquivoREL -Append
+"----------------------------------------" | Out-File $ArquivoREL -Append
+"Pastas total (sem node_modules): $totalPastas" | Out-File $ArquivoREL -Append
+"Arquivos total (sem node_modules): $totalArquivos" | Out-File $ArquivoREL -Append
+"Tamanho total dos arquivos: $([math]::Round($tamanhoTotal / 1MB, 2)) MB" | Out-File $ArquivoREL -Append
+"Arquivo ZIP gerado: $ArquivoZIP" | Out-File $ArquivoREL -Append
+
+Write-Host "Arquivos gerados:"
+Write-Host "TXT  => $ArquivoTXT"
+Write-Host "JSON => $ArquivoJSON"
+Write-Host "ZIP  => $ArquivoZIP"
+Write-Host "REL  => $ArquivoREL"
