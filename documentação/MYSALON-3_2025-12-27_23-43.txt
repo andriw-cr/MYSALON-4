@@ -1,0 +1,87 @@
+--------------------------------------------------
+Estrutura do projeto: C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3
+Gerado em: 12/27/2025 23:43:14
+--------------------------------------------------
+
+ [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\check-data.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\check-html-folder.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\check-structure.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\database-config.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\install-fixed.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\install.js
+    [PASTA OCULTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\node_modules
+       Conteúdo não exibido por ser muito grande
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\package-lock.json
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\package.json
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\populate-simple.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\quick-ckeck.js
+    [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\routes
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\routes\agendamentos.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\routes\bloqueios.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\routes\clientes.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\routes\profissionais.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\routes\servicos.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\routes\users.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\server.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\backend\test-api.js
+ [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\database
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\database\db.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\database\initDatabase.js
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\database\test-connection.js
+ [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\-- detalhes_indices.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\-- lista_colunas.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\-- lista_indices.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\-- lista_tabelas.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\gerador de extrutura do banco.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-12_14-30_Relatorio.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-12_14-30.json
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-12_14-30.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-12_14-30.zip
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-23_19-52_Relatorio.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-23_19-52.json
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-23_19-52.txt
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-27_23-43.txt
+ [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend
+    [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\agenda.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\clientes.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\configuracoes.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\dashboard.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\estoque.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\fidelidade.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\financeiro.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\logs.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\profissionais.html
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\html\servicos.html
+    [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\agenda.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\api.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\app.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\clientes.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\logs-system.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\profissionais-service.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\profissionais-ui.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\profissionais.js
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\js\servicos.js
+    [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\style
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\frontend\style\style.css
+ [PASTA OCULTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\node_modules
+    Conteúdo não exibido por ser muito grande
+ [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\package-lock.json
+ [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\package.json
+ [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\salao.db
+ [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\salao.db-shm
+ [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\salao.db-wal
+ [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\salao.sqbpro
+ [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite
+    [PASTA]  C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite\bk
+       [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite\bk\salao.db
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite\salao.db
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite\sqldiff.exe
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite\sqlite3
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite\sqlite3_analyzer.exe
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite\sqlite3_rsync.exe
+    [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\sqlite\sqlite3.exe
+ [ARQUIVO] C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\test-db.js

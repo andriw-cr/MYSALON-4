@@ -1,0 +1,7 @@
+Título: Relatório Analítico do Projeto MYSALON-3
+Gerado em: 12/27/2025 23:43:16
+----------------------------------------
+Pastas total (sem node_modules): 10
+Arquivos total (sem node_modules): 69
+Tamanho total dos arquivos: 22.53 MB
+Arquivo ZIP gerado: C:\Users\Andriw\Desktop\PROJETO SL\MYSALON-3\documentação\MYSALON-3_2025-12-27_23-43.zip

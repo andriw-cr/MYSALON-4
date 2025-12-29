@@ -1,0 +1,218 @@
+# MySalon – Documentação Técnica do Banco de Dados (SQLite)
+
+## Visão Geral
+
+Este banco de dados foi projetado para suportar um sistema completo de gestão de salão de beleza, com foco em **agendamentos**, **profissionais**, **serviços**, **financeiro** e **regras de negócio aplicadas diretamente no banco** (SQLite).
+
+O modelo prioriza:
+
+* Normalização
+* Integridade referencial
+* Validações por `CHECK`
+* Regras críticas implementadas via `TRIGGERS`
+
+---
+
+## Tecnologias
+
+* **SQLite 3.51+**
+* Compatível com Node.js / APIs REST
+* Totalmente funcional em ambiente local (VS Code / sqlite3 CLI)
+
+---
+
+## Estrutura Geral
+
+### Entidades Principais
+
+#### profissionais
+
+Tabela central do cadastro de profissionais.
+
+Campos principais:
+
+* `id`
+* `nome_completo`
+* `cpf`
+* `email`
+* `telefone`
+* `especialidade`
+* `status`
+
+Relacionamentos:
+
+* 1:N com dados pessoais, endereço, financeiro e horários
+
+---
+
+### profissionais_pessoais
+
+Dados pessoais normalizados.
+
+* `profissional_id`
+* `data_nascimento`
+* `genero` (`M`, `F`, `O`)
+* `estado_civil`
+
+---
+
+### profissionais_enderecos
+
+Endereço do profissional.
+
+---
+
+### profissionais_financeiro
+
+Informações contratuais e financeiras.
+
+* `salario_base`
+* `carga_horaria`
+* `tipo_contrato` (CLT / PJ)
+
+---
+
+### profissionais_horarios
+
+Define dias e horários de trabalho.
+
+* `dia_semana` (1 = terça … 6 = sábado)
+* `hora_inicio`
+* `hora_fim`
+* `folga`
+
+Usado diretamente na validação de agendamentos.
+
+---
+
+## Serviços
+
+### servicos
+
+Catálogo de serviços do salão.
+
+Campos relevantes:
+
+* `preco_base`
+* `duracao_minutos`
+* `max_clientes_por_horario`
+* `intervalo_entre_atendimentos`
+
+Restrições:
+
+* `categoria` validada por `CHECK`
+
+---
+
+## Clientes
+
+### clientes
+
+Cadastro simples de clientes.
+
+---
+
+## Agendamentos
+
+### agendamentos
+
+Representa o evento principal do calendário.
+
+* `data_agendamento`
+* `cliente_id`
+* `profissional_id`
+* `status`
+* `valor_final`
+
+Validações:
+
+* horário de trabalho
+* bloqueios
+
+---
+
+### agendamento_servicos
+
+Relaciona agendamentos aos serviços executados.
+
+Campos obrigatórios:
+
+* `agendamento_id`
+* `servico_id`
+* `profissional_id`
+* `preco`
+* `duracao_minutos`
+
+---
+
+## Bloqueios de Horário
+
+### bloqueios_horario
+
+Permite bloquear horários específicos.
+
+Tipos:
+
+* `folga`
+* `reuniao`
+* `ferias`
+* `outro`
+
+Pode ser recorrente ou por data específica.
+
+---
+
+## Views Importantes
+
+* `vw_profissionais_completos`
+* `vw_agendamentos_dia`
+* `vw_dashboard_financeiro`
+* `vw_dashboard_metrics`
+
+Views prontas para consumo direto pelo front-end.
+
+---
+
+## Triggers Implementadas
+
+### Regras Críticas
+
+* ❌ Agendamento fora do horário de trabalho
+* ❌ Agendamento em horário bloqueado
+* ❌ Sobreposição de atendimentos
+* ❌ Intervalo mínimo não respeitado
+* ❌ Excesso de clientes por horário
+
+Essas regras garantem **integridade forte**, mesmo sem camada de aplicação.
+
+---
+
+## Padrões Importantes
+
+* Datas: `YYYY-MM-DD`
+* Datas/Horas: `YYYY-MM-DD HH:MM:SS`
+* Booleanos: `0 / 1`
+
+---
+
+## Estado Atual
+
+✔ Banco validado com dados reais de teste
+✔ Fluxo completo de agendamento funcional
+✔ Pronto para integração com API REST
+
+---
+
+## Próximos Passos Técnicos
+
+1. Consolidação do módulo financeiro
+2. Fechamento mensal de comissões
+3. Auditoria de alterações
+4. Geração automática de horários disponíveis
+5. Otimização com índices
+
+---
+
+## Observação Final
+
+Este banco foi projetado para **reduzir lógica na aplicação** e **centralizar regras críticas no banco**, aumentando segurança, consistência e previsibilidade do sistema.

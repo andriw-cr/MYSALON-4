@@ -1,0 +1,486 @@
+[
+  {
+    "name": "backend",
+    "children": [
+      {
+        "name": "check-data.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\check-data.js",
+        "type": "file",
+        "size_bytes": 1729
+      },
+      {
+        "name": "check-html-folder.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\check-html-folder.js",
+        "type": "file",
+        "size_bytes": 716
+      },
+      {
+        "name": "check-structure.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\check-structure.js",
+        "type": "file",
+        "size_bytes": 2491
+      },
+      {
+        "name": "database-config.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\database-config.js",
+        "type": "file",
+        "size_bytes": 617
+      },
+      {
+        "name": "install-fixed.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\install-fixed.js",
+        "type": "file",
+        "size_bytes": 3208
+      },
+      {
+        "name": "install.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\install.js",
+        "type": "file",
+        "size_bytes": 8658
+      },
+      {
+        "name": "node_modules",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\node_modules",
+        "type": "folder_hidden"
+      },
+      {
+        "name": "package-lock.json",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\package-lock.json",
+        "type": "file",
+        "size_bytes": 94517
+      },
+      {
+        "name": "package.json",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\package.json",
+        "type": "file",
+        "size_bytes": 979
+      },
+      {
+        "name": "populate-simple.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\populate-simple.js",
+        "type": "file",
+        "size_bytes": 5132
+      },
+      {
+        "name": "quick-ckeck.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\quick-ckeck.js",
+        "type": "file",
+        "size_bytes": 946
+      },
+      {
+        "name": "routes",
+        "children": [
+          {
+            "name": "agendamentos.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\routes\\agendamentos.js",
+            "type": "file",
+            "size_bytes": 7726
+          },
+          {
+            "name": "bloqueios.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\routes\\bloqueios.js",
+            "type": "file",
+            "size_bytes": 2506
+          },
+          {
+            "name": "clientes.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\routes\\clientes.js",
+            "type": "file",
+            "size_bytes": 7722
+          },
+          {
+            "name": "profissionais.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\routes\\profissionais.js",
+            "type": "file",
+            "size_bytes": 17958
+          },
+          {
+            "name": "servicos.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\routes\\servicos.js",
+            "type": "file",
+            "size_bytes": 10774
+          },
+          {
+            "name": "users.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\routes\\users.js",
+            "type": "file",
+            "size_bytes": 8825
+          }
+        ],
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\routes",
+        "type": "folder"
+      },
+      {
+        "name": "server.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\server.js",
+        "type": "file",
+        "size_bytes": 29768
+      },
+      {
+        "name": "test-api.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend\\test-api.js",
+        "type": "file",
+        "size_bytes": 610
+      }
+    ],
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\backend",
+    "type": "folder"
+  },
+  {
+    "name": "database",
+    "children": [
+      {
+        "name": "db.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\database\\db.js",
+        "type": "file",
+        "size_bytes": 2796
+      },
+      {
+        "name": "initDatabase.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\database\\initDatabase.js",
+        "type": "file",
+        "size_bytes": 9455
+      },
+      {
+        "name": "test-connection.js",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\database\\test-connection.js",
+        "type": "file",
+        "size_bytes": 1526
+      }
+    ],
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\database",
+    "type": "folder"
+  },
+  {
+    "name": "documentação",
+    "children": [
+      {
+        "name": "-- detalhes_indices.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\-- detalhes_indices.txt",
+        "type": "file",
+        "size_bytes": 2728
+      },
+      {
+        "name": "-- lista_colunas.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\-- lista_colunas.txt",
+        "type": "file",
+        "size_bytes": 14816
+      },
+      {
+        "name": "-- lista_indices.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\-- lista_indices.txt",
+        "type": "file",
+        "size_bytes": 3833
+      },
+      {
+        "name": "-- lista_tabelas.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\-- lista_tabelas.txt",
+        "type": "file",
+        "size_bytes": 1216
+      },
+      {
+        "name": "gerador de extrutura do banco.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\gerador de extrutura do banco.txt",
+        "type": "file",
+        "size_bytes": 4179
+      },
+      {
+        "name": "MYSALON-3_2025-12-12_14-30_Relatorio.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\MYSALON-3_2025-12-12_14-30_Relatorio.txt",
+        "type": "file",
+        "size_bytes": 696
+      },
+      {
+        "name": "MYSALON-3_2025-12-12_14-30.json",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\MYSALON-3_2025-12-12_14-30.json",
+        "type": "file",
+        "size_bytes": 25407
+      },
+      {
+        "name": "MYSALON-3_2025-12-12_14-30.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\MYSALON-3_2025-12-12_14-30.txt",
+        "type": "file",
+        "size_bytes": 12476
+      },
+      {
+        "name": "MYSALON-3_2025-12-12_14-30.zip",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\MYSALON-3_2025-12-12_14-30.zip",
+        "type": "file",
+        "size_bytes": 6717214
+      },
+      {
+        "name": "MYSALON-3_2025-12-23_19-52_Relatorio.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\MYSALON-3_2025-12-23_19-52_Relatorio.txt",
+        "type": "file",
+        "size_bytes": 353
+      },
+      {
+        "name": "MYSALON-3_2025-12-23_19-52.json",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\MYSALON-3_2025-12-23_19-52.json",
+        "type": "file",
+        "size_bytes": 16225
+      },
+      {
+        "name": "MYSALON-3_2025-12-23_19-52.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\MYSALON-3_2025-12-23_19-52.txt",
+        "type": "file",
+        "size_bytes": 6937
+      },
+      {
+        "name": "MYSALON-3_2025-12-27_23-43.txt",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação\\MYSALON-3_2025-12-27_23-43.txt",
+        "type": "file",
+        "size_bytes": 2417
+      }
+    ],
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\documentação",
+    "type": "folder"
+  },
+  {
+    "name": "frontend",
+    "children": [
+      {
+        "name": "html",
+        "children": [
+          {
+            "name": "agenda.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\agenda.html",
+            "type": "file",
+            "size_bytes": 79942
+          },
+          {
+            "name": "clientes.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\clientes.html",
+            "type": "file",
+            "size_bytes": 22025
+          },
+          {
+            "name": "configuracoes.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\configuracoes.html",
+            "type": "file",
+            "size_bytes": 50183
+          },
+          {
+            "name": "dashboard.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\dashboard.html",
+            "type": "file",
+            "size_bytes": 16298
+          },
+          {
+            "name": "estoque.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\estoque.html",
+            "type": "file",
+            "size_bytes": 59281
+          },
+          {
+            "name": "fidelidade.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\fidelidade.html",
+            "type": "file",
+            "size_bytes": 65967
+          },
+          {
+            "name": "financeiro.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\financeiro.html",
+            "type": "file",
+            "size_bytes": 55586
+          },
+          {
+            "name": "logs.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\logs.html",
+            "type": "file",
+            "size_bytes": 8991
+          },
+          {
+            "name": "profissionais.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\profissionais.html",
+            "type": "file",
+            "size_bytes": 44756
+          },
+          {
+            "name": "servicos.html",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html\\servicos.html",
+            "type": "file",
+            "size_bytes": 27892
+          }
+        ],
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\html",
+        "type": "folder"
+      },
+      {
+        "name": "js",
+        "children": [
+          {
+            "name": "agenda.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\agenda.js",
+            "type": "file",
+            "size_bytes": 77307
+          },
+          {
+            "name": "api.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\api.js",
+            "type": "file",
+            "size_bytes": 19221
+          },
+          {
+            "name": "app.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\app.js",
+            "type": "file",
+            "size_bytes": 82287
+          },
+          {
+            "name": "clientes.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\clientes.js",
+            "type": "file",
+            "size_bytes": 32181
+          },
+          {
+            "name": "logs-system.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\logs-system.js",
+            "type": "file",
+            "size_bytes": 10982
+          },
+          {
+            "name": "profissionais-service.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\profissionais-service.js",
+            "type": "file",
+            "size_bytes": 9525
+          },
+          {
+            "name": "profissionais-ui.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\profissionais-ui.js",
+            "type": "file",
+            "size_bytes": 23404
+          },
+          {
+            "name": "profissionais.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\profissionais.js",
+            "type": "file",
+            "size_bytes": 13959
+          },
+          {
+            "name": "servicos.js",
+            "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js\\servicos.js",
+            "type": "file",
+            "size_bytes": 58242
+          }
+        ],
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\js",
+        "type": "folder"
+      },
+      {
+        "name": "style",
+        "children": {
+          "name": "style.css",
+          "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\style\\style.css",
+          "type": "file",
+          "size_bytes": 19127
+        },
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend\\style",
+        "type": "folder"
+      }
+    ],
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\frontend",
+    "type": "folder"
+  },
+  {
+    "name": "node_modules",
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\node_modules",
+    "type": "folder_hidden"
+  },
+  {
+    "name": "package-lock.json",
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\package-lock.json",
+    "type": "file",
+    "size_bytes": 91799
+  },
+  {
+    "name": "package.json",
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\package.json",
+    "type": "file",
+    "size_bytes": 538
+  },
+  {
+    "name": "salao.db",
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\salao.db",
+    "type": "file",
+    "size_bytes": 348160
+  },
+  {
+    "name": "salao.db-shm",
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\salao.db-shm",
+    "type": "file",
+    "size_bytes": 32768
+  },
+  {
+    "name": "salao.db-wal",
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\salao.db-wal",
+    "type": "file",
+    "size_bytes": 152472
+  },
+  {
+    "name": "salao.sqbpro",
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\salao.sqbpro",
+    "type": "file",
+    "size_bytes": 5900
+  },
+  {
+    "name": "sqlite",
+    "children": [
+      {
+        "name": "bk",
+        "children": {
+          "name": "salao.db",
+          "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite\\bk\\salao.db",
+          "type": "file",
+          "size_bytes": 147456
+        },
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite\\bk",
+        "type": "folder"
+      },
+      {
+        "name": "salao.db",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite\\salao.db",
+        "type": "file",
+        "size_bytes": 348160
+      },
+      {
+        "name": "sqldiff.exe",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite\\sqldiff.exe",
+        "type": "file",
+        "size_bytes": 3188736
+      },
+      {
+        "name": "sqlite3",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite\\sqlite3",
+        "type": "file",
+        "size_bytes": 0
+      },
+      {
+        "name": "sqlite3_analyzer.exe",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite\\sqlite3_analyzer.exe",
+        "type": "file",
+        "size_bytes": 4449280
+      },
+      {
+        "name": "sqlite3_rsync.exe",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite\\sqlite3_rsync.exe",
+        "type": "file",
+        "size_bytes": 3133952
+      },
+      {
+        "name": "sqlite3.exe",
+        "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite\\sqlite3.exe",
+        "type": "file",
+        "size_bytes": 3897344
+      }
+    ],
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\sqlite",
+    "type": "folder"
+  },
+  {
+    "name": "test-db.js",
+    "path": "C:\\Users\\Andriw\\Desktop\\PROJETO SL\\MYSALON-3\\test-db.js",
+    "type": "file",
+    "size_bytes": 2342
+  }
+]
