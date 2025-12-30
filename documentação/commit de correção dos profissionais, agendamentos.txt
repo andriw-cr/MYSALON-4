@@ -1,0 +1,30 @@
+feat(database): implementação completa do sistema de agendamentos com validações por regras de negócio
+
+Implementa a modelagem e regras do banco de dados SQLite para o sistema de agendamento de salão, incluindo:
+
+- Criação das tabelas principais:
+  - profissionais
+  - profissionais_horarios
+  - agendamentos
+  - agendamento_servicos
+  - bloqueios_horario
+
+- Estruturação do controle de horários de trabalho por profissional
+- Implementação de bloqueios de agenda por:
+  - data específica
+  - recorrência semanal
+  - intervalos parciais (ex: almoço)
+  - tipos de bloqueio (folga, reunião, férias, outros)
+
+- Criação de triggers para garantir regras críticas de negócio:
+  - Bloqueio de agendamentos fora do horário de trabalho
+  - Prevenção de conflitos de horário para o mesmo profissional
+  - Bloqueio automático em horários bloqueados
+  - Respeito ao intervalo mínimo entre atendimentos
+  - Limite máximo de clientes por horário conforme configuração do serviço
+
+- Correção de inconsistências estruturais (colunas NOT NULL, CHECK constraints)
+- Padronização dos campos de data e hora para compatibilidade com SQLite
+- Validação prática com inserts reais e consultas de auditoria
+
+Base sólida preparada para integração com backend (API) e camada de frontend.
